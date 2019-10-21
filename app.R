@@ -1,8 +1,8 @@
 library(shiny)
 library(shinythemes)
-options(shiny.port = 3000)
+options(shiny.port = 5000)
 
-server <- function(input, output) {
-}
+path <- getwd()
+path <- paste(path, "/IRACE-Interface/core", sep = "")
 
-shinyApp(ui = htmlTemplate("www/index.html"), server)
+runApp(appDir = path)

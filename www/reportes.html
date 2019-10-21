@@ -9,23 +9,140 @@
     </head>
 
     <body>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <a class="navbar-brand" href="#" style="font-size: 55px;">IRACE</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarText">
+                <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Setup</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Runtime</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="#">Reports<span class="sr-only">(current)</span></a>
+                 </li>
+                </ul>
+                <span class="navbar-text">
+                    <div class="statusButton">
+                        Status
+                        <br><img src="/resources/images/finished.png" width="20" height="20" align="center">,<br>
+                        Finished
+                    </div>
+                </span>
+            </div>
+        </nav>
         <br>
-        <br>
-        <h1 class="display-1" align="center">IRACE - Sección de generación e importación de reportes</h1>
-
-        <div class="container px-lg-5">
-            <div class="row mx-lg-n5">
-                <div class="col py-3 px-lg-5 border bg-light" align="center">
-                    <button type="button" class="btn btn-outline-primary">
-                        Ingreso de parámetros 
-                        <br>para nueva optimización
-                    </button>
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-2">
+                    <div class="card">
+                        <div class="card-header" align="center">Menu</div>
+                        <div class="card=body">
+                            <div class="container" align="center">
+                                <br>
+                                <a class="btn btn-outline-dark my-2 my-sm-0" href="" role="button" style="cursor: pointer;">Save PDF</a>
+                                <br>
+                                <br>
+                                <br>
+                                <br>
+                                <a class="btn btn-outline-dark my-2 my-sm-0" href="" role="button" style="cursor: pointer;">Save Report</a>
+                                <a class="btn btn-outline-dark my-2 my-sm-0" href="" role="button" style="cursor: pointer;">Load Report</a>
+                            </div>
+                            <br>
+                        </div>
+                    </div>
                 </div>
-                <div class="col py-3 px-lg-5 border bg-light" align="center">
-                    <button type="button" class="btn btn-outline-primary">
-                        Sección de generación e 
-                        <br>importación de reportes
-                    </button>
+                <div class="col-md-8 overflow-auto">
+                    <div class="card">
+                        <div class="card-header">Summary</div>
+                        <div class="card=body">
+                            <br>
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col">
+                                        <table id="tablaSummary1">
+                                            <tr>
+                                                <th>Number of candidate solutions: </th>
+                                                <td>x</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Number of executions: </th>
+                                                <td>x</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Total time required: </th>
+                                                <td>HH:MM:SS</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Elitist new instances: </th>
+                                                <td>x</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Elitist limit: </th>
+                                                <td>x</td>
+                                            </tr>  
+                                            <tr>
+                                                <th>nbIterations: </th>
+                                                <td>x</td>
+                                            </tr>  
+                                        </table>
+                                    </div>
+                                    <div class="col">
+                                        <table id="tablaSummary2">
+                                            <tr>
+                                                <th>minNbSurvival: </th>
+                                                <td>x</td>
+                                            </tr>
+                                            <tr>
+                                                <th>nbParameters: </th>
+                                                <td>x</td>
+                                            </tr>
+                                            <tr>
+                                                <th>seed: </th>
+                                                <td>x</td>
+                                            </tr>
+                                            <tr>
+                                                <th>confidence level: </th>
+                                                <td>x</td>
+                                            </tr>
+                                            <tr>
+                                                <th>budget: </th>
+                                                <td>x</td>
+                                            </tr>  
+                                            <tr>
+                                                <th>mu: </th>
+                                                <td>x</td>
+                                            </tr>
+                                            <tr>
+                                                <th>deterministic: </th>
+                                                <td>x</td>
+                                            </tr>  
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <br>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="card">
+                        <div class="card-header" align="center">Contents</div>
+                        <div class="card=body">
+                            <br>
+                            <div class="container" align="center">
+                                <a href="#" class="badge badge-light" style="color: blue; font-size: 18px;">*Summary</a>
+                                <a href="#" class="badge badge-light" style="color: blue; font-size: 18px;">*Candidates</a>
+                                <a href="#" class="badge badge-light" style="color: blue; font-size: 18px;">*Perfomance</a>
+                                <a href="#" class="badge badge-light" style="color: blue; font-size: 18px;">*Details</a>
+                            </div>
+                            <br>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
