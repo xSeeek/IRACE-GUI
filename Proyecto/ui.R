@@ -1,4 +1,2 @@
-
-htmlTemplate("../www/control.html",
-             sliderValue = 50
+htmlTemplate("../Templates/www/control.html"
 )
