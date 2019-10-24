@@ -8,7 +8,6 @@ print("IRACE version of the report: ")
 #print(summary[3])
 
 htmlTemplate("../www/reportes.html",
-  sliderValue = 50,
   iraceVersion = iraceResults$irace.version,
   dataScenario = iraceResults$scenario,
   dataParameters = iraceResults$parameters
