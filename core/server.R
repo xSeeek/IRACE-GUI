@@ -1,6 +1,6 @@
 absolutePath <- getwd()
 
 server <- function(input, output) {
-    resourcesPath <- paste(absolutePath, "/IRACE-Interface/resources/", sep = "")
+    resourcesPath <- paste(absolutePath, "/resources", sep = "")
     print(resourcesPath)
 }
