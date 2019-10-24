@@ -1,12 +1,14 @@
 absolutePath <- getwd()
 
-#loadData <- function(){
-  #parameters <- readParameters(iraceResults, digits = 4, debugLevel = 0,text)
-  #parameters
-# }
-  
 server <- function(input, output) {
-  resourcesPath <- paste(absolutePath, "/ProyectoIRACE/IRACE-GUI/resources/", sep = "")
+  resourcesPath <- paste(absolutePath, "../resources", sep = "")
   print(resourcesPath)
-  #addResourcePath('resources', resourcesPath)
+}
+
+Plot1 <- function(input, output){
+  output$newBoxPlot <- renderPlot({
+    configuracionID <- iraceResults$allElites[[1]]
+    configuraciones <- iraceResults$allElites$experiments[[1]]
+    boxplot(configuraciones,configuracionID,xlab="Configurations ID",ylab="Configurations")
+  })
 }
