@@ -2,6 +2,7 @@
 <html>
 
     <head>
+        {{headContent()}}
         <script src="shared/jquery.js" type="text/javascript"></script>
         <script src="shared/shiny.js" type="text/javascript"></script>
         <script src="resources/scripts/main.js" type="text/javascript"></script>
@@ -78,11 +79,14 @@
                     <div class="card">
                         <div class="card-header">Summary</div>
                         <div class="card=body">
-                            <br>
                             <div class="container">
                                 <div class="row">
                                     <div class="col">
                                         <table id="tablaSummary1">
+                                            <tr>
+                                                <th>IRACE version: </th>
+                                                <td>{{ iraceVersion }}</td>
+                                            </tr>
                                             <tr>
                                                 <th>Number of candidate solutions: </th>
                                                 <td>x</td>
@@ -105,7 +109,7 @@
                                             </tr>  
                                             <tr>
                                                 <th>nbIterations: </th>
-                                                <td>x</td>
+                                                <td>{{ dataScenario$nbIterations }}</td>
                                             </tr>  
                                         </table>
                                     </div>
@@ -113,31 +117,31 @@
                                         <table id="tablaSummary2">
                                             <tr>
                                                 <th>minNbSurvival: </th>
-                                                <td>x</td>
+                                                <td>{{ dataScenario$minNbSurvival }}</td>
                                             </tr>
                                             <tr>
                                                 <th>nbParameters: </th>
-                                                <td>x</td>
+                                                <td>{{ dataParameters$nbParameters }}</td>
                                             </tr>
                                             <tr>
                                                 <th>seed: </th>
-                                                <td>x</td>
+                                                <td>{{ dataScenario$seed }}</td>
                                             </tr>
                                             <tr>
                                                 <th>confidence level: </th>
-                                                <td>x</td>
+                                                <td>{{ dataScenario$confidence }}</td>
                                             </tr>
                                             <tr>
                                                 <th>budget: </th>
-                                                <td>x</td>
+                                                <td>{{  dataScenario$budgetEstimation }}</td>
                                             </tr>  
                                             <tr>
                                                 <th>mu: </th>
-                                                <td>x</td>
+                                                <td>{{  dataScenario$mu }}</td>
                                             </tr>
                                             <tr>
                                                 <th>deterministic: </th>
-                                                <td>x</td>
+                                                <td>{{  dataScenario$deterministic }}</td>
                                             </tr>  
                                         </table>
                                     </div>
@@ -276,9 +280,9 @@
             </div>
         </div>
         <br>
+        <!--
         <textarea>Write yours annotations here</textarea>
         <br>
-        <!--
         <p>
             <label>Distribution type:</label><br />
             <select name="dist">
