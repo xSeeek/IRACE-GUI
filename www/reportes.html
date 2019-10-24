@@ -9,7 +9,7 @@
         <link rel="stylesheet" type="text/css" href="shared/shiny.css"/>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
         <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
-  <script>tinymce.init({selector:'textarea'});</script>
+        <script>tinymce.init({selector:'textarea'});</script>
     </head>
 
     <body>
@@ -190,18 +190,33 @@
                     <div class="card">
                         <div class="card-header" id="bestConfiguration">Best Configuration</div>
                         <div class="card=body">
-                            <br>
                             <div class="container">
                                 <div class="row">
                                     <div class="col">
-                                        Data
+                                        <b>&#9819Best-so-far</b>
+                                        <br>&#10132configurarion: &emsp;{{  bestConfiguration$.ID  }}
+                                        <br>&#10132mean value: &emsp;
+                                        <br>
+                                        <b>Description of the best-so-far configurarion</b>
+                                        <br>&#10132ID: &emsp;&emsp;&emsp;&emsp;{{  bestConfiguration$.ID  }}
+                                        <br>&#10132algorithm: &emsp;{{  bestConfiguration$algorithm  }}
+                                        <br>&#10132localsearch: &emsp;{{  bestConfiguration$localsearch  }}
+                                        <br>&#10132alpha: &emsp;&emsp;&emsp;{{  bestConfiguration$alpha  }}
+                                        <br>&#10132beta: &emsp;&emsp;&emsp;{{  bestConfiguration$beta  }}
+                                        <br>&#10132rho: &emsp;&emsp;&emsp;&emsp;{{  bestConfiguration$rho  }}
+                                        <br>&#10132ants: &emsp;&emsp;&emsp;&emsp;{{  bestConfiguration$ants  }}
+                                        <br>&#10132nnls: &emsp;&emsp;&emsp;&emsp;{{  bestConfiguration$nnls  }}
+                                        <br>&#10132q0: &emsp;&emsp;&emsp;&emsp;{{  bestConfiguration$q0  }}
+                                        <br>&#10132dlb: &emsp;&emsp;&emsp;&emsp;&emsp;{{  bestConfiguration$dlb  }}
+                                        <br>&#10132rasrank: &emsp;&emsp;&emsp;{{  bestConfiguration$rasrank  }}
+                                        <br>&#10132elitistants: &emsp;&emsp;{{  bestConfiguration$elitistants  }}
+                                        <br>&#10132PARENT: &emsp;&emsp;{{  bestConfiguration$.PARENT  }}
                                     </div>
                                     <div class="col">
                                         Plots
                                     </div>
                                 </div>
                             </div>
-                            <br>
                         </div>
                     </div>
                 </div>
