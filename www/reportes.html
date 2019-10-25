@@ -93,7 +93,7 @@
                                             </tr>
                                             <tr>
                                                 <th>Number of executions: </th>
-                                                <td>x</td>
+                                                <td> {{ dataState$nbIterations }}</td>
                                             </tr>
                                             <tr>
                                                 <th>Total time required: </th>
@@ -275,16 +275,17 @@
             <div class="row justify-content-center">
                 <div class="col-md-12 overflow-auto">
                     <div class="card">
-                        <div class="card-header" id="details">Details</div>
+                        <div class="card-header" id="details">Details by iteration</div>
                         <div class="card=body">
                             <br>
                             <div class="container">
+                                <div class="row justify-content-center">
+                                    {{ selectIteration }}
+                                </div>
                                 <div class="row">
                                     <div class="col">
+                                        {{ selectedIteration }}
                                         Data
-                                    </div>
-                                    <div class="col">
-                                        Plots
                                     </div>
                                 </div>
                             </div>
