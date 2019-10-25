@@ -5,7 +5,6 @@ print("IRACE version of the report: ")
 print(iraceResults$irace.version)
 
 bestConfiguration <- getFinalElites(iraceResults, n = 0)[1,]
-#print(bestConfiguration)
 
 htmlTemplate("../www/reportes.html",
   iraceVersion = iraceResults$irace.version,
