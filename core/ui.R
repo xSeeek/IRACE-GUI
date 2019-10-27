@@ -4,7 +4,9 @@ load('../resources/data/example-irace.Rdata', envir=.GlobalEnv)
 print("IRACE version of the report: ")
 print(iraceResults$irace.version)
 
-bestConfiguration <- getFinalElites(iraceResults, n = 0)[1,]
+last <- length(iraceResults$iterationElites)
+id <- iraceResults$iterationElites[last]
+bestConfiguration <- getConfigurationById(iraceResults, ids = id)
 
 choices = c()
 for (i in 1:iraceResults$state$nbIterations) 
