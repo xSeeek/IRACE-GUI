@@ -43,8 +43,8 @@ server <- function(input, output, session) {
         detailsBestConfiguration <- getConfigurationById(iraceResults, ids = bestConfigurationID)
         dataTable = createTableEliteConfigurations(bestConfigurations[[1]])
 
-        HTML('Best-so-far configuration: ', bestConfigurationID, '<br>mean value: ', input$iteration
-        , '<br><br>Description of the best-so-far configuration:<br>
+        HTML('<b>Best-so-far configuration: </b>', bestConfigurationID, '<br><b>mean value: </b>', input$iteration
+        , '<br><br><b>Description of the best-so-far configuration:</b><br>
         <table class="table table-bordered table-sm" id="best-so-far">
             <thead>
                 <tr>
@@ -80,7 +80,7 @@ server <- function(input, output, session) {
                     <td>', detailsBestConfiguration$.PARENT, '</td>
                 </tr>
             </tbody></table>
-        <br>Elite configurations: <br>
+        <br><b>Elite configurations: </b><br>
         <table class="table table-bordered table-sm" id="best-so-far">
             <thead>
                 <tr>

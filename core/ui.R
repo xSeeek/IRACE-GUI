@@ -16,6 +16,6 @@ htmlTemplate("../www/reportes.html",
   dataState = iraceResults$state,
   dataParameters = iraceResults$parameters,
   bestConfiguration = bestConfiguration,
-  selectIteration = selectInput("iteration", "Select iteration", choices),
+  selectIteration = selectInput("iteration", "Iteration:", choices),
   selectedIteration = htmlOutput('iterationSelected')
 )
