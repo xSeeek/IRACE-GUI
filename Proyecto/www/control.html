@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+        <script src="shared/jquery.js" type="text/javascript"></script>
+        <script src="shared/shiny.js" type="text/javascript"></script>
+        <link rel="stylesheet" type="text/css" href="shared/shiny.css"/>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <!--DataTables-->
+        <link rel="stylesheet" type="text/css" href="DataTables-1.10.20/css/jquery.dataTables.css"/>
+        <script type="text/javascript" src="jQuery-3.3.1/jquery-3.3.1.js"></script>
+        <script type="text/javascript" sr   c="jQuery-1.12.4/jquery-1.12.4.js"></script>
+        <script type="text/javascript" src="DataTables-1.10.20/js/jquery.dataTables.js"></script>
+</head>
+<body>
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <a class="navbar-brand" href="#" style="font-size: 55px;">IRACE</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarText">
+                    <ul class="navbar-nav mr-auto">
+                    <li class="nav-item" style="padding-left: 150px; font-size: 30px;">
+                        <a class="nav-link" href="#">Setup</a>
+                    </li>
+                    <li class="nav-item" style="padding-left: 150px; font-size: 30px;">
+                        <a class="nav-link" href="#">Runtime</a>
+                    </li>
+                    <li class="nav-item active" style="padding-left: 150px; font-size: 30px; color: green;">
+                        <a class="nav-link" href="#">Reports<span class="sr-only">(current)</span></a>
+                     </li>
+                    </ul>
+                    <span class="navbar-text">
+                        <div class="container">
+                            <div class="row">
+                                Status
+                            </div>
+                            <div class="row">
+                                <br><img src="resources/images/finished.png" width="20" height="20" alt="Status: Finished"><br>
+                            </div>
+                            <div class="row">
+                                Finished
+                            </div>
+                        </div>
+                    </span>
+                </div>
+            </nav>
+            <br>
+            <br>
+            <br>
+<div class="container">
+                <div class="row justify-content-left">
+                    <div class="col-md-2">
+                        <div class="mini-submenu">
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </div>
+                        <div class="list-group">
+                            <span href="#" class="list-group-item active">
+                                MENU
+                                <span class="pull-right" id="slide-submenu">
+                                    <i class="fa fa-times"></i>
+                                </span>
+                            </span>
+                            <a href="" class="list-group-item">
+                                <i class="fa fa-comment-o"></i> Command Line Output
+                            </a>
+                            <a href="#" class="list-group-item" color="red">
+                                <i class="fa fa-bar-chart-o"></i> Summary
+                            </a>
+                            <a href="#" class="list-group-item">
+                                <i class="fa fa-envelope"></i> Performance
+                            </a>
+                            <a href="#" class="list-group-item">
+                                <i class="fa fa-envelope"></i> Frequency
+                            </a>
+                        </div>      
+                    </div
+    <div class="col-md-8 overflow-auto">
+        <div class="card">
+            <div class="card-header">Summary</div>
+                <div class="card=body">
+                <br>
+                    <div class="container">
+                        <div class="row">
+                            <div class="col">
+                                <table id="tablaSummary1">
+                                    <tr>
+                                        <th>Number of elite candidates:</th>
+                                            <td>{{length(iraceResults$allElites)}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Number of Experiments: </th>
+                                            <td>{{iraceResults$scenario$maxExperiments}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Numer of Iterations: </th>
+                                            <td>{{iraceResults$scenario$nbIterations}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Number of Configurations: </th>
+                                            <td>{{iraceResults$scenario$nbConfigurations}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Number of Parameters: </th>
+                                            <td>{{iraceResults$scenario$nbParameters}}</td>
+                                    </tr>  
+                                    <tr>
+                                        <th>nbIterations: </th>
+                                            <td></td>
+                                    </tr>  
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        <div class="col-md-14 overflow-auto">
+            <div class="card">
+                <div class="card-header">All Elites Configurations</div>
+                    <div class="card=body">
+                    <br>
+                        <div class="container">
+                            <div class="row">
+                                <div class="col">
+                                    <table class="table table-bordered table-sm" id="tablaElites">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Algorithm</th>
+                                                <th>Localsearch</th>
+                                                <th>Alpha</th>
+                                                <th>Beta</th>
+                                                <th>Rho</th>
+                                                <th>Ants</th>
+                                                <th>nnls</th>
+                                                <th>q0</th>
+                                                <th>dlb</th>
+                                                <th>Rasrank</th>    
+                                                <th>Elitistants</th>
+                                            </tr> 
+                                        </thead>
+                                        <tbody> 
+                                            <tr>
+                                                <td>{{iraceResults$state$eliteConfigurations$.ID.}}</td>
+                                                <td>{{iraceResults$state$eliteConfigurations$algorithm}}</td>
+                                                <td>{{iraceResults$state$eliteConfigurations$localsearch}}</td>
+                                                <td>{{iraceResults$state$eliteConfigurations$alpha}}</td>
+                                                <td>{{iraceResults$state$eliteConfigurations$beta}}</td>
+                                                <td>{{iraceResults$state$eliteConfigurations$rho}}</td>
+                                                <td>{{iraceResults$state$eliteConfigurations$ants}}</td>
+                                                <td>{{iraceResults$state$eliteConfigurations$nnls}}</td>
+                                                <td>{{iraceResults$state$eliteConfigurations$q0}}</td>
+                                                <td>{{iraceResults$state$eliteConfigurations$dlb}}</td>
+                                                <td>{{iraceResults$state$eliteConfigurations$rasrank}}</td>
+                                                <td>{{iraceResults$state$eliteConfigurations$elitistants}}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container   ">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="row">
+                    <div class="card-header">Performance
+                        <div class="card=body">
+                        <br>
+                            <div class="container">
+                                <div id="dataset" class="shiny-table-output"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+     </div>
+</div>
+</div>
+    </body>
+</html>
