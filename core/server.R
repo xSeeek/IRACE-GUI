@@ -35,6 +35,14 @@ createOneLine <- function(tableVector)
     return(fullLine)
 }
 
+convertVectorToString <- function(vector)
+{
+    newVector = c()
+    for(i in 1:length(vector))
+        newVector[i] <- paste0(vector[i])
+    return(newVector)
+}
+
 server <- function(input, output, session) {
     resourcesPath <- paste(absolutePath, "/resources", sep = "")
 
@@ -108,7 +116,20 @@ server <- function(input, output, session) {
     })
 
     output$boxPlotBestConfiguration <- renderPlot({
+        last <- length(iraceResults$iterationElites)
+        id <- paste0(iraceResults$iterationElites[last])
+        results <- subset(iraceResults$testing$experiments, select=c(id))
+        conf <- gl(ncol(results), nrow(results), labels = colnames(results))
+        pairwise.wilcox.test (as.vector(results), conf, paired = TRUE, p.adj = "bonf")
+        configurationsBoxplot (results, ylab = "Solution cost")
+    })
+
+    output$boxPlotPerfomance <- renderPlot({
+        req(input$iterationPlotsPerfomance)
+        configurationPerIteration <- convertVectorToString(iraceResults$allElites[as.integer(input$iterationPlotsPerfomance)][[1]])
+        print(configurationPerIteration)
         results <- iraceResults$testing$experiments
+        results <- subset(iraceResults$testing$experiments, select=(configurationPerIteration))
         conf <- gl(ncol(results), nrow(results), labels = colnames(results))
         pairwise.wilcox.test (as.vector(results), conf, paired = TRUE, p.adj = "bonf")
         configurationsBoxplot (results, ylab = "Solution cost")

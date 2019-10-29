@@ -1,4 +1,4 @@
-packageVerification <- c("shiny", "irace", "assertthat", "plotly")
+packageVerification <- c("shiny", "irace", "assertthat", "plotly", "dplyr")
 
 pkgCheck <- function(x)
 {

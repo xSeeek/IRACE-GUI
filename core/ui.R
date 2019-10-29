@@ -30,5 +30,6 @@ htmlTemplate("../www/reportes.html",
   evaluatedAlgorithms = formatedText,
   paralelCoordinatesCandidates = plotOutput("paralelCoordinatesCandidates"),
   sliderCandidates = sliderInput("iterationPlotsCandidates", label = h5("Iteration"), min = 1, max = iraceResults$state$nbIterations, value = c(iraceResults$state$nbIterations - 1, iraceResults$state$nbIterations)),
-  sliderPerfomance = sliderInput("iterationPlotsPerfomance", label = h5("Iteration"), min = 1, max = iraceResults$state$nbIterations, value = c(iraceResults$state$nbIterations - 1, iraceResults$state$nbIterations))
+  sliderPerfomance = sliderInput("iterationPlotsPerfomance", label = h5("Iteration"), min = 1, max = iraceResults$state$nbIterations, value = 1),
+  boxPlotPerfomance = plotOutput("boxPlotPerfomance")
 )
