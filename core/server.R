@@ -1,5 +1,7 @@
 absolutePath <- getwd()
 
+#iraceResults[["parameters"]][["names"]]
+
 createTableEliteConfigurations <- function(configurationsData)
 {
     dataTable = c()
@@ -100,7 +102,26 @@ server <- function(input, output, session) {
             </thead>
             <tbody>'
                 , dataTable,
-            '</tbody></table>'
+            '</tbody>
+        </table>'
         )
+    })
+
+    output$boxPlotBestConfiguration <- renderPlot({
+        results <- iraceResults$testing$experiments
+        conf <- gl(ncol(results), nrow(results), labels = colnames(results))
+        pairwise.wilcox.test (as.vector(results), conf, paired = TRUE, p.adj = "bonf")
+        configurationsBoxplot (results, ylab = "Solution cost")
+    })
+
+    output$frecuencyParameters <- renderPlot({
+        parameterFrequency(iraceResults$allConfigurations, iraceResults$parameters)
+    })
+
+    output$paralelCoordinatesCandidates <- renderPlot({
+        req(input$iterationPlotsCandidates)
+        last <- length(iraceResults$iterationElites)
+        conf <- getConfigurationByIteration(iraceResults = iraceResults, iterations = c(input$iterationPlotsCandidates[1], input$iterationPlotsCandidates[2]))
+        parallelCoordinatesPlot (conf, iraceResults$parameters, param_names = c("algorithm", "alpha", "beta", "rho", "q0"), hierarchy = FALSE)
     })
 }

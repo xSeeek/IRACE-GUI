@@ -213,7 +213,7 @@
                                         <br>&#10132PARENT: &emsp;&emsp;{{  bestConfiguration$.PARENT  }}
                                     </div>
                                     <div class="col">
-                                        Plots
+                                        {{ boxPlotBestConfiguration }}
                                     </div>
                                 </div>
                             </div>
@@ -233,10 +233,15 @@
                             <div class="container">
                                 <div class="row">
                                     <div class="col">
-                                        Data
+                                        {{ sliderCandidates }}
+                                        {{ evaluatedAlgorithms }}
+                                        {{ paralelCoordinatesCandidates }}
                                     </div>
                                     <div class="col">
-                                        Plots
+                                        <br>
+                                        <br>
+                                        <br>
+                                        {{ frecuencyParameters }}
                                     </div>
                                 </div>
                             </div>
@@ -257,7 +262,7 @@
                             <div class="container">
                                 <div class="row">
                                     <div class="col">
-                                        Data
+                                        {{ evaluatedAlgorithms }}
                                     </div>
                                     <div class="col">
                                         Plots
