@@ -43,17 +43,24 @@ convertVectorToString <- function(vector)
     return(newVector)
 }
 
+formatColData <- function(resultsData, iterationData)
+{
+    vectorColNames <- colnames(resultsData)
+    formatedData <- Reduce(intersect, list(vectorColNames, iterationData))
+    return(formatedData)
+}
+
 server <- function(input, output, session) {
     resourcesPath <- paste(absolutePath, "/resources", sep = "")
 
     output$iterationSelected <- renderUI({
-        req(input$iteration)
-        bestConfigurations <- iraceResults$allElites[as.integer(input$iteration)]
+        req(input$iterationDetails)
+        bestConfigurations <- iraceResults$allElites[as.integer(input$iterationDetails)]
         bestConfigurationID <- bestConfigurations[[1]][1]
         detailsBestConfiguration <- getConfigurationById(iraceResults, ids = bestConfigurationID)
         dataTable = createTableEliteConfigurations(bestConfigurations[[1]])
 
-        HTML('<b>Best-so-far configuration: </b>', bestConfigurationID, '<br><b>mean value: </b>', input$iteration
+        HTML('<b>Best-so-far configuration: </b>', bestConfigurationID, '<br><b>mean value: </b>', input$iterationDetails
         , '<br><br><b>Description of the best-so-far configuration:</b><br>
         <table class="table table-bordered table-sm" id="best-so-far">
             <thead>
@@ -127,9 +134,9 @@ server <- function(input, output, session) {
     output$boxPlotPerfomance <- renderPlot({
         req(input$iterationPlotsPerfomance)
         configurationPerIteration <- convertVectorToString(iraceResults$allElites[as.integer(input$iterationPlotsPerfomance)][[1]])
-        print(configurationPerIteration)
         results <- iraceResults$testing$experiments
-        results <- subset(iraceResults$testing$experiments, select=(configurationPerIteration))
+        intersectedColumns <- formatColData(results, configurationPerIteration)
+        results <- subset(iraceResults$testing$experiments, select=(intersectedColumns))
         conf <- gl(ncol(results), nrow(results), labels = colnames(results))
         pairwise.wilcox.test (as.vector(results), conf, paired = TRUE, p.adj = "bonf")
         configurationsBoxplot (results, ylab = "Solution cost")
