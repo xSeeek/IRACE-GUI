@@ -24,22 +24,31 @@ convertVectorToString <- function(vector)
     newVector[i] <- paste0(vector[i])
   return(newVector)
 }
+
+formatColData <- function(resultsData, iterationData)
+{
+  vectorColNames <- colnames(resultsData)
+  formatedData <- Reduce(intersect, list(vectorColNames, iterationData))
+  return(formatedData)
+}
+
+elites <- function(input,output){
+  allElites <- iraceResults$allElites
+  last <- iraceResults$iterationElites
+  for(i in allElites)
+  {
+    bestConfiguration <- getConfigurationById(iraceResults, ids=i)
+    print(bestConfiguration)
+    return(bestConfiguration)
+  }
+}
 summary <- function(input,output){
-  
   iterations <- iraceResults$state$nbIterations
   count <- 0
-      allElites <- length(iraceResults$allElites)
     
-    last <- length(iraceResults$iterationElites)
-    for(i in 1:last)
-    {
-      bestConfigurationID <- iraceResults$iterationElites[i]
-      bestConfiguration <- getConfigurationById(iraceResults, ids=bestConfigurationID)
-      print(bestConfiguration)
-      output$dataTableElites <- DT::renderDataTable(
-        bestConfiguration
-      )
-    }
+  output$dataTableElites <- DT::renderDataTable({
+    elites()
+  })
   
   output$numIterations <- renderText(
     iraceResults$state$nbIterations
@@ -89,4 +98,25 @@ summary <- function(input,output){
     conf <- getConfigurationByIteration(iraceResults = iraceResults,iterations = c(input$iterationPC[1],input$iterationPC[2]))
     parallelCoordinatesPlot(conf, iraceResults$parameters, param_names = c("algorithm", "alpha","beta","rho","q0"), hierarchy = FALSE)
   })
+    
+    
+    output$boxPlotPerfomance <- renderPlot({
+      req(input$iterationPlotsPerfomance)
+      configurationPerIteration <- convertVectorToString(iraceResults$allElites[as.integer(input$iterationPlotsPerfomance)][[1]])
+      results <- iraceResults$testing$experiments
+      intersectedColumns <- formatColData(results, configurationPerIteration)
+      results <- subset(iraceResults$testing$experiments, select=(intersectedColumns))
+      conf <- gl(ncol(results), nrow(results), labels = colnames(results))
+      pairwise.wilcox.test (as.vector(results), conf, paired = TRUE, p.adj = "bonf")
+      configurationsBoxplot (results, ylab = "Solution cost")
+    })
+    
+    output$boxPlotBestConfiguration <- renderPlot({
+      last <- length(iraceResults$iterationElites)
+      id <- paste0(iraceResults$iterationElites[last])
+      results <- subset(iraceResults$testing$experiments, select=c(id))
+      conf <- gl(ncol(results), nrow(results), labels = colnames(results))
+      pairwise.wilcox.test (as.vector(results), conf, paired = TRUE, p.adj = "bonf")
+      configurationsBoxplot (results, ylab = "Solution cost")
+    })
 }

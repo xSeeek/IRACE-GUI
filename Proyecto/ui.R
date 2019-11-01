@@ -46,6 +46,7 @@ sidebar <- dashboardSidebar(
           box(title = "Elite Configurations",
               status = "primary",
               uiOutput("iterationSeleceted"),
+              textInput("iterationElites","Select Iteration"),
               DT::dataTableOutput("dataTableElites"),
               width = 15
           )
@@ -61,7 +62,11 @@ sidebar <- dashboardSidebar(
     tabItem(tabName = "performance",
       fluidRow(
         box(title="Performance",
-            status="primary"
+            status="primary",
+            h1("BoxPlot"),
+            textInput("iterationPlotsPerfomance","Select Iteration"),
+            plotOutput("boxPlotPerfomance"),
+            plotOutput("boxPlotBestConfiguration")
         )
       )
     ),
