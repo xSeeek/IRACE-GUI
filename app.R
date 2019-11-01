@@ -2,6 +2,7 @@ library(shiny)
 library(shinythemes)
 library(shinydashboard)
 library(DT)
+library(irace)
 options(shiny.port = 5000)
   
 
