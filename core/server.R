@@ -134,9 +134,9 @@ server <- function(input, output, session) {
     output$boxPlotPerfomance <- renderPlot({
         req(input$iterationPlotsPerfomance)
         configurationPerIteration <- convertVectorToString(iraceResults$allElites[as.integer(input$iterationPlotsPerfomance)][[1]])
-        results <- iraceResults$testing$experiments
+        results <- iraceResults$experiments
         intersectedColumns <- formatColData(results, configurationPerIteration)
-        results <- subset(iraceResults$testing$experiments, select=(intersectedColumns))
+        results <- subset(iraceResults$experiments, select=(intersectedColumns))
         conf <- gl(ncol(results), nrow(results), labels = colnames(results))
         pairwise.wilcox.test (as.vector(results), conf, paired = TRUE, p.adj = "bonf")
         configurationsBoxplot (results, ylab = "Solution cost")
