@@ -42,10 +42,11 @@ elites <- function(input,output){
     return(bestConfiguration)
   }
 }
+
 summary <- function(input,output){
   iterations <- iraceResults$state$nbIterations
   count <- 0
-    
+  
   output$dataTableElites <- DT::renderDataTable({
     elites()
   })
@@ -54,16 +55,16 @@ summary <- function(input,output){
     iraceResults$state$nbIterations
   )
   output$numConfigurations <- renderText(
-    conf <- iraceResults$state$nbConfigurations
+    conf <- length(iraceResults$allConfigurations$.ID.)
   )
   output$numInstances <- renderText(
     instances <- length(iraceResults$state$.irace$instancesList$instance)
   )
   output$numElitesConfigurations <- renderText(
-    for(i in 1:length(iraceResults$allElites[[iterations]][iterations]))
+    for(i in iraceResults$allElites)
     {
-      count = count + 1
-      return(count)
+      c(i)
+      return(length(i))
     }
   )
   
@@ -71,25 +72,25 @@ summary <- function(input,output){
     iraceResults$allConfigurations,
     options = list(
       scrollX = TRUE,
+      scrollY = TRUE,
       pageLength = 5
     )
   )
-  #output$getData <- reactive({
-   # last <- length(iraceResults$iterationElites)
-    #for(i in 1:last)
-    #{
-      #bestConfigurationID <- iraceResults$iterationElites[i]
-      #bestConfiguration <- getConfigurationById(iraceResults, ids=bestConfigurationID)
-    #  print(bestConfigurationID)
-     # print(allElites)
-    #}
-    #bestConfiguration
-  #})
-
   
+  output$plotPerformance <- renderPlot({
+    req(input$iterationPerformance)
+    fes <- cumsum(table(iraceResults$experimentLog[,"iteration"]))
+    elites <- as.character(iraceResults$iterationElites)
+    values <- colMeans(iraceResults$testing$experiments[,elites])
+    plot(fes,values,type="s",xlab="Number of runs of the target algorithm",ylab= "Mean value over testing set")
+    points(fes,values)
+    text(fes,values,elites,pos=1)
+  })
   
   output$frecuencyParameters <- renderPlot({
-    parameterFrequency(iraceResults$allConfigurations, iraceResults$parameters)
+    req(input$iterationFrequency)
+    conf <- getConfigurationByIteration(iraceResults = iraceResults, iterations = c(input$iterationFrequency[1],input$iterationFrequency[2]))
+    parameterFrequency(conf, iraceResults$parameters)
   })
   
     output$paralelCoordinatesCandidates <- renderPlot({
@@ -99,24 +100,30 @@ summary <- function(input,output){
     parallelCoordinatesPlot(conf, iraceResults$parameters, param_names = c("algorithm", "alpha","beta","rho","q0"), hierarchy = FALSE)
   })
     
-    
-    output$boxPlotPerfomance <- renderPlot({
-      req(input$iterationPlotsPerfomance)
-      configurationPerIteration <- convertVectorToString(iraceResults$allElites[as.integer(input$iterationPlotsPerfomance)][[1]])
-      results <- iraceResults$testing$experiments
-      intersectedColumns <- formatColData(results, configurationPerIteration)
-      results <- subset(iraceResults$testing$experiments, select=(intersectedColumns))
-      conf <- gl(ncol(results), nrow(results), labels = colnames(results))
-      pairwise.wilcox.test (as.vector(results), conf, paired = TRUE, p.adj = "bonf")
-      configurationsBoxplot (results, ylab = "Solution cost")
+    output$boxPlotBestConfiguration <- renderPlot({
+      req(input$iterationBoxPlot)
+      results <- iraceResults$experiments[,iraceResults$allElites[[input$iterationBoxPlot]]]
+      conf <- gl(ncol(results),
+                 nrow(results),
+                 labels = colnames(results)
+              )
+      pairwise.wilcox.test(as.vector(results), conf,paired = TRUE, p.adj ="bonf")
+      configurationsBoxplot(results, ylab = "Solution Cost")
     })
     
-    output$boxPlotBestConfiguration <- renderPlot({
-      last <- length(iraceResults$iterationElites)
-      id <- paste0(iraceResults$iterationElites[last])
-      results <- subset(iraceResults$testing$experiments, select=c(id))
-      conf <- gl(ncol(results), nrow(results), labels = colnames(results))
-      pairwise.wilcox.test (as.vector(results), conf, paired = TRUE, p.adj = "bonf")
-      configurationsBoxplot (results, ylab = "Solution cost")
+    output$performance <- renderPlot({
+      iters <- unique(iraceResults$experimentLog[,"iteration"])
+      fes <- cumsum(table(iraceResults$experimentLog[,"iteration"]))
+      elites <- as.character(iraceResults$iterationElites)
+      values <- colMeans(iraceResults$experiments[,elites])
+      plot(fes,
+           values,
+           type = "s",
+           xlab = "Number of runs of the target algorithm",
+           ylab = "Mean value over testing set"
+      )
+      points(fes,values)
+      text(fes, values, elites, pos = 1)
+      
     })
 }

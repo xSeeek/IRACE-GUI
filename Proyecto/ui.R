@@ -46,7 +46,7 @@ sidebar <- dashboardSidebar(
           box(title = "Elite Configurations",
               status = "primary",
               uiOutput("iterationSeleceted"),
-              textInput("iterationElites","Select Iteration"),
+              numericInput("elitesPerIteration","Select Iteration",value = 1,min = 1,max = iraceResults$state$nbIterations),
               DT::dataTableOutput("dataTableElites"),
               width = 15
           )
@@ -64,9 +64,10 @@ sidebar <- dashboardSidebar(
         box(title="Performance",
             status="primary",
             h1("BoxPlot"),
-            textInput("iterationPlotsPerfomance","Select Iteration"),
-            plotOutput("boxPlotPerfomance"),
-            plotOutput("boxPlotBestConfiguration")
+            sliderInput("iterationBoxPlot","Select Iteration", min = 1, max = iraceResults$state$nbIterations, value = 1, dragRange = TRUE),
+            plotOutput("boxPlotBestConfiguration"),
+            h1("Peformance Plot"),
+            plotOutput("performance")
         )
       )
     ),
@@ -75,9 +76,10 @@ sidebar <- dashboardSidebar(
         box(title = "Frequency",
             status = "primary",
             h1("Sampling Frequency"),
+            sliderInput("iterationFrequency","Select Iteration",min = 1, max = iraceResults$state$nbIterations,value = c(1,2),dragRange = TRUE),
             plotOutput("frecuencyParameters"),
             h1("Parallel Coordinates"),
-            textInput("iterationPC","Select Iteration"),
+            sliderInput("iterationPC","Select Iteration",min = 1, max = iraceResults$state$nbIterations, value = c(1,2), dragRange = TRUE),
             plotOutput("paralelCoordinatesCandidates")
         )
       )
