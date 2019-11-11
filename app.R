@@ -18,4 +18,5 @@ options(shiny.port = 5000)
 path <- getwd()
 path <- paste(path, "/core", sep = "")
 
+browseURL("http://127.0.0.1:5000/")
 runApp(appDir = path)
