@@ -32,4 +32,5 @@ htmlTemplate("../www/reportes.html",
   sliderCandidates = sliderInput("iterationPlotsCandidates", label = h5("Iteration"), min = 1, max = iraceResults$state$nbIterations, value = c(iraceResults$state$nbIterations - 1, iraceResults$state$nbIterations)),
   selectIterationPerfomance = selectInput("iterationPlotsPerfomance", "Iteration:", choices, selected = iraceResults$state$nbIterations),
   boxPlotPerfomance = plotOutput("boxPlotPerfomance")
+  #convergencePerfomance = plotOutput("convergencePerfomance")
 )

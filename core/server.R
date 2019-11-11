@@ -7,21 +7,11 @@ createTableEliteConfigurations <- function(configurationsData)
     dataTable = c()
     for(i in 1:length(configurationsData))
     {
+        valueData <- ""
         actualConfiguration <- getConfigurationById(iraceResults, ids = configurationsData[i])
-        dataTable[i] = paste('
-            <tr><td>', actualConfiguration$.ID., '</td>
-            <td>', actualConfiguration$algorithm, '</td>
-            <td>', actualConfiguration$localsearch, '</td>
-            <td>', actualConfiguration$alpha, '</td>
-            <td>', actualConfiguration$beta, '</td>
-            <td>', actualConfiguration$rho, '</td>
-            <td>', actualConfiguration$ants, '</td>
-            <td>', actualConfiguration$nnls, '</td>
-            <td>', actualConfiguration$q0, '</td>
-            <td>', actualConfiguration$dlb, '</td>
-            <td>', actualConfiguration$rasrank, '</td>
-            <td>', actualConfiguration$elitistants, '</td></tr>
-        ', sep = "")
+        for(j in 1:(length(actualConfiguration) - 1))
+            valueData <- paste0(valueData, '<td>', actualConfiguration[j], '</td>')
+        dataTable[i] = paste0('<tr>', valueData,'</tr>')
     }
     formatedResults = createOneLine(dataTable)
     return(formatedResults)
@@ -50,6 +40,15 @@ formatColData <- function(resultsData, iterationData)
     return(formatedData)
 }
 
+setupContentTable <- function(toFormat, open, close)
+{
+    data <- toFormat
+    formatedData <- ""
+    for(i in 1:length(data))
+        formatedData <- paste0(formatedData, open, data[[i]], close)
+    return(formatedData)
+}
+
 server <- function(input, output, session) {
     resourcesPath <- paste(absolutePath, "/resources", sep = "")
 
@@ -59,61 +58,29 @@ server <- function(input, output, session) {
         bestConfigurationID <- bestConfigurations[[1]][1]
         detailsBestConfiguration <- getConfigurationById(iraceResults, ids = bestConfigurationID)
         dataTable = createTableEliteConfigurations(bestConfigurations[[1]])
+        parameters = setupContentTable(iraceResults$parameters$names, '<th>', '</th>');
+        bestConfigurationData = setupContentTable(detailsBestConfiguration, '<td>', '</td>');
 
         HTML('<b>Best-so-far configuration: </b>', bestConfigurationID, '<br><b>mean value: </b>', input$iterationDetails
         , '<br><br><b>Description of the best-so-far configuration:</b><br>
-        <table class="table table-bordered table-sm" id="best-so-far">
+        <table class="table table-bordered table-sm display" id="best-so-far">
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>algorithm</th>
-                    <th>localsearch</th>
-                    <th>alpha</th>
-                    <th>beta</th>
-                    <th>rho</th>
-                    <th>ants</th>
-                    <th>nnls</th>
-                    <th>q0</th>
-                    <th>dlb</th>
-                    <th>rasrank</th>
-                    <th>elitistants</th>
-                    <th>PARENT</th>
+                    <th>ID</th>'
+                    , parameters,
+                    '<th>PARENT</th>
                 </tr> 
             </thead>
             <tbody> 
-                <tr>
-                    <td>', detailsBestConfiguration$.ID., '</td>
-                    <td>', detailsBestConfiguration$algorithm, '</td>
-                    <td>', detailsBestConfiguration$localsearch, '</td>
-                    <td>', detailsBestConfiguration$alpha, '</td>
-                    <td>', detailsBestConfiguration$beta, '</td>
-                    <td>', detailsBestConfiguration$rho, '</td>
-                    <td>', detailsBestConfiguration$ants, '</td>
-                    <td>', detailsBestConfiguration$nnls, '</td>
-                    <td>', detailsBestConfiguration$q0, '</td>
-                    <td>', detailsBestConfiguration$dlb, '</td>
-                    <td>', detailsBestConfiguration$rasrank, '</td>
-                    <td>', detailsBestConfiguration$elitistants, '</td>
-                    <td>', detailsBestConfiguration$.PARENT, '</td>
-                </tr>
+                <tr>', bestConfigurationData, '</tr>
             </tbody></table>
         <br><b>Elite configurations: </b><br>
-        <table class="table table-bordered table-sm" id="best-so-far">
+        <table class="table table-bordered table-sm display" id="best-so-far">
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>algorithm</th>
-                    <th>localsearch</th>
-                    <th>alpha</th>
-                    <th>beta</th>
-                    <th>rho</th>
-                    <th>ants</th>
-                    <th>nnls</th>
-                    <th>q0</th>
-                    <th>dlb</th>
-                    <th>rasrank</th>
-                    <th>elitistants</th>
-                </tr> 
+                    <th>ID</th>'
+                    , parameters,
+                '</tr> 
             </thead>
             <tbody>'
                 , dataTable,
@@ -151,5 +118,17 @@ server <- function(input, output, session) {
         last <- length(iraceResults$iterationElites)
         conf <- getConfigurationByIteration(iraceResults = iraceResults, iterations = c(input$iterationPlotsCandidates[1], input$iterationPlotsCandidates[2]))
         parallelCoordinatesPlot (conf, iraceResults$parameters, param_names = c("algorithm", "alpha", "beta", "rho", "q0"), hierarchy = FALSE)
+    })
+
+    output$convergencePerfomance <- renderPlot({
+        iters <- unique(iraceResults$experimentLog[, "iteration"])
+        fes <- cumsum(table(iraceResults$experimentLog[,"iteration"]))
+        elites <- as.character(iraceResults$iterationElites)
+        values <- colMeans(iraceResults$testing$experiments[, elites])
+        plot(fes, values, type = "s",
+        xlab = "Number of runs of the target algorithm",
+        ylab = "Mean value over testing set")
+        points(fes, values)
+        text(fes, values, elites, pos = 1)
     })
 }

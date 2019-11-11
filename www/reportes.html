@@ -11,6 +11,10 @@
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
         <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
         <script>tinymce.init({selector:'textarea'});</script>
+
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.css">
+  
+        <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>
     </head>
 
     <body>
@@ -76,7 +80,7 @@
                         </a>
                     </div>      
                 </div>
-                <div class="col-md-8 overflow-auto">
+                <div class="col-md-10 overflow-auto">
                     <div class="card">
                         <div class="card-header">Summary</div>
                         <div class="card=body">
@@ -90,7 +94,7 @@
                                             </tr>
                                             <tr>
                                                 <th>Number of candidate solutions: </th>
-                                                <td>x</td>
+                                                <td>{{ nrow(iraceResults$allConfigurations) }}</td>
                                             </tr>
                                             <tr>
                                                 <th>Number of executions: </th>
@@ -102,11 +106,11 @@
                                             </tr>
                                             <tr>
                                                 <th>Elitist new instances: </th>
-                                                <td>x</td>
+                                                <td>{{ iraceResults$scenario$elitistNewInstances }}</td>
                                             </tr>
                                             <tr>
                                                 <th>Elitist limit: </th>
-                                                <td>x</td>
+                                                <td>{{ iraceResults$scenario$elitistLimit }}</td>
                                             </tr>  
                                             <tr>
                                                 <th>nbIterations: </th>
@@ -151,27 +155,24 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-2">
-                    <div class="card">
-                        <div class="card-header" align="center">Contents</div>
-                        <div class="card=body">
-                            <br>
-                            <div class="container" align="center">
-                                <a href="#summary" class="badge badge-light" style="color: blue; font-size: 18px;">*Summary</a>
-                                <a href="#candidates" class="badge badge-light" style="color: blue; font-size: 18px;">*Candidates</a>
-                                <a href="#perfomance" class="badge badge-light" style="color: blue; font-size: 18px;">*Perfomance</a>
-                                <a href="#details" class="badge badge-light" style="color: blue; font-size: 18px;">*Details</a>
-                            </div>
-                            <br>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
         <br>
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-md-2">
+                    <div class="card">
+                        <div class="card-header" align="center">Contents</div>
+                        <div class="card=body">
+                            <div class="container" align="center">
+                                <a href="#summary" class="badge badge-light" style="color: blue; font-size: 18px;">*Summary</a>
+                                <a href="#candidates" class="badge badge-light" style="color: blue; font-size: 18px;">*Candidates</a>
+                                <a href="#perfomance" class="badge badge-light" style="color: blue; font-size: 18px;">*Perfomance</a>
+                                <a href="#details" class="badge badge-light" style="color: blue; font-size: 18px;">*Details</a>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
                     <div class="card">
                         <div class="card-header" align="center">Sections</div>
                         <div class="card=body">
@@ -194,9 +195,9 @@
                                         <b>&#9819Best-so-far</b>
                                         <br>&#10132configurarion: &emsp;{{  bestConfiguration$.ID  }}
                                         <br>&#10132mean value: &emsp;
+                                        <br>&#10132PARENT: &emsp;&emsp;{{  bestConfiguration$.PARENT  }}
                                         <br>
                                         <b>Description of the best-so-far configurarion</b>
-                                        <br>&#10132ID: &emsp;&emsp;&emsp;&emsp;{{  bestConfiguration$.ID  }}
                                         <br>&#10132algorithm: &emsp;{{  bestConfiguration$algorithm  }}
                                         <br>&#10132localsearch: &emsp;{{  bestConfiguration$localsearch  }}
                                         <br>&#10132alpha: &emsp;&emsp;&emsp;{{  bestConfiguration$alpha  }}
@@ -208,7 +209,6 @@
                                         <br>&#10132dlb: &emsp;&emsp;&emsp;&emsp;&emsp;{{  bestConfiguration$dlb  }}
                                         <br>&#10132rasrank: &emsp;&emsp;&emsp;{{  bestConfiguration$rasrank  }}
                                         <br>&#10132elitistants: &emsp;&emsp;{{  bestConfiguration$elitistants  }}
-                                        <br>&#10132PARENT: &emsp;&emsp;{{  bestConfiguration$.PARENT  }}
                                     </div>
                                     <div class="col">
                                         {{ boxPlotBestConfiguration }}
@@ -302,6 +302,24 @@
     </body>
 </html>
 <script>
+window.onload = function(){
+    setTimeout(function(){
+        $('table.display').DataTable();
+    }, 1000);
+    updateInput();
+}
+
+function updateInput()
+{
+    var select = document.getElementById('iterationDetails')
+    select.setAttribute('onchange','setDatatables();');
+}
+
+function setDatatables(){
+    setTimeout(function(){
+        $('table.display').DataTable();
+    }, 100);
+}
 function createNewSection()
 {
     var newSectionName = prompt("Please, enter the name for the new section:", "New Section");
