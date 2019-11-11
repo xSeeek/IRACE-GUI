@@ -49,8 +49,30 @@ setupContentTable <- function(toFormat, open, close)
     return(formatedData)
 }
 
+setupContentBestConfiguration <- function(dataToFormat)
+{
+    formatedData <- ""
+    for(i in 2:(length(dataToFormat)-1))
+        formatedData <- paste0(formatedData, '<br>&#10132', colnames(dataToFormat[i]), ': &emsp;', dataToFormat[i])
+    return(formatedData)
+}
+
 server <- function(input, output, session) {
     resourcesPath <- paste(absolutePath, "/resources", sep = "")
+
+    output$bestConfigurationsDetails <- renderUI({
+        last <- length(iraceResults$iterationElites)
+        id <- iraceResults$iterationElites[last]
+        bestConfiguration <- getConfigurationById(iraceResults, ids = id)
+        formatedDataBestConfiguration <- setupContentBestConfiguration(bestConfiguration)
+
+        HTML('<b>&#9819Best-so-far</b>
+            <br>&#10132configurarion: &emsp;', bestConfiguration[[1]],
+            '<br>&#10132mean value: &emsp;', (colMeans(iraceResults$experiments[,iraceResults$iterationElites[last], drop=FALSE], na.rm=TRUE)[[1]]),
+            '<br>&#10132PARENT: &emsp;&emsp;', bestConfiguration[[length(bestConfiguration)]],
+            '<br>
+            <b>Description of the best-so-far configurarion</b>', formatedDataBestConfiguration)
+    })
 
     output$iterationSelected <- renderUI({
         req(input$iterationDetails)
@@ -60,8 +82,9 @@ server <- function(input, output, session) {
         dataTable = createTableEliteConfigurations(bestConfigurations[[1]])
         parameters = setupContentTable(iraceResults$parameters$names, '<th>', '</th>');
         bestConfigurationData = setupContentTable(detailsBestConfiguration, '<td>', '</td>');
+        meanValue = colMeans(iraceResults$experiments[,iraceResults$iterationElites[as.integer(input$iterationDetails)], drop=FALSE], na.rm=TRUE)
 
-        HTML('<b>Best-so-far configuration: </b>', bestConfigurationID, '<br><b>mean value: </b>', input$iterationDetails
+        HTML('<b>Best-so-far configuration: </b>', bestConfigurationID, '<br><b>mean value: </b>', meanValue[[1]]
         , '<br><br><b>Description of the best-so-far configuration:</b><br>
         <table class="table table-bordered table-sm display" id="best-so-far">
             <thead>

@@ -191,24 +191,8 @@
                         <div class="card=body">
                             <div class="container">
                                 <div class="row">
-                                    <div class="col">
-                                        <b>&#9819Best-so-far</b>
-                                        <br>&#10132configurarion: &emsp;{{  bestConfiguration$.ID  }}
-                                        <br>&#10132mean value: &emsp;
-                                        <br>&#10132PARENT: &emsp;&emsp;{{  bestConfiguration$.PARENT  }}
-                                        <br>
-                                        <b>Description of the best-so-far configurarion</b>
-                                        <br>&#10132algorithm: &emsp;{{  bestConfiguration$algorithm  }}
-                                        <br>&#10132localsearch: &emsp;{{  bestConfiguration$localsearch  }}
-                                        <br>&#10132alpha: &emsp;&emsp;&emsp;{{  bestConfiguration$alpha  }}
-                                        <br>&#10132beta: &emsp;&emsp;&emsp;{{  bestConfiguration$beta  }}
-                                        <br>&#10132rho: &emsp;&emsp;&emsp;&emsp;{{  bestConfiguration$rho  }}
-                                        <br>&#10132ants: &emsp;&emsp;&emsp;&emsp;{{  bestConfiguration$ants  }}
-                                        <br>&#10132nnls: &emsp;&emsp;&emsp;&emsp;{{  bestConfiguration$nnls  }}
-                                        <br>&#10132q0: &emsp;&emsp;&emsp;&emsp;{{  bestConfiguration$q0  }}
-                                        <br>&#10132dlb: &emsp;&emsp;&emsp;&emsp;&emsp;{{  bestConfiguration$dlb  }}
-                                        <br>&#10132rasrank: &emsp;&emsp;&emsp;{{  bestConfiguration$rasrank  }}
-                                        <br>&#10132elitistants: &emsp;&emsp;{{  bestConfiguration$elitistants  }}
+                                    <div class="col shiny-html-output">
+                                        {{ bestConfiguration }}
                                     </div>
                                     <div class="col">
                                         {{ boxPlotBestConfiguration }}
