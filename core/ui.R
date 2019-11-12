@@ -18,19 +18,28 @@ for(i in 1:length(eAlgorithms))
   formatedText <- paste0(formatedText, " ", eAlgorithms[i])
 
 htmlTemplate("../www/reportes.html",
+  # GENERAL DATA
+  evaluatedAlgorithms = formatedText,
+
+  # SUMMARY PARAMETERS
   iraceVersion = iraceResults$irace.version,
   dataScenario = iraceResults$scenario,
   dataState = iraceResults$state,
   dataParameters = iraceResults$parameters,
   bestConfiguration = htmlOutput('bestConfigurationsDetails'),
+  boxPlotBestConfiguration = plotOutput("boxPlotBestConfiguration"),
+
+  # DETAILS BY ITERATION PARAMETERS
   selectDetailsIteration = selectInput("iterationDetails", "Iteration:", choices),
   selectedIteration = htmlOutput('iterationSelected'),
-  boxPlotBestConfiguration = plotOutput("boxPlotBestConfiguration"),
-  frecuencyParameters = plotOutput("frecuencyParameters"),
-  evaluatedAlgorithms = formatedText,
+
+  # CANDIDATES PARAMETERS
+  frecuencyCandidates = plotOutput("frecuencyCandidates"),
   paralelCoordinatesCandidates = plotOutput("paralelCoordinatesCandidates"),
   sliderCandidates = sliderInput("iterationPlotsCandidates", label = h5("Iteration"), min = 1, max = iraceResults$state$nbIterations, value = c(iraceResults$state$nbIterations - 1, iraceResults$state$nbIterations)),
+
+  # PERFOMANCE PARAMETERS
   selectIterationPerfomance = selectInput("iterationPlotsPerfomance", "Iteration:", choices, selected = iraceResults$state$nbIterations),
-  boxPlotPerfomance = plotOutput("boxPlotPerfomance")
-  #convergencePerfomance = plotOutput("convergencePerfomance")
+  boxPlotPerfomance = plotOutput("boxPlotPerfomance"),
+  convergencePerfomance = plotOutput("convergencePerfomance")
 )
