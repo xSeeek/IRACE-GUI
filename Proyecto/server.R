@@ -32,25 +32,24 @@ formatColData <- function(resultsData, iterationData)
   return(formatedData)
 }
 
-elites <- function(input,output){
-  allElites <- iraceResults$allElites
-  last <- iraceResults$iterationElites
-  for(i in allElites)
-  {
-    bestConfiguration <- getConfigurationById(iraceResults, ids=i)
-    print(bestConfiguration)
-    return(bestConfiguration)
-  }
-}
 
 summary <- function(input,output){
   iterations <- iraceResults$state$nbIterations
   count <- 0
+  bestConfiguration <- data.frame()
   
-  output$dataTableElites <- DT::renderDataTable({
-    elites()
+  output$elites <- DT::renderDataTable({
+    req(input$iterationsElites)
+    allElitesID <- iraceResults$allElites
+    for(i in allElitesID[as.integer(input$iterationsElites)])
+    {
+      bestConfiguration <- getConfigurationById(iraceResults, ids=i)
+      print(bestConfiguration)
+      print(i)
+    }
+    DT::datatable(bestConfiguration)
   })
-  
+
   output$numIterations <- renderText(
     iraceResults$state$nbIterations
   )
@@ -111,19 +110,19 @@ summary <- function(input,output){
       configurationsBoxplot(results, ylab = "Solution Cost")
     })
     
-    output$performance <- renderPlot({
-      iters <- unique(iraceResults$experimentLog[,"iteration"])
-      fes <- cumsum(table(iraceResults$experimentLog[,"iteration"]))
-      elites <- as.character(iraceResults$iterationElites)
-      values <- colMeans(iraceResults$experiments[,elites])
-      plot(fes,
-           values,
-           type = "s",
-           xlab = "Number of runs of the target algorithm",
-           ylab = "Mean value over testing set"
-      )
-      points(fes,values)
-      text(fes, values, elites, pos = 1)
-      
-    })
+      output$performance <- renderPlot({
+        iters <- unique(iraceResults$experimentLog[,"iteration"])
+        fes <- cumsum(table(iraceResults$experimentLog[,"iteration"]))
+        elites <- as.character(iraceResults$iterationElites)
+        values <- colMeans(iraceResults$experiments[,elites])
+        plot(fes,
+             values,
+             type = "s",
+             xlab = "Number of runs of the target algorithm",
+             ylab = "Mean value over testing set"
+        )
+        points(fes,values)
+        text(fes, values, elites, pos = 1)
+        
+      })
 }

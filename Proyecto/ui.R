@@ -42,15 +42,14 @@ sidebar <- dashboardSidebar(
               textOutput("numElitesConfigurations")
           )
         ),
-        fluidRow(
-          box(title = "Elite Configurations",
-              status = "primary",
-              uiOutput("iterationSeleceted"),
-              numericInput("elitesPerIteration","Select Iteration",value = 1,min = 1,max = iraceResults$state$nbIterations),
-              DT::dataTableOutput("dataTableElites"),
-              width = 15
-          )
-        ),
+          fluidRow(
+            box(title = "Elite Configurations",
+                status = "primary",
+                numericInput("iterationsElites","Select Iteration",value = 1,min = 1,max = iraceResults$state$nbIterations),
+                DT::dataTableOutput("elites"),
+                width = 15
+            )
+          ),
         fluidRow(
           box(title="All Configurations",
               status="primary",
