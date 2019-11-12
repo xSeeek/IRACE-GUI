@@ -223,7 +223,7 @@
                                         <br>
                                         <br>
                                         <br>
-                                        {{ frecuencyParameters }}
+                                        {{ frecuencyCandidates }}
                                     </div>
                                 </div>
                             </div>
@@ -246,6 +246,7 @@
                                     <div class="col">
                                         {{ selectIterationPerfomance }}
                                         {{ evaluatedAlgorithms }}
+                                        {{ convergencePerfomance }}
                                     </div>
                                     <div class="col">
                                         {{ boxPlotPerfomance }}
@@ -288,7 +289,12 @@
 <script>
 window.onload = function(){
     setTimeout(function(){
-        $('table.display').DataTable();
+        $('table.display').DataTable({
+            buttons: {
+                name: 'primary',
+                buttons: [ 'copy', 'csv', 'excel' ]
+            }
+        });
     }, 1000);
     updateInput();
 }
@@ -301,7 +307,12 @@ function updateInput()
 
 function setDatatables(){
     setTimeout(function(){
-        $('table.display').DataTable();
+        $('table.display').DataTable({
+            buttons: {
+                name: 'primary',
+                buttons: [ 'copy', 'csv', 'excel' ]
+            }
+        });
     }, 100);
 }
 function createNewSection()

@@ -132,26 +132,32 @@ server <- function(input, output, session) {
         configurationsBoxplot (results, ylab = "Solution cost")
     })
 
-    output$frecuencyParameters <- renderPlot({
-        parameterFrequency(iraceResults$allConfigurations, iraceResults$parameters)
+    output$frecuencyCandidates <- renderPlot({
+        req(input$iterationPlotsCandidates)
+        configurations <- getConfigurationByIteration(iraceResults = iraceResults, iterations = c(input$iterationPlotsCandidates[1], input$iterationPlotsCandidates[2]))
+        parameterFrequency(configurations, iraceResults$parameters)
     })
 
     output$paralelCoordinatesCandidates <- renderPlot({
         req(input$iterationPlotsCandidates)
         last <- length(iraceResults$iterationElites)
         conf <- getConfigurationByIteration(iraceResults = iraceResults, iterations = c(input$iterationPlotsCandidates[1], input$iterationPlotsCandidates[2]))
-        parallelCoordinatesPlot (conf, iraceResults$parameters, param_names = c("algorithm", "alpha", "beta", "rho", "q0"), hierarchy = FALSE)
+        parallelCoordinatesPlot (conf, iraceResults$parameters, hierarchy = FALSE)
+        #, param_names = c("algorithm", "alpha", "beta", "rho", "q0") -> CHECK
     })
 
     output$convergencePerfomance <- renderPlot({
-        iters <- unique(iraceResults$experimentLog[, "iteration"])
+        iters <- unique(iraceResults$experimentLog[,"iteration"])
         fes <- cumsum(table(iraceResults$experimentLog[,"iteration"]))
         elites <- as.character(iraceResults$iterationElites)
-        values <- colMeans(iraceResults$testing$experiments[, elites])
-        plot(fes, values, type = "s",
-        xlab = "Number of runs of the target algorithm",
-        ylab = "Mean value over testing set")
-        points(fes, values)
+        values <- colMeans(iraceResults$experiments[,elites])
+        plot(fes,
+            values,
+            type = "s",
+            xlab = "Number of runs of the target algorithm",
+            ylab = "Mean value over testing set"
+        )
+        points(fes,values)
         text(fes, values, elites, pos = 1)
     })
 }
