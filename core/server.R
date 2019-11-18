@@ -94,9 +94,10 @@ server <- function(input, output, session) {
             </thead>
             <tbody> 
                 <tr>', bestConfigurationData, '</tr>
-            </tbody></table>
+            </tbody>
+        </table>
         <br><b>Elite configurations: </b><br>
-        <table class="table table-bordered table-sm display" id="best-so-far">
+        <table class="table table-bordered table-sm display" id="best-so-far-all-configs">
             <thead>
                 <tr>
                     <th>ID</th>'

@@ -195,6 +195,15 @@
                                         {{ bestConfiguration }}
                                     </div>
                                     <div class="col">
+                                        <br>
+                                        <div class="input-group">
+                                            <select class="custom-select section" id="bestConfigurationSectionSelect">
+                                                <option selected disabled>Select a section to copy Boxplot</option>
+                                            </select>
+                                            <div class="input-group-append">
+                                                <button class="btn btn-outline-primary" type="button" onclick="copyContentIntoSection('bestConfigurationSectionSelect', 'boxPlotBestConfiguration')">Copy</button>
+                                            </div>
+                                        </div>
                                         {{ boxPlotBestConfiguration }}
                                     </div>
                                 </div>
@@ -217,12 +226,34 @@
                                     <div class="col">
                                         {{ sliderCandidates }}
                                         {{ evaluatedAlgorithms }}
+                                        <br>
+                                        <br>
+                                        <div class="input-group">
+                                            <select class="custom-select section" id="candidatesParalelCoordinatesSectionSelect">
+                                                <option selected disabled>Select a section to copy Paralel Coordinates</option>
+                                            </select>
+                                            <div class="input-group-append">
+                                                <button class="btn btn-outline-primary" type="button" onclick="copyContentIntoSection('candidatesParalelCoordinatesSectionSelect', 'paralelCoordinatesCandidates')">Copy</button>
+                                            </div>
+                                        </div>
                                         {{ paralelCoordinatesCandidates }}
                                     </div>
                                     <div class="col">
                                         <br>
                                         <br>
                                         <br>
+                                        <br>
+                                        <br>
+                                        <br>
+                                        <br>
+                                        <div class="input-group">
+                                            <select class="custom-select section" id="candidatesFrecuencySectionSelect">
+                                                <option selected disabled>Select a section to copy Frequency Plot</option>
+                                            </select>
+                                            <div class="input-group-append">
+                                                <button class="btn btn-outline-primary" type="button" onclick="copyContentIntoSection('candidatesFrecuencySectionSelect', 'frecuencyCandidates')">Copy</button>
+                                            </div>
+                                        </div>
                                         {{ frecuencyCandidates }}
                                     </div>
                                 </div>
@@ -246,9 +277,30 @@
                                     <div class="col">
                                         {{ selectIterationPerfomance }}
                                         {{ evaluatedAlgorithms }}
+                                        <br>
+                                        <div class="input-group">
+                                            <select class="custom-select section" id="covergencePerfomanceSectionSelect">
+                                                <option selected disabled>Select a section to copy Convergence Plot</option>
+                                            </select>
+                                            <div class="input-group-append">
+                                                <button class="btn btn-outline-primary" type="button" onclick="copyContentIntoSection('covergencePerfomanceSectionSelect', 'convergencePerfomance')">Copy</button>
+                                            </div>
+                                        </div>
                                         {{ convergencePerfomance }}
                                     </div>
                                     <div class="col">
+                                        <br>
+                                        <br>
+                                        <br>
+                                        <br>
+                                        <div class="input-group">
+                                            <select class="custom-select section" id="boxplotPerfomanceSectionSelect">
+                                                <option selected disabled>Select a section to copy Boxplot</option>
+                                            </select>
+                                            <div class="input-group-append">
+                                                <button class="btn btn-outline-primary" type="button" onclick="copyContentIntoSection('boxplotPerfomanceSectionSelect', 'boxPlotPerfomance')">Copy</button>
+                                            </div>
+                                        </div>
                                         {{ boxPlotPerfomance }}
                                     </div>
                                 </div>
@@ -278,6 +330,15 @@
                                 </div>
                             </div>
                             <br>
+                            <div class="input-group">
+                                <select class="custom-select section" id="bestConfigsDetailsSectionSelect">
+                                    <option selected disabled>Select a section to copy Details</option>
+                                </select>
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-primary" type="button">Copy</button>
+                                </div>
+                            </div> 
+                            <br>
                         </div>
                     </div>
                 </div>
@@ -290,10 +351,7 @@
 window.onload = function(){
     setTimeout(function(){
         $('table.display').DataTable({
-            buttons: {
-                name: 'primary',
-                buttons: [ 'copy', 'csv', 'excel' ]
-            }
+            "scrollX": true
         });
     }, 1000);
     updateInput();
@@ -308,10 +366,7 @@ function updateInput()
 function setDatatables(){
     setTimeout(function(){
         $('table.display').DataTable({
-            buttons: {
-                name: 'primary',
-                buttons: [ 'copy', 'csv', 'excel' ]
-            }
+            "scrollX": true
         });
     }, 100);
 }
@@ -334,6 +389,8 @@ function createNewSection()
         div.appendChild(newSection);
         $(idNewSection).text('*' + newSectionName);
         insertHTMLSection(newSectionName.replace(/\s/g, "") + randomNum, newSectionName)
+
+        addSectionsToSelect((newSectionName.replace(/\s/g, "") + randomNum), randomNum)
     }
 }
 function insertHTMLSection(id, name)
@@ -366,5 +423,28 @@ function insertHTMLSection(id, name)
     '<br>'
     var div = document.getElementsByTagName("BODY")[0];
     div.insertAdjacentHTML('beforeend', textData);
+}
+
+function addSectionsToSelect(sectionName, sectionID)
+{
+    var selectSections = document.getElementsByClassName("section");
+
+    for(i = 0; i < selectSections.length; i++)
+    {
+        var objOption = document.createElement("option");
+        objOption.text = sectionName;
+        objOption.value = sectionName;
+        selectSections[i].appendChild(objOption);
+    }
+}
+
+function copyContentIntoSection(selectID, idDataToCopy)
+{
+    var selectData = document.getElementById(selectID).value;
+    var sectionToCopy = document.getElementById(selectData + 'Images')
+
+    let clone = document.querySelector('#' + idDataToCopy).cloneNode( true );
+    clone.setAttribute('id', (idDataToCopy +  selectID));
+    sectionToCopy.appendChild(clone);
 }
 </script>
