@@ -1,7 +1,5 @@
 absolutePath <- getwd()
 
-#iraceResults[["parameters"]][["names"]]
-
 createTableEliteConfigurations <- function(configurationsData)
 {
     dataTable = c()
