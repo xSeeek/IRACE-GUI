@@ -11,15 +11,14 @@ if (skin == "")
   skin <- "black"
 
 header <- dashboardHeader(
-  title="IRACE"
+  title="IRACE",
+  tags$li(class = "dropdown",actionLink("status", "Setup")),
+  tags$li(class = "dropdown",actionLink("status", "Runtime")),
+  tags$li(class = "dropdown",actionLink("status", "Reports")),
+  tags$li(class = "dropdown", actionLink("status", "Running", icon("circle"), style="color: #cb3234"))
 ) 
 sidebar <- dashboardSidebar(
         sidebarMenu(
-          menuItem("Modules", tabName ="modules",
-                   menuSubItem("Setup", tabName="setup"),
-                   menuSubItem("Runtime", tabName="runtime"),
-                   menuSubItem("Reports", tabName="reports")
-          ),
           menuItem("Summary", tabName = "summary", icon = icon("dashboard")),
           menuItem("Performance", icon = icon("th"), tabName = "performance"),
           menuItem("Frequency",tabName = "frequency" ,icon = icon("bar-chart-o")),
@@ -33,7 +32,7 @@ sidebar <- dashboardSidebar(
           box(title="Summary",
               status="primary",
               "Num of Iterations: ",
-              textOutput("numIterations"),
+              verbatimTextOutput("numIterations"),
               "Num of Configurations",
               textOutput("numConfigurations"),
               "Num of Instances",

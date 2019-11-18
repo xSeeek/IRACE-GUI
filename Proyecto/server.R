@@ -4,17 +4,24 @@ library(shinydashboard)
 library(DT)
 library(ggplot2)
 library(irace)
+library(readr)
+load('../resources/test-dummy/acotsp-arena/irace.Rdata', envir=.GlobalEnv)
+
+
 
 server <- function(input, output) {
-  resourcesPath <- paste(absolutePath, "../resources", sep = "")
   absolutePath <- getwd()
+  resourcesPath <- paste(absolutePath, "../resources", sep = "")
+
   
   addResourcePath(prefix = 'resources', directoryPath = '../resources')
-  load('../resources/irace.Rdata', envir=.GlobalEnv)
   
   print(resourcesPath)
   
+  
 }
+
+
 
 
 convertVectorToString <- function(vector)
@@ -38,21 +45,45 @@ summary <- function(input,output){
   count <- 0
   bestConfiguration <- data.frame()
   
+  
+  
+  fileReaderData <- reactiveFileReader(500,
+                                       NULL,
+                                       filePath = '/home/daser/ProyectoIRACE/IRACE-GUI/resources/test-dummy/acotsp-arena/irace.Rdata', 
+                                       readFunc = readr::read_file())
+  
+  
+  
+  
+  
+  
+  
+  #### TABLAS ####
   output$elites <- DT::renderDataTable({
     req(input$iterationsElites)
     allElitesID <- iraceResults$allElites
     for(i in allElitesID[as.integer(input$iterationsElites)])
     {
       bestConfiguration <- getConfigurationById(iraceResults, ids=i)
-      print(bestConfiguration)
-      print(i)
     }
     DT::datatable(bestConfiguration)
   })
-
-  output$numIterations <- renderText(
-    iraceResults$state$nbIterations
+  
+  
+  output$dataTableAllConfigurations <- DT::renderDataTable(
+    iraceResults$allConfigurations,
+    options = list(
+      scrollX = TRUE,
+      scrollY = TRUE,
+      pageLength = 5
+    )
   )
+  
+  #### SUMMARY ####
+  
+  output$numIterations <- renderText({
+    iraceResults$state$nbIterations
+  })
   output$numConfigurations <- renderText(
     conf <- length(iraceResults$allConfigurations$.ID.)
   )
@@ -66,15 +97,7 @@ summary <- function(input,output){
       return(length(i))
     }
   )
-  
-  output$dataTableAllConfigurations <- DT::renderDataTable(
-    iraceResults$allConfigurations,
-    options = list(
-      scrollX = TRUE,
-      scrollY = TRUE,
-      pageLength = 5
-    )
-  )
+ #### PLOTS ####
   
   output$plotPerformance <- renderPlot({
     req(input$iterationPerformance)
@@ -126,3 +149,8 @@ summary <- function(input,output){
         
       })
 }
+
+
+
+  #### PROGRESS BAR ####
+

@@ -3,11 +3,10 @@ library(shinythemes)
 library(shinydashboard)
 library(DT)
 library(irace)
-options(shiny.port = 5000)
+
   
-
-packageVerification <- c("shiny", "irace", "assertthat", "plotly","DT","ggplot2")
-
+  
+packageVerification <- c("shiny", "irace")
 pkgCheck <- function(x)
 {
   if (!require(x,character.only = TRUE))
@@ -17,8 +16,13 @@ pkgCheck <- function(x)
       stop("Package not found")
   }
 }
-path <- getwd()
+
+
+for (i in 1:length(packageVerification)) 
+  pkgCheck(packageVerification[i])
+
+  path <- getwd()
 path <- paste(path, "/ProyectoIRACE/IRACE-GUI/Proyecto", sep = "")
 
-
+options(shiny.port = 5000)
 runApp(appDir = path)
