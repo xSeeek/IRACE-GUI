@@ -1,8 +1,6 @@
 addResourcePath(prefix = 'resources', directoryPath = '../resources')
 
 load('../resources/data/example-irace.Rdata', envir=.GlobalEnv)
-print("IRACE version of the report: ")
-print(iraceResults$irace.version)
 
 last <- length(iraceResults$iterationElites)
 id <- iraceResults$iterationElites[last]
