@@ -390,7 +390,7 @@ function createNewSection()
         $(idNewSection).text('*' + newSectionName);
         insertHTMLSection(newSectionName.replace(/\s/g, "") + randomNum, newSectionName)
 
-        addSectionsToSelect((newSectionName.replace(/\s/g, "") + randomNum), randomNum)
+        addSectionsToSelect(newSectionName, (newSectionName.replace(/\s/g, "") + randomNum))
     }
 }
 function insertHTMLSection(id, name)
@@ -433,7 +433,7 @@ function addSectionsToSelect(sectionName, sectionID)
     {
         var objOption = document.createElement("option");
         objOption.text = sectionName;
-        objOption.value = sectionName;
+        objOption.value = sectionID;
         selectSections[i].appendChild(objOption);
     }
 }
