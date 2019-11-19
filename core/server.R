@@ -69,7 +69,7 @@ server <- function(input, output, session) {
             '<br>&#10132mean value: &emsp;', (colMeans(iraceResults$experiments[,iraceResults$iterationElites[last], drop=FALSE], na.rm=TRUE)[[1]]),
             '<br>&#10132PARENT: &emsp;&emsp;', bestConfiguration[[length(bestConfiguration)]],
             '<br>
-            <b>Description of the best-so-far configurarion</b>', formatedDataBestConfiguration)
+            <br><b>Description of the best-so-far configurarion</b>', formatedDataBestConfiguration)
     })
 
     output$iterationSelected <- renderUI({

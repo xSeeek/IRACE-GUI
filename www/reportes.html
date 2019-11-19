@@ -166,38 +166,44 @@
         <br>
         <div class="container">
             <div class="row justify-content-center">
-                <div class="col-md-2">
+                <div class="col-md-3">
                     <div class="card">
                         <div class="card-header" align="center">Contents</div>
-                        <div class="card=body">
+                        <div class="card=body" style="overflow:auto; height:160px;">
+                            <br>
                             <div class="container" align="center">
-                                <a href="#summary" class="badge badge-light" style="color: blue; font-size: 18px;">*Summary</a>
-                                <a href="#candidates" class="badge badge-light" style="color: blue; font-size: 18px;">*Candidates</a>
-                                <a href="#perfomance" class="badge badge-light" style="color: blue; font-size: 18px;">*Perfomance</a>
-                                <a href="#details" class="badge badge-light" style="color: blue; font-size: 18px;">*Details</a>
+                                <div class="list-group">
+                                    <a href="#summary" class="badge badge-light" style="color: blue; font-size: 18px;">*Summary</a>
+                                    <a href="#candidates" class="badge badge-light" style="color: blue; font-size: 18px;">*Candidates</a>
+                                    <a href="#perfomance" class="badge badge-light" style="color: blue; font-size: 18px;">*Perfomance</a>
+                                    <a href="#details" class="badge badge-light" style="color: blue; font-size: 18px;">*Details</a>
+                                </div>
                             </div>
                         </div>
                     </div>
                     <br>
                     <div class="card">
                         <div class="card-header" align="center">Sections</div>
-                        <div class="card=body">
+                        <div class="card=body" style="overflow:auto; height:160px;">
                             <br>
-                            <div class="container" align="center" id="sectionsMenu">
-                                <a href="#" class="badge badge-light" style="color: blue; font-size: 18px;">*Main Section</a>
+                            <div class="container" align="center">
+                                <div class="list-group" id="sectionsMenu">
+                                    <a href="#" class="badge badge-light" style="color: blue; font-size: 18px;">*Main Section</a>
+                                </div>
                             </div>
                             <br>
                         </div>
                         <button type="button" class="btn btn-outline-success btn-md" role="button" onclick="createNewSection()">New section</button>
                     </div>
                 </div>
-                <div class="col-md-10 overflow-auto">
+                <div class="col-md-9">
                     <div class="card">
                         <div class="card-header" id="bestConfiguration">Best Configuration</div>
                         <div class="card=body">
-                            <div class="container">
+                            <div class="container" style="overflow:auto; height:500px;">
                                 <div class="row">
                                     <div class="col shiny-html-output">
+                                        <br>
                                         {{ bestConfiguration }}
                                     </div>
                                     <div class="col">
@@ -323,7 +329,7 @@
                 <div class="col-md-12 overflow-auto">
                     <div class="card">
                         <div class="card-header" id="details">Details by iteration</div>
-                        <div class="card=body">
+                        <div class="card=body" style="overflow:auto; height:800px;">
                             <br>
                             <div class="container">
                                 <div class="row justify-content-center">
@@ -390,7 +396,7 @@ function createNewSection()
         newSection.href = "#" + newSectionName.replace(/\s/g, "") + randomNum + 'Frame';
         newSection.id = newSectionName.replace(/\s/g, "") + randomNum;
         newSection.className = "badge badge-light " + newSection.id;
-        newSection.style = "color: lightblue; font-size: 18px;";
+        newSection.style = "color: green; font-size: 18px;";
 
         var div = document.getElementById('sectionsMenu');
         var idNewSection = '#' + (newSectionName.replace(/\s/g, "")) + randomNum;
@@ -439,7 +445,7 @@ function insertHTMLSection(id, name)
         height: 750,
         minHeight: null,
         maxHeight: null,
-        focus: true,
+        //focus: true,
         spellCheck: true,
         toolbar: [
             ['style', ['style']],
