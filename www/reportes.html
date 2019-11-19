@@ -420,8 +420,6 @@ function insertHTMLSection(id, name)
                                     '<div class="col">' + 
                                         '<div id="' + id + 'Text"></div>' +
                                     '</div>' +
-                                    '<div class="col" id="' + id + 'Images">' + 
-                                    '</div>' +
                                 '</div>' +
                             '</div>' +
                             '<br>' +
@@ -438,7 +436,7 @@ function insertHTMLSection(id, name)
     buttonUpdate.onclick = function(){removeSection(id)};
 
     $('#' + id + 'Text').summernote({
-        height: 300,                 // set editor height
+        height: 750,                 // set editor height
         minHeight: null,             // set minimum height of editor
         maxHeight: null,             // set maximum height of editor
         focus: true                  // set focus to editable area after initializing summernote
@@ -466,7 +464,8 @@ function copyContentIntoSection(selectID, idDataToCopy)
 
     let clone = document.querySelector('#' + idDataToCopy).cloneNode( true );
     clone.setAttribute('id', (idDataToCopy +  selectID));
-    sectionToCopy.appendChild(clone);
+
+    $('#' + selectData + 'Text').summernote('pasteHTML', clone.getElementsByTagName('img'));
 }
 
 function removeSection(sectionID)
