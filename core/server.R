@@ -82,9 +82,11 @@ server <- function(input, output, session) {
         bestConfigurationData = setupContentTable(detailsBestConfiguration, '<td>', '</td>');
         meanValue = colMeans(iraceResults$experiments[,iraceResults$iterationElites[as.integer(input$iterationDetails)], drop=FALSE], na.rm=TRUE)
 
+        defineButton = "type='button' onclick='copyTableIntoSection('bestSoFarIterationSelect', 'bestSoFarIteration')'"
+
         HTML('<b>Best-so-far configuration: </b>', bestConfigurationID, '<br><b>mean value: </b>', meanValue[[1]]
         , '<br><br><b>Description of the best-so-far configuration:</b><br>
-        <table class="table table-bordered table-sm display" id="best-so-far">
+        <table class="table table-bordered table-sm display" id="bestSoFarIteration">
             <thead>
                 <tr>
                     <th>ID</th>'
@@ -96,8 +98,17 @@ server <- function(input, output, session) {
                 <tr>', bestConfigurationData, '</tr>
             </tbody>
         </table>
+        <div class="input-group">
+            <select class="custom-select section" id="bestSoFarIterationSelect">
+                <option selected disabled>Select a section to copy best-so-far configuration table</option>
+            </select>
+            <div class="input-group-append">
+                <button class="btn btn-outline-primary">Copy</button>
+            </div>
+        </div>
+        <br>
         <br><b>Elite configurations: </b><br>
-        <table class="table table-bordered table-sm display" id="best-so-far-all-configs">
+        <table class="table table-bordered table-sm display" id="bestSoFarConfigsIteration">
             <thead>
                 <tr>
                     <th>ID</th>'
@@ -107,7 +118,15 @@ server <- function(input, output, session) {
             <tbody>'
                 , dataTable,
             '</tbody>
-        </table>'
+        </table>
+        <div class="input-group">
+            <select class="custom-select section" id="eliteConfigurationSelect">
+                <option selected disabled>Select a section to copy elite configurations table</option>
+            </select>
+            <div class="input-group-append">
+                <button class="btn btn-outline-primary" type="button" onclick="copyTableIntoSection(eliteConfigurationSelect, bestSoFarConfigsIteration)">Copy</button>
+            </div>
+        </div>'
         )
     })
 
