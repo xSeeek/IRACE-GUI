@@ -152,15 +152,27 @@ server <- function(input, output, session) {
 
     output$frecuencyCandidates <- renderPlot({
         req(input$iterationPlotsCandidates)
+        req(input$selectedParametersCandidates)
+
+        # TEMPORAL FIX DUE IMPLEMENTATION OF THE PLOT
+        fixFormat <- iraceResults$parameters
+        fixFormat$names <- input$selectedParametersCandidates
+
         configurations <- getConfigurationByIteration(iraceResults = iraceResults, iterations = c(input$iterationPlotsCandidates[1], input$iterationPlotsCandidates[2]))
-        parameterFrequency(configurations, iraceResults$parameters)
+        parameterFrequency(configurations, fixFormat)
     })
 
     output$paralelCoordinatesCandidates <- renderPlot({
         req(input$iterationPlotsCandidates)
+        req(input$selectedParametersCandidates)
+
+        # TEMPORAL FIX DUE IMPLEMENTATION OF THE PLOT
+        fixFormat <- iraceResults$parameters
+        fixFormat$names <- input$selectedParametersCandidates
+
         last <- length(iraceResults$iterationElites)
         conf <- getConfigurationByIteration(iraceResults = iraceResults, iterations = c(input$iterationPlotsCandidates[1], input$iterationPlotsCandidates[2]))
-        parallelCoordinatesPlot (conf, iraceResults$parameters, hierarchy = FALSE)
+        parallelCoordinatesPlot (conf, fixFormat, hierarchy = FALSE)
         #, param_names = c("algorithm", "alpha", "beta", "rho", "q0") -> CHECK
     })
 

@@ -32,6 +32,7 @@ htmlTemplate("../www/reportes.html",
   selectedIteration = htmlOutput('iterationSelected'),
 
   # CANDIDATES PARAMETERS
+  selectedParametersCandidates = selectInput("selectedParametersCandidates", "Parameters to be displayed: ", iraceResults$parameters$names, selected = iraceResults$parameters$names, multiple = TRUE),
   frecuencyCandidates = plotOutput("frecuencyCandidates"),
   paralelCoordinatesCandidates = plotOutput("paralelCoordinatesCandidates"),
   sliderCandidates = sliderInput("iterationPlotsCandidates", label = h5("Iteration"), min = 1, max = iraceResults$state$nbIterations, value = c(iraceResults$state$nbIterations - 1, iraceResults$state$nbIterations)),
