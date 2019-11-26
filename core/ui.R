@@ -1,44 +1,30 @@
 addResourcePath(prefix = 'resources', directoryPath = '../resources')
 
-load('../resources/data/example-irace.Rdata', envir=.GlobalEnv)
-
-last <- length(iraceResults$iterationElites)
-id <- iraceResults$iterationElites[last]
-bestConfiguration <- getConfigurationById(iraceResults, ids = id)
-
-choices = c()
-for (i in 1:iraceResults$state$nbIterations) 
-  choices[i] <- i
-
-eAlgorithms <- unique(iraceResults$allConfigurations$algorithm)
-formatedText <- "Evaluated algorithms: "
-for(i in 1:length(eAlgorithms))
-  formatedText <- paste0(formatedText, " ", eAlgorithms[i])
+if(length(ls(envir=.GlobalEnv, pattern="iraceResults")) == 0)
+  load('../resources/data/irace-lingeling.Rdata', envir=.GlobalEnv)
 
 htmlTemplate("../www/reportes.html",
-  # GENERAL DATA
-  evaluatedAlgorithms = formatedText,
+  # CORE DATA
+  loadAnotherRdata = fileInput("rdataLoader", "Load ", multiple = FALSE, accept = NULL,
+                      width = 200, 
+                      placeholder = "Load IRACE results"),
 
   # SUMMARY PARAMETERS
-  iraceVersion = iraceResults$irace.version,
-  dataScenario = iraceResults$scenario,
-  dataState = iraceResults$state,
-  dataParameters = iraceResults$parameters,
   bestConfiguration = htmlOutput('bestConfigurationsDetails'),
   boxPlotBestConfiguration = plotOutput("boxPlotBestConfiguration"),
 
   # DETAILS BY ITERATION PARAMETERS
-  selectDetailsIteration = selectInput("iterationDetails", "Iteration:", choices),
+  selectDetailsIteration = selectInput("iterationDetails", "Iteration:", 1:iraceResults$state$nbIterations),
   selectedIteration = htmlOutput('iterationSelected'),
 
   # CANDIDATES PARAMETERS
-  selectedParametersCandidates = selectInput("selectedParametersCandidates", "Parameters to be displayed: ", iraceResults$parameters$names, selected = iraceResults$parameters$names, multiple = TRUE),
+  selectedParametersCandidates = selectInput("selectedParametersCandidates", "Parameters to be displayed: ", iraceResults$parameters$names, selected = iraceResults$parameters$names, multiple = TRUE, width = 600, size = 5, selectize = FALSE),
   frecuencyCandidates = plotOutput("frecuencyCandidates"),
   paralelCoordinatesCandidates = plotOutput("paralelCoordinatesCandidates"),
   sliderCandidates = sliderInput("iterationPlotsCandidates", label = h5("Iteration"), min = 1, max = iraceResults$state$nbIterations, value = c(iraceResults$state$nbIterations - 1, iraceResults$state$nbIterations)),
 
   # PERFOMANCE PARAMETERS
-  selectIterationPerfomance = selectInput("iterationPlotsPerfomance", "Iteration:", choices, selected = iraceResults$state$nbIterations),
+  selectIterationPerfomance = selectInput("iterationPlotsPerfomance", "Iteration:", 1:iraceResults$state$nbIterations, selected = iraceResults$state$nbIterations),
   boxPlotPerfomance = plotOutput("boxPlotPerfomance"),
   convergencePerfomance = plotOutput("convergencePerfomance")
 )

@@ -46,7 +46,7 @@
                 </li>
                 <li class="nav-item active" style="padding-left: 150px; font-size: 30px; color: green;">
                     <a class="nav-link" href="#">Reports<span class="sr-only">(current)</span></a>
-                 </li>
+                </li>
                 </ul>
                 <span class="navbar-text">
                     <div class="container">
@@ -66,7 +66,7 @@
         <br>
         <div class="container">
             <div class="row justify-content-center">
-                <div class="col-md-2">
+                <div class="col-md-3">
                     <div class="mini-submenu">
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
@@ -91,9 +91,12 @@
                         <a href="#" class="list-group-item">
                             <i class="fa fa-envelope"></i> Go to Setup
                         </a>
+                        <a href="#" class="list-group-item">
+                            {{ loadAnotherRdata }}
+                        </a>
                     </div>      
                 </div>
-                <div class="col-md-10 overflow-auto">
+                <div class="col-md-9 overflow-auto">
                     <div class="card">
                         <div class="card-header">Summary</div>
                         <div class="card=body">
@@ -103,7 +106,7 @@
                                         <table id="tablaSummary1">
                                             <tr>
                                                 <th>IRACE version: </th>
-                                                <td>{{ iraceVersion }}</td>
+                                                <td>{{ iraceResults$irace.version }}</td>
                                             </tr>
                                             <tr>
                                                 <th>Number of candidate solutions: </th>
@@ -111,7 +114,7 @@
                                             </tr>
                                             <tr>
                                                 <th>Number of executions: </th>
-                                                <td> {{ dataState$nbIterations }}</td>
+                                                <td> {{ iraceResults$state$nbIterations }}</td>
                                             </tr>
                                             <tr>
                                                 <th>Total time required: </th>
@@ -127,7 +130,7 @@
                                             </tr>  
                                             <tr>
                                                 <th>nbIterations: </th>
-                                                <td>{{ dataScenario$nbIterations }}</td>
+                                                <td>{{ iraceResults$scenario$nbIterations }}</td>
                                             </tr>  
                                         </table>
                                     </div>
@@ -135,31 +138,31 @@
                                         <table id="tablaSummary2">
                                             <tr>
                                                 <th>minNbSurvival: </th>
-                                                <td>{{ dataScenario$minNbSurvival }}</td>
+                                                <td>{{ iraceResults$scenario$minNbSurvival }}</td>
                                             </tr>
                                             <tr>
                                                 <th>nbParameters: </th>
-                                                <td>{{ dataParameters$nbParameters }}</td>
+                                                <td>{{ iraceResults$parameters$nbParameters }}</td>
                                             </tr>
                                             <tr>
                                                 <th>seed: </th>
-                                                <td>{{ dataScenario$seed }}</td>
+                                                <td>{{ iraceResults$scenario$seed }}</td>
                                             </tr>
                                             <tr>
                                                 <th>confidence level: </th>
-                                                <td>{{ dataScenario$confidence }}</td>
+                                                <td>{{ iraceResults$scenario$confidence }}</td>
                                             </tr>
                                             <tr>
                                                 <th>budget: </th>
-                                                <td>{{  dataScenario$budgetEstimation }}</td>
+                                                <td>{{  iraceResults$scenario$budgetEstimation }}</td>
                                             </tr>  
                                             <tr>
                                                 <th>mu: </th>
-                                                <td>{{  dataScenario$mu }}</td>
+                                                <td>{{  iraceResults$scenario$mu }}</td>
                                             </tr>
                                             <tr>
                                                 <th>deterministic: </th>
-                                                <td>{{  dataScenario$deterministic }}</td>
+                                                <td>{{  iraceResults$scenario$deterministic }}</td>
                                             </tr>  
                                         </table>
                                     </div>
@@ -244,7 +247,6 @@
                                 <div class="row">
                                     <div class="col">
                                         {{ sliderCandidates }}
-                                        {{ evaluatedAlgorithms }}
                                         <br>
                                         <br>
                                         <div class="input-group">
@@ -258,7 +260,9 @@
                                         {{ paralelCoordinatesCandidates }}
                                     </div>
                                     <div class="col">
+                                        <div style="overflow:auto; height:20;">
                                         {{selectedParametersCandidates}}
+                                        </div>
                                         <div class="input-group">
                                             <select class="custom-select section" id="candidatesFrecuencySectionSelect">
                                                 <option selected disabled>Select a section to copy Frequency Plot</option>
@@ -289,7 +293,6 @@
                                 <div class="row">
                                     <div class="col">
                                         {{ selectIterationPerfomance }}
-                                        {{ evaluatedAlgorithms }}
                                         <br>
                                         <div class="input-group">
                                             <select class="custom-select section" id="covergencePerfomanceSectionSelect">

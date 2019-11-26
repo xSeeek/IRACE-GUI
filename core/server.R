@@ -69,6 +69,15 @@ checkIfExists <- function(fileName, flagDelete)
 server <- function(input, output, session) {
     resourcesPath <- paste(absolutePath, "/resources", sep = "")
 
+    session$allowReconnect(TRUE)
+
+    observeEvent(input$rdataLoader, {
+        file.copy(input$rdataLoader$datapath, "../resources/data")
+        rm(iraceResults, envir = .GlobalEnv)
+        load(paste0('../resources/data/', input$rdataLoader$name), envir=.GlobalEnv)
+        print(ls(envir=.GlobalEnv))
+    })
+
     output$bestConfigurationsDetails <- renderUI({
         last <- length(iraceResults$iterationElites)
         id <- iraceResults$iterationElites[last]
@@ -144,7 +153,7 @@ server <- function(input, output, session) {
     output$boxPlotBestConfiguration <- renderPlot({
         last <- length(iraceResults$iterationElites)
         id <- paste0(iraceResults$iterationElites[last])
-        results <- subset(iraceResults$testing$experiments, select=c(id))
+        results <- subset(iraceResults$experiments, select=c(id))
         conf <- gl(ncol(results), nrow(results), labels = colnames(results))
         pairwise.wilcox.test (as.vector(results), conf, paired = TRUE, p.adj = "bonf")
         configurationsBoxplot (results, ylab = "Solution cost")
