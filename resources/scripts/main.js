@@ -48,7 +48,7 @@ function createNewSection()
 function insertHTMLSection(id, name)
 {
     var textData = 
-    '<div class="container ' + id + '">' + 
+    '<div class="container ' + id + ' customSection">' + 
         '<div class="row justify-content-center">' +
             '<div class="col-md-12 overflow-auto">' +
                 '<div class="card">' +
@@ -72,7 +72,7 @@ function insertHTMLSection(id, name)
                 '</div>' +
             '</div>' +
         '</div>' +
-    '<br class="' + id + '">'
+    '<br class="' + id + ' customSection">'
     var div = document.getElementsByTagName("BODY")[0];
     div.insertAdjacentHTML('beforeend', textData);
 

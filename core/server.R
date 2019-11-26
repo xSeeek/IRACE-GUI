@@ -55,6 +55,17 @@ setupContentBestConfiguration <- function(dataToFormat)
     return(formatedData)
 }
 
+checkIfExists <- function(fileName, flagDelete)
+{
+    if(file.exists(fileName))
+        if(flagDelete)
+        {
+           unlink(fileName) 
+           return(TRUE);
+        }
+    return(FALSE)
+}
+
 server <- function(input, output, session) {
     resourcesPath <- paste(absolutePath, "/resources", sep = "")
 
@@ -189,5 +200,14 @@ server <- function(input, output, session) {
         )
         points(fes,values)
         text(fes, values, elites, pos = 1)
+    })
+
+    observeEvent(input$customSections, {
+        checkIfExists("../resources/data/reportData.irace", TRUE)
+        write(input$customSections, file = "../resources/data/customSections",
+            ncolumns = if(is.character(input$customSections)) 1 else 5,
+            append = FALSE, sep = '\n')
+        encrypt_file("../resources/data/customSections", outfile = "../resources/data/reportData.irace")
+        checkIfExists("../resources/data/customSections", TRUE)
     })
 }

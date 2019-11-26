@@ -1,4 +1,9 @@
-packageVerification <- c("shiny", "irace")
+packageVerification <- c("shiny", "irace", "safer")
+
+local({r <- getOption("repos")
+    r["CRAN"] <- "http://cran.us.r-project.org" 
+    options(repos=r)
+})
 
 pkgCheck <- function(x)
 {
