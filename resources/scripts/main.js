@@ -22,12 +22,10 @@ function setDatatables(){
         });
     }, 100);
 }
-function createNewSection()
+async function createNewSection()
 {
-    var newSectionName = prompt("Please, enter the name for the new section:", "New Section");
-    if (newSectionName == null || newSectionName == "")
-        alert("User cancelled the prompt.");
-    else
+    var newSectionName = await inputText("Please, enter the name for the new section:", "Name of the section");
+    if (newSectionName != null && newSectionName != 'A name is required')
     {
         var newSection = document.createElement('a');
         var randomNum = Math.floor(Math.random() * 101);
