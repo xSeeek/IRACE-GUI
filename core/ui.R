@@ -1,13 +1,14 @@
 addResourcePath(prefix = 'resources', directoryPath = '../resources')
 
 if(length(ls(envir=.GlobalEnv, pattern="iraceResults")) == 0)
-  load('../resources/data/irace-lingeling.Rdata', envir=.GlobalEnv)
+  load('../resources/data/iraceResults.Rdata', envir=.GlobalEnv)
 
 htmlTemplate("../www/reportes.html",
   # CORE DATA
   loadAnotherRdata = fileInput("rdataLoader", "Load ", multiple = FALSE, accept = NULL,
                       width = 200, 
-                      placeholder = "Load IRACE results"),
+                      placeholder = "Load"),
+  loadReport = fileInput("reportLoader", "Load Report", multiple = FALSE, accept = c("application/x-r-data"), width = 200, placeholder = "Load"),
 
   # SUMMARY PARAMETERS
   bestConfiguration = htmlOutput('bestConfigurationsDetails'),

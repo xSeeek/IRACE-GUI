@@ -62,7 +62,7 @@ function insertHTMLSection(id, name)
                             '<div class="container">' +
                                 '<div class="row">' +
                                     '<div class="col">' + 
-                                        '<div id="' + id + 'Text"></div>' +
+                                        '<div id="' + id + 'Text" class="TextAreaCustom"></div>' +
                                     '</div>' +
                                 '</div>' +
                             '</div>' +

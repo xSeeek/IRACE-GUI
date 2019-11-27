@@ -212,11 +212,21 @@ server <- function(input, output, session) {
     })
 
     observeEvent(input$customSections, {
-        checkIfExists("../resources/data/reportData.irace", TRUE)
-        write(input$customSections, file = "../resources/data/customSections",
-            ncolumns = if(is.character(input$customSections)) 1 else 5,
-            append = FALSE, sep = '\n')
-        encrypt_file("../resources/data/customSections", outfile = "../resources/data/reportData.irace")
-        checkIfExists("../resources/data/customSections", TRUE)
+        customSections <- input$customSections
+        customSectionsNames <- input$customSectionsNames
+        customSectionsIDS <- input$customSectionsIDS
+        checkIfExists(paste0("../resources/data/", input$reportName, ".RData"), TRUE)
+        dir.create("../reports/")
+        save(iraceResults, customSections, customSectionsNames, customSectionsIDS, file = paste0("../reports/", input$reportName, ".RData"))
+        #encrypt_file(paste0("../resources/data/", input$reportName, ".RData"), outfile = paste0("../resources/data/", input$reportName, ".RData"))
     })
+
+    observeEvent(input$reportLoader, {
+        dataToLoad <- input$reportLoader
+        #rm(iraceResults, envir = .GlobalEnv)
+        load(dataToLoad$datapath, envir=.GlobalEnv)
+        dataSelect <- list(names = customSectionsNames, ids = customSectionsIDS, content = customSections)
+
+        session$sendCustomMessage("loadCustomSections", dataSelect)
+    }, once = TRUE)
 }

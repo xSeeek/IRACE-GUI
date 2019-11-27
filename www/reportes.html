@@ -72,7 +72,7 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </div>
-                    <div class="list-group">
+                    <div class="list-group" style="overflow:auto; height:250px;">
                         <span href="#" class="list-group-item active">
                             MENU
                             <span class="pull-right" id="slide-submenu">
@@ -80,19 +80,16 @@
                             </span>
                         </span>
                         <a href="" class="list-group-item">
-                            <i class="fa fa-comment-o"></i> Save PDF
+                            <button type="button" class="btn btn-link">Save PDF</button>
                         </a>
-                        <a class="list-group-item" onclick="getAllCustomSections()">
-                            <i class="fa fa-bar-chart-o"></i> Save Report
+                        <a class="list-group-item">
+                            <button type="button" onclick="getAllCustomSections()" class="btn btn-link">Save Report</button>
                         </a>
                         <a href="#" class="list-group-item">
-                            <i class="fa fa-envelope"></i> Load Report
+                            <i class="fa fa-comment-o">{{ loadReport }}</i>
                         </a>
                         <a href="#" class="list-group-item">
                             <i class="fa fa-envelope"></i> Go to Setup
-                        </a>
-                        <a href="#" class="list-group-item">
-                            {{ loadAnotherRdata }}
                         </a>
                     </div>      
                 </div>
