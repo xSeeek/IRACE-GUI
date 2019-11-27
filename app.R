@@ -6,7 +6,7 @@ library(irace)
 
   
   
-packageVerification <- c("shiny", "irace")
+packageVerification <- c("shiny", "irace","readr")
 pkgCheck <- function(x)
 {
   if (!require(x,character.only = TRUE))
@@ -16,7 +16,7 @@ pkgCheck <- function(x)
       stop("Package not found")
   }
 }
-
+  
 
 for (i in 1:length(packageVerification)) 
   pkgCheck(packageVerification[i])

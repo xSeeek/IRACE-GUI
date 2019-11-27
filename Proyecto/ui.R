@@ -32,7 +32,7 @@ sidebar <- dashboardSidebar(
           box(title="Summary",
               status="primary",
               "Num of Iterations: ",
-              verbatimTextOutput("numIterations"),
+              textOutput("numIterations"),
               "Num of Configurations",
               textOutput("numConfigurations"),
               "Num of Instances",
@@ -75,9 +75,11 @@ sidebar <- dashboardSidebar(
             status = "primary",
             h1("Sampling Frequency"),
             sliderInput("iterationFrequency","Select Iteration",min = 1, max = iraceResults$state$nbIterations,value = c(1,2),dragRange = TRUE),
+            textInput("parametersFrequency","Enter a parameter: "),
             plotOutput("frecuencyParameters"),
             h1("Parallel Coordinates"),
             sliderInput("iterationPC","Select Iteration",min = 1, max = iraceResults$state$nbIterations, value = c(1,2), dragRange = TRUE),
+            textInput("parametersParallelCoordinates","Enter a parameter: "),
             plotOutput("paralelCoordinatesCandidates")
         )
       )

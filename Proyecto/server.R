@@ -7,7 +7,17 @@ library(irace)
 library(readr)
 load('../resources/test-dummy/acotsp-arena/irace.Rdata', envir=.GlobalEnv)
 
+updateFile <- function()
+{
+  load('../resources/test-dummy/acotsp-arena/irace.Rdata', envir=.GlobalEnv)
+  return(file)
+}
 
+
+fileReaderData <- reactiveFileReader(500,
+                                     NULL,
+                                     filePath = 'resources/test-dummy/acotsp-arena/irace.Rdata', 
+                                     read_file(file.path("/home/daser/ProyectoIRACE/IRACE-GUI/resources/test-dummy/acotsp-arena/irace.Rdata"),locale("es",decimal_mark = ",")))
 
 server <- function(input, output) {
   absolutePath <- getwd()
@@ -40,20 +50,12 @@ formatColData <- function(resultsData, iterationData)
 }
 
 
-summary <- function(input,output){
+summary <- function(input,output,session){
+  
   iterations <- iraceResults$state$nbIterations
   count <- 0
   bestConfiguration <- data.frame()
-  
-  
-  
-  fileReaderData <- reactiveFileReader(500,
-                                       NULL,
-                                       filePath = '/home/daser/ProyectoIRACE/IRACE-GUI/resources/test-dummy/acotsp-arena/irace.Rdata', 
-                                       readFunc = readr::read_file())
-  
-  
-  
+
   
   
   
@@ -61,42 +63,58 @@ summary <- function(input,output){
   #### TABLAS ####
   output$elites <- DT::renderDataTable({
     req(input$iterationsElites)
-    allElitesID <- iraceResults$allElites
-    for(i in allElitesID[as.integer(input$iterationsElites)])
-    {
-      bestConfiguration <- getConfigurationById(iraceResults, ids=i)
-    }
-    DT::datatable(bestConfiguration)
+    invalidateLater(5000, session)
+    #withProgress(message = "Calculation in progress...",
+     #            detail = "This may take a while...",
+      #           value = 0, {
+       #            for(x in 1:iraceResults$scenario$maxExperiments){
+        #             incProgress(1/iraceResults$scenario$maxExperiments)
+         #            Sys.sleep(0.25)
+          #         }
+           #      })
+      allElitesID <- iraceResults$allElites
+      for(i in allElitesID[as.integer(input$iterationsElites)])
+      {
+        bestConfiguration <- getConfigurationById(iraceResults, ids=i)
+      }
+      DT::datatable(bestConfiguration)
   })
   
   
-  output$dataTableAllConfigurations <- DT::renderDataTable(
-    iraceResults$allConfigurations,
+  output$dataTableAllConfigurations <- DT::renderDataTable({
+    invalidateLater(5000, session)
+    DT::datatable(iraceResults$allConfigurations,
     options = list(
       scrollX = TRUE,
       scrollY = TRUE,
       pageLength = 5
-    )
-  )
+    ))
+  })
   
   #### SUMMARY ####
   
   output$numIterations <- renderText({
     iraceResults$state$nbIterations
   })
-  output$numConfigurations <- renderText(
+  output$numConfigurations <- renderText({
+    invalidateLater(5000, session)
     conf <- length(iraceResults$allConfigurations$.ID.)
-  )
-  output$numInstances <- renderText(
+  })
+  output$numInstances <- renderText({
+    invalidateLater(5000, session)
     instances <- length(iraceResults$state$.irace$instancesList$instance)
-  )
-  output$numElitesConfigurations <- renderText(
-    for(i in iraceResults$allElites)
-    {
-      c(i)
-      return(length(i))
-    }
-  )
+  })
+  observe({
+    invalidateLater(5000, session)
+    output$numElitesConfigurations <- renderText({
+      dataUpdate <- updateFile()
+      for(i in iraceResults$allElites)
+      {
+        c(i)
+        return(length(i))
+      }
+    })
+  })
  #### PLOTS ####
   
   output$plotPerformance <- renderPlot({
@@ -111,12 +129,21 @@ summary <- function(input,output){
   
   output$frecuencyParameters <- renderPlot({
     req(input$iterationFrequency)
+    req(input$parametersFrequency)
+    
+    fixFormat <- iraceResults$parameters
+    fixFormat$names <- input$parametersFrequency
+    
     conf <- getConfigurationByIteration(iraceResults = iraceResults, iterations = c(input$iterationFrequency[1],input$iterationFrequency[2]))
-    parameterFrequency(conf, iraceResults$parameters)
+    parameterFrequency(conf, fixFormat)
   })
   
     output$paralelCoordinatesCandidates <- renderPlot({
     req(input$iterationPC)
+    req(input$parametersParallelCoordinates)
+      
+    fixFormat <- iraceResults$parameters
+    fixFormat$names <- input$parametersParallelCoordinates
     last <- length(iraceResults$iterationElites)
     conf <- getConfigurationByIteration(iraceResults = iraceResults,iterations = c(input$iterationPC[1],input$iterationPC[2]))
     parallelCoordinatesPlot(conf, iraceResults$parameters, param_names = c("algorithm", "alpha","beta","rho","q0"), hierarchy = FALSE)
