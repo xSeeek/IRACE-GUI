@@ -1,7 +1,7 @@
 Shiny.addCustomMessageHandler('loadCustomSections', 
     function(params) 
     { 
-        appendCustomSections(params)
+        appendCustomSections(params);
     });
 
 async function getAllCustomSections()
@@ -18,9 +18,7 @@ async function getAllCustomSections()
         {
             arrayNameSections[i-1] = sectionsNames[i].innerHTML;
             arrayIDSections[i-1] = sectionsNames[i].value;
-
-            var plainHTML = $($("#" + sectionsNames[i].value + "Text").summernote("code"))
-            arrayOfSections[i-1] = plainHTML[0].outerHTML
+            arrayOfSections[i-1] = $("#" + sectionsNames[i].value + "Text").summernote("code");
         }
 
         Shiny.onInputChange("customSections", arrayOfSections);
@@ -54,5 +52,5 @@ function appendSections(name, id, data)
         selectSections[k].appendChild(objOption);
     }
     insertHTMLSection(id, name);
-    $('#' + id + 'Text').summernote('pasteHTML', data);
+    $('#' + id + 'Text').summernote('code', data);
 }
