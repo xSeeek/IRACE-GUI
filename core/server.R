@@ -67,16 +67,18 @@ checkIfExists <- function(fileName, flagDelete)
 }
 
 server <- function(input, output, session) {
-    resourcesPath <- paste(absolutePath, "/resources", sep = "")
+    if(length(ls(envir=.GlobalEnv, pattern="loadedCustomSection")) == 1)
+    {
+        if(length(ls(envir=.GlobalEnv, pattern="customSectionsNames")) == 0)
+            customSectionsNames <- NULL
+        if(length(ls(envir=.GlobalEnv, pattern="customSectionsIDS")) == 0)
+            customSectionsIDS <- NULL
+        if(length(ls(envir=.GlobalEnv, pattern="customSections")) == 0)
+            customSections <- NULL
 
-    session$allowReconnect(TRUE)
-
-    observeEvent(input$rdataLoader, {
-        file.copy(input$rdataLoader$datapath, "../resources/data")
-        rm(iraceResults, envir = .GlobalEnv)
-        load(paste0('../resources/data/', input$rdataLoader$name), envir=.GlobalEnv)
-        print(ls(envir=.GlobalEnv))
-    })
+        dataSelect <- list(names = customSectionsNames, ids = customSectionsIDS, content = customSections)
+        session$sendCustomMessage("loadCustomSections", dataSelect)
+    }
 
     output$bestConfigurationsDetails <- renderUI({
         last <- length(iraceResults$iterationElites)
@@ -223,19 +225,14 @@ server <- function(input, output, session) {
 
     observeEvent(input$reportLoader, {
         dataToLoad <- input$reportLoader
-        #rm(iraceResults, envir = .GlobalEnv)
-        #detach(iraceResults)
-        load(dataToLoad$datapath, envir=.GlobalEnv)
 
-        if(length(ls(envir=.GlobalEnv, pattern="customSectionsNames")) == 0)
-            customSectionsNames <- NULL
-        if(length(ls(envir=.GlobalEnv, pattern="customSectionsIDS")) == 0)
-            customSectionsIDS <- NULL
-        if(length(ls(envir=.GlobalEnv, pattern="customSections")) == 0)
-            customSections <- NULL
+        if(length(ls(envir=.GlobalEnv, pattern="customSectionsNames")) != 0)
+            rm(customSectionsNames, envir = .GlobalEnv)
+        if(length(ls(envir=.GlobalEnv, pattern="customSectionsIDS")) != 0)
+            rm(customSectionsIDS, envir = .GlobalEnv)
+        if(length(ls(envir=.GlobalEnv, pattern="customSections")) != 0)
+            rm(customSections, envir = .GlobalEnv)
 
-        dataSelect <- list(names = customSectionsNames, ids = customSectionsIDS, content = customSections)
-
-        session$sendCustomMessage("loadCustomSections", dataSelect)
+        stopApp(returnValue = invisible(dataToLoad$datapath))
     }, once = TRUE)
 }

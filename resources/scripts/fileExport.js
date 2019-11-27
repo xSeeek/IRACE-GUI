@@ -1,6 +1,6 @@
 Shiny.addCustomMessageHandler('loadCustomSections', 
     function(params) 
-    { 
+    {
         appendCustomSections(params);
     });
 
@@ -51,6 +51,18 @@ function appendSections(name, id, data)
         objOption.className = id;
         selectSections[k].appendChild(objOption);
     }
+
+    var newSection = document.createElement('a');
+    newSection.href = "#" + id + 'Frame';
+    newSection.id = id;
+    newSection.className = "badge badge-light " + id;
+    newSection.style = "color: green; font-size: 18px;";
+
+    var div = document.getElementById('sectionsMenu');
+    var idNewSection = '#' + id;
+    div.appendChild(newSection);
+    $(idNewSection).text('*' + name);
+
     insertHTMLSection(id, name);
     $('#' + id + 'Text').summernote('code', data);
 }
