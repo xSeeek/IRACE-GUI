@@ -224,7 +224,16 @@ server <- function(input, output, session) {
     observeEvent(input$reportLoader, {
         dataToLoad <- input$reportLoader
         #rm(iraceResults, envir = .GlobalEnv)
+        #detach(iraceResults)
         load(dataToLoad$datapath, envir=.GlobalEnv)
+
+        if(length(ls(envir=.GlobalEnv, pattern="customSectionsNames")) == 0)
+            customSectionsNames <- NULL
+        if(length(ls(envir=.GlobalEnv, pattern="customSectionsIDS")) == 0)
+            customSectionsIDS <- NULL
+        if(length(ls(envir=.GlobalEnv, pattern="customSections")) == 0)
+            customSections <- NULL
+
         dataSelect <- list(names = customSectionsNames, ids = customSectionsIDS, content = customSections)
 
         session$sendCustomMessage("loadCustomSections", dataSelect)
