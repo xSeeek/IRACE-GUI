@@ -9,6 +9,7 @@
         <script src="shared/jquery.js" type="text/javascript"></script>
         <script src="shared/shiny.js" type="text/javascript"></script>
         <link rel="stylesheet" type="text/css" href="shared/shiny.css"/>
+        <script src="../resources/dependences/bootstrap/js/bootstrap.min.js"></script>
         <link rel="stylesheet" href="../resources/dependences/bootstrap/css/bootstrap.css">
 
         <!-- include datatables css/js -->
@@ -242,7 +243,6 @@
                                     <div class="col">
                                         {{ sliderCandidates }}
                                         <br>
-                                        <br>
                                         <div class="input-group">
                                             <select class="custom-select section" id="candidatesParalelCoordinatesSectionSelect">
                                                 <option selected disabled>Select a section to copy Paralel Coordinates</option>
@@ -254,9 +254,10 @@
                                         {{ paralelCoordinatesCandidates }}
                                     </div>
                                     <div class="col">
-                                        <div style="overflow:auto; height:20;">
-                                        {{selectedParametersCandidates}}
-                                        </div>
+                                        <button type="button" class="btn btn-outline-warning btn-lg btn-block" data-toggle="modal" data-target="#parametersModal">
+                                                Open parameters selection
+                                        </button>
+                                        <br>
                                         <div class="input-group">
                                             <select class="custom-select section" id="candidatesFrecuencySectionSelect">
                                                 <option selected disabled>Select a section to copy Frequency Plot</option>
@@ -347,6 +348,25 @@
         </div>
         <br>
     </body>
+    <!-- Modal -->
+    <div class="modal fade bd-example-modal-lg" id="parametersModal" tabindex="-1" role="dialog" aria-labelledby="parametersSelection" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Parameters Selection (Only afects Candidates section)</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    {{selectedParametersCandidates}}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-danger" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </html>
 <!-- include customs js -->
 <script src="../resources/scripts/main.js" type="text/javascript"></script>
