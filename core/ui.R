@@ -1,5 +1,8 @@
 addResourcePath(prefix = 'resources', directoryPath = '../resources')
 
+#junk <- dir(pattern="name")
+#file.remove(junk)
+
 htmlTemplate("../www/reportes.html",
   # CORE DATA
   loadReport = fileInput("reportLoader", "Load Report", multiple = FALSE, accept = c("application/x-r-data", ".Rdata"), width = 200, placeholder = "Load"),

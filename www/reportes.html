@@ -104,12 +104,12 @@
                                                 <td>{{ iraceResults$irace.version }}</td>
                                             </tr>
                                             <tr>
-                                                <th>Number of candidate solutions: </th>
+                                                <th>Number of candidate configurations: </th>
                                                 <td>{{ nrow(iraceResults$allConfigurations) }}</td>
                                             </tr>
                                             <tr>
-                                                <th>Number of executions: </th>
-                                                <td> {{ iraceResults$state$nbIterations }}</td>
+                                                <th>Number of target executions: </th>
+                                                <td> {{ iraceResults$state$experimentsUsedSoFar }}</td>
                                             </tr>
                                             <tr>
                                                 <th>Total time required: </th>
@@ -125,7 +125,7 @@
                                             </tr>  
                                             <tr>
                                                 <th>nbIterations: </th>
-                                                <td>{{ iraceResults$scenario$nbIterations }}</td>
+                                                <td>{{ iraceResults$state$nbIterations }}</td>
                                             </tr>  
                                         </table>
                                     </div>
@@ -133,7 +133,7 @@
                                         <table id="tablaSummary2">
                                             <tr>
                                                 <th>minNbSurvival: </th>
-                                                <td>{{ iraceResults$scenario$minNbSurvival }}</td>
+                                                <td>{{ iraceResults$state$minSurvival }}</td>
                                             </tr>
                                             <tr>
                                                 <th>nbParameters: </th>
@@ -255,7 +255,7 @@
                                     </div>
                                     <div class="col">
                                         <button type="button" class="btn btn-outline-warning btn-lg btn-block" data-toggle="modal" data-target="#parametersModal">
-                                                Open parameters selection
+                                            Open parameters selection
                                         </button>
                                         <br>
                                         <div class="input-group">

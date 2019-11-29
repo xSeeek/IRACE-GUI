@@ -90,6 +90,7 @@ server <- function(input, output, session) {
             <br>&#10132configurarion: &emsp;', bestConfiguration[[1]],
             '<br>&#10132mean value: &emsp;', (colMeans(iraceResults$experiments[,iraceResults$iterationElites[last], drop=FALSE], na.rm=TRUE)[[1]]),
             '<br>&#10132PARENT: &emsp;&emsp;', bestConfiguration[[length(bestConfiguration)]],
+            '<br>&#10132Total instances tested: &emsp;', sum(!is.na(iraceResults$experiments[ ,iraceResults$iterationElites[length(iraceResults$iterationElites)] ])),
             '<br>
             <br><b>Description of the best-so-far configurarion</b>', formatedDataBestConfiguration)
     })
@@ -195,7 +196,8 @@ server <- function(input, output, session) {
         last <- length(iraceResults$iterationElites)
         conf <- getConfigurationByIteration(iraceResults = iraceResults, iterations = c(input$iterationPlotsCandidates[1], input$iterationPlotsCandidates[2]))
         parallelCoordinatesPlot (conf, fixFormat, hierarchy = FALSE)
-        #, param_names = c("algorithm", "alpha", "beta", "rho", "q0") -> CHECK
+        #dev.off()
+        #graphics.off()
     })
 
     output$convergencePerfomance <- renderPlot({
@@ -211,6 +213,7 @@ server <- function(input, output, session) {
         )
         points(fes,values)
         text(fes, values, elites, pos = 1)
+        #dev.off()
     })
 
     observeEvent(input$customSections, {
@@ -232,6 +235,9 @@ server <- function(input, output, session) {
             rm(customSectionsIDS, envir = .GlobalEnv)
         if(length(ls(envir=.GlobalEnv, pattern="customSections")) != 0)
             rm(customSections, envir = .GlobalEnv)
+
+        #junk <- dir(pattern="name")
+        #file.remove(junk)
 
         stopApp(returnValue = invisible(dataToLoad$datapath))
     }, once = TRUE)
