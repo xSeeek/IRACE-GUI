@@ -1,4 +1,4 @@
-packageVerification <- c("shiny", "irace", "safer")
+packageVerification <- c("shiny", "irace", "safer", "magick")
 
 local({r <- getOption("repos")
     r["CRAN"] <- "http://cran.us.r-project.org" 
@@ -25,7 +25,7 @@ path <- getwd()
 path <- paste(path, "/core", sep = "")
 
 if(length(ls(envir=.GlobalEnv, pattern="iraceResults")) == 0)
-  load('resources/data/iraceResults.Rdata', envir=.GlobalEnv)
+    load('resources/data/iraceResults.Rdata', envir=.GlobalEnv)
 
 repeat{
     browseURL("http://127.0.0.1:5000/")

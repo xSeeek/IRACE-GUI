@@ -66,6 +66,12 @@ checkIfExists <- function(fileName, flagDelete)
     return(FALSE)
 }
 
+removeTemporalPlots <- function()
+{
+    junk <- dir(pattern="tempPlot")
+    file.remove(junk)
+}
+
 server <- function(input, output, session) {
     if(length(ls(envir=.GlobalEnv, pattern="loadedCustomSection")) == 1)
     {
@@ -173,19 +179,54 @@ server <- function(input, output, session) {
         configurationsBoxplot (results, ylab = "Solution cost")
     })
 
-    output$frecuencyCandidates <- renderPlot({
+    output$frecuencyCandidates <- renderImage({
         req(input$iterationPlotsCandidates)
         req(input$selectedParametersCandidates)
 
-        # TEMPORAL FIX DUE IMPLEMENTATION OF THE PLOT
-        fixFormat <- iraceResults$parameters
-        fixFormat$names <- input$selectedParametersCandidates
-
         configurations <- getConfigurationByIteration(iraceResults = iraceResults, iterations = c(input$iterationPlotsCandidates[1], input$iterationPlotsCandidates[2]))
-        parameterFrequency(configurations, fixFormat)
+
+        max <- 12
+        limit <- 1
+        params <- c()
+        numberOfParameters <- ceiling(length(input$selectedParametersCandidates)/max)
+        for(i in 1: numberOfParameters)
+        {
+            k <- 1
+            for(j in limit:(max*i))
+            {
+                if(length(input$selectedParametersCandidates) >= j)
+                {
+                    params[k] <- input$selectedParametersCandidates[j]
+                    k <- k + 1
+                }
+            }
+
+            # TEMPORAL FIX DUE IMPLEMENTATION OF THE PLOT
+            fixFormat <- iraceResults$parameters
+            fixFormat$names <- params
+
+            png(filename = paste0("tempPlotFrequency", i, ".png"))
+            parameterFrequency(configurations, fixFormat)
+            dev.off()
+            limit <- (max*i) + 1;
+        }
+        finalPlot <- NULL
+        for(i in 1:numberOfParameters)
+        {
+            if(is.null(finalPlot))
+            {
+                finalPlot <- image_read(paste0("tempPlotFrequency", i, ".png"))
+                next
+            }
+            image <- image_read(paste0("tempPlotFrequency", i, ".png"))
+            finalPlot <- image_append(c(finalPlot, image), stack = TRUE)
+        }
+        removeTemporalPlots()
+        image_write(finalPlot, path = "../resources/plots/frequencyPlot.png", format = "png")
+        list(src = "../resources/plots/frequencyPlot.png")
     })
 
-    output$paralelCoordinatesCandidates <- renderPlot({
+    output$parallelCoordinatesCandidates <- renderPlot({
         req(input$iterationPlotsCandidates)
         req(input$selectedParametersCandidates)
 
@@ -236,8 +277,7 @@ server <- function(input, output, session) {
         if(length(ls(envir=.GlobalEnv, pattern="customSections")) != 0)
             rm(customSections, envir = .GlobalEnv)
 
-        #junk <- dir(pattern="name")
-        #file.remove(junk)
+        removeTemporalPlots()
 
         stopApp(returnValue = invisible(dataToLoad$datapath))
     }, once = TRUE)
