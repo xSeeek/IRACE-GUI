@@ -222,8 +222,8 @@ server <- function(input, output, session) {
             finalPlot <- image_append(c(finalPlot, image), stack = TRUE)
         }
         removeTemporalPlots()
-        image_write(finalPlot, path = "../resources/plots/frequencyPlot.png", format = "png")
-        list(src = "../resources/plots/frequencyPlot.png")
+        image_write(finalPlot, path = "../resources/images/frequencyPlot.png", format = "png")
+        list(src = "../resources/images/frequencyPlot.png")
     })
 
     output$parallelCoordinatesCandidates <- renderPlot({
