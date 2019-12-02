@@ -24,6 +24,9 @@
         <script src="../resources/dependences/sweetalert2/dist/sweetalert2.min.js"></script>
         <link rel="stylesheet" href="../resources/dependences/sweetalert2/dist/sweetalert2.min.css">
 
+        <!-- include jsPDF js -->
+        <script src="../resources/dependences/jsPDF/dist/jspdf.min.js"></script>
+
         <!-- include customs js -->
         <script src="../resources/scripts/alerts.js" type="text/javascript"></script>
     </head>
@@ -77,8 +80,8 @@
                                 <i class="fa fa-times"></i>
                             </span>
                         </span>
-                        <a href="" class="list-group-item">
-                            <button type="button" class="btn btn-link">Save PDF</button>
+                        <a class="list-group-item">
+                            <button type="button" onclick="generatePDF()" class="btn btn-link">Save PDF</button>
                         </a>
                         <a class="list-group-item">
                             <button type="button" onclick="getAllCustomSections()" class="btn btn-link">Save Report</button>
@@ -371,3 +374,4 @@
 <!-- include customs js -->
 <script src="../resources/scripts/main.js" type="text/javascript"></script>
 <script src="../resources/scripts/fileExport.js" type="text/javascript"></script>
+<script src="../resources/scripts/pdfGen.js" type="text/javascript"></script>
