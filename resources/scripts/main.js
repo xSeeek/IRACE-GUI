@@ -133,7 +133,8 @@ function copyTableIntoSection(selectID, idDataToCopy)
     $('#' + selectData + 'Text').summernote('pasteHTML', clone);
 }
 
-function removeSection(sectionID)
+async function removeSection(sectionID)
 {
-    $('.' + sectionID).remove();
+    if(await confirmDelete("Delete Section", "This action can't be undone", "Delete", "Custom section deleted") == true)
+        $('.' + sectionID).remove();
 }
