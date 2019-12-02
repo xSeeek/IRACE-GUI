@@ -226,19 +226,52 @@ server <- function(input, output, session) {
         list(src = "../resources/images/frequencyPlot.png")
     })
 
-    output$parallelCoordinatesCandidates <- renderPlot({
+    output$parallelCoordinatesCandidates <- renderImage({
         req(input$iterationPlotsCandidates)
         req(input$selectedParametersCandidates)
 
-        # TEMPORAL FIX DUE IMPLEMENTATION OF THE PLOT
-        fixFormat <- iraceResults$parameters
-        fixFormat$names <- input$selectedParametersCandidates
-
         last <- length(iraceResults$iterationElites)
         conf <- getConfigurationByIteration(iraceResults = iraceResults, iterations = c(input$iterationPlotsCandidates[1], input$iterationPlotsCandidates[2]))
-        parallelCoordinatesPlot (conf, fixFormat, hierarchy = FALSE)
-        #dev.off()
-        #graphics.off()
+        
+        max <- 12
+        limit <- 1
+        params <- c()
+        numberOfParameters <- ceiling(length(input$selectedParametersCandidates)/max)
+        for(i in 1: numberOfParameters)
+        {
+            k <- 1
+            for(j in limit:(max*i))
+            {
+                if(length(input$selectedParametersCandidates) >= j)
+                {
+                    params[k] <- input$selectedParametersCandidates[j]
+                    k <- k + 1
+                }
+            }
+
+            # TEMPORAL FIX DUE IMPLEMENTATION OF THE PLOT
+            fixFormat <- iraceResults$parameters
+            fixFormat$names <- params
+
+            png(filename = paste0("tempPlotParallel", i, ".png"))
+            parallelCoordinatesPlot (conf, fixFormat, hierarchy = FALSE)
+            dev.off()
+            limit <- (max*i) + 1;
+        }
+        finalPlot <- NULL
+        for(i in 1:numberOfParameters)
+        {
+            if(is.null(finalPlot))
+            {
+                finalPlot <- image_read(paste0("tempPlotParallel", i, ".png"))
+                next
+            }
+            image <- image_read(paste0("tempPlotParallel", i, ".png"))
+            finalPlot <- image_append(c(finalPlot, image), stack = TRUE)
+        }
+        removeTemporalPlots()
+        image_write(finalPlot, path = "../resources/images/parallelPlot.png", format = "png")
+        list(src = "../resources/images/parallelPlot.png")
     })
 
     output$convergencePerfomance <- renderPlot({
