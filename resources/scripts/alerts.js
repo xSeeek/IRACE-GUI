@@ -30,8 +30,8 @@ async function inputText(message, placeholder)
 async function confirmDelete(title, message, titleConfirmation, messageConfiguration)
 {
     var status = await Swal.fire({
-        title: 'Delete Section',
-        text: "You won't be able to revert this!",
+        title: title,
+        text: message,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
@@ -40,8 +40,8 @@ async function confirmDelete(title, message, titleConfirmation, messageConfigura
     }).then((result) => {
         if (result.value) {
             Swal.fire(
-                'Deleted!',
-                'Custom section deleted.',
+                titleConfirmation,
+                messageConfiguration,
                 'success'
             )
             return true;
