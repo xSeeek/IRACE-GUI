@@ -72,6 +72,46 @@ removeTemporalPlots <- function()
     file.remove(junk)
 }
 
+generateFrequencyPlot <- function(iterations, parameters)
+{
+    print(iterations)
+    configurations <- getConfigurationByIteration(iraceResults = iraceResults, iterations = c(iterations[1], iterations[2]))
+
+    max <- 12
+    limit <- 1
+    params <- c()
+    numberOfParameters <- ceiling(length(parameters)/max)
+    base64plots <- c();
+    for(i in 1: numberOfParameters)
+    {
+        k <- 1
+        for(j in limit:(max*i))
+        {
+            if(length(parameters) >= j)
+            {
+                params[k] <- parameters[j]
+                k <- k + 1
+            }
+        }
+
+        # TEMPORAL FIX DUE IMPLEMENTATION OF THE PLOT
+        fixFormat <- iraceResults$parameters
+        fixFormat$names <- params
+
+        png(filename <- paste0("tempPlotFrequency", i, ".png"))
+        parameterFrequency(configurations, fixFormat)
+        dev.off()
+
+        base64image <- base64Encode(readBin(filename, "raw", file.info(filename)[1, "size"]), "txt")
+        base64image <- paste0('data:image/png;base64,', base64image)
+        base64plots[i] <- base64image
+
+        limit <- (max*i) + 1;
+    }
+    removeTemporalPlots()
+    return(base64plots)
+}
+
 server <- function(input, output, session) {
     if(length(ls(envir=.GlobalEnv, pattern="loadedCustomSection")) == 1)
     {
@@ -314,4 +354,14 @@ server <- function(input, output, session) {
 
         stopApp(returnValue = invisible(dataToLoad$datapath))
     }, once = TRUE)
+
+    observeEvent(input$requestPlottingCandidates, {
+        iterations <- input$requestPlottingCandidates;
+        print(input$requestPlottingCandidates)
+
+        frequencyPlot <- generateFrequencyPlot(iterations, iraceResults$parameters$names)
+        images <- list(frequency = frequencyPlot, parallel = 'data2')
+
+        session$sendCustomMessage("imagePlotCandidates", images)
+    })
 }
