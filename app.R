@@ -1,4 +1,4 @@
-packageVerification <- c("shiny", "irace", "safer", "magick")
+packageVerification <- c("shiny", "irace", "safer", "magick", "shinythemes", "shinydashboard", "DT", "RCurl")
 
 local({r <- getOption("repos")
     r["CRAN"] <- "http://cran.us.r-project.org" 
