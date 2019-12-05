@@ -317,6 +317,7 @@ server <- function(input, output, session) {
     output$convergencePerfomance <- renderPlot({
         iters <- unique(iraceResults$experimentLog[,"iteration"])
         fes <- cumsum(table(iraceResults$experimentLog[,"iteration"]))
+        fes <- fes[!names(fes) == '0']
         elites <- as.character(iraceResults$iterationElites)
         values <- colMeans(iraceResults$experiments[,elites])
         plot(fes,
