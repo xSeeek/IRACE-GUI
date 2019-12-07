@@ -74,8 +74,7 @@ removeTemporalPlots <- function()
 
 generateFrequencyPlot <- function(iterations, parameters)
 {
-    print(iterations)
-    configurations <- getConfigurationByIteration(iraceResults = iraceResults, iterations = c(iterations[1], iterations[2]))
+    configurations <- getConfigurationByIteration(iraceResults = iraceResults, iterations = iterations[1]:iterations[2])
 
     max <- 12
     limit <- 1
@@ -98,8 +97,48 @@ generateFrequencyPlot <- function(iterations, parameters)
         fixFormat <- iraceResults$parameters
         fixFormat$names <- params
 
-        png(filename <- paste0("tempPlotFrequency", i, ".png"))
+        png(filename <- paste0("tempPlotFrequency", i, ".png"), width = 1500, height = 1500, res = 200)
         parameterFrequency(configurations, fixFormat)
+        dev.off()
+
+        base64image <- base64Encode(readBin(filename, "raw", file.info(filename)[1, "size"]), "txt")
+        base64image <- paste0('data:image/png;base64,', base64image)
+        base64plots[i] <- base64image
+
+        limit <- (max*i) + 1;
+    }
+    removeTemporalPlots()
+    return(base64plots)
+}
+
+generateParallelCoordinatesPlot <- function(iterations, parameters)
+{
+    last <- length(iraceResults$iterationElites)
+    conf <- getConfigurationByIteration(iraceResults = iraceResults, iterations = iterations[1]:iterations[2])
+    
+    max <- 12
+    limit <- 1
+    params <- c()
+    numberOfParameters <- ceiling(length(parameters)/max)
+    base64plots <- c();
+    for(i in 1: numberOfParameters)
+    {
+        k <- 1
+        for(j in limit:(max*i))
+        {
+            if(length(parameters) >= j)
+            {
+                params[k] <- parameters[j]
+                k <- k + 1
+            }
+        }
+
+        # TEMPORAL FIX DUE IMPLEMENTATION OF THE PLOT
+        fixFormat <- iraceResults$parameters
+        fixFormat$names <- params
+
+        png(filename <- paste0("tempPlotParallel", i, ".png"), width = 1500, height = 1500, res = 200)
+        parallelCoordinatesPlot (conf, fixFormat, hierarchy = FALSE)
         dev.off()
 
         base64image <- base64Encode(readBin(filename, "raw", file.info(filename)[1, "size"]), "txt")
@@ -223,7 +262,7 @@ server <- function(input, output, session) {
         req(input$iterationPlotsCandidates)
         req(input$selectedParametersCandidates)
 
-        configurations <- getConfigurationByIteration(iraceResults = iraceResults, iterations = c(input$iterationPlotsCandidates[1], input$iterationPlotsCandidates[2]))
+        configurations <- getConfigurationByIteration(iraceResults = iraceResults, iterations = input$iterationPlotsCandidates[1]:input$iterationPlotsCandidates[2])
 
         max <- 12
         limit <- 1
@@ -245,7 +284,7 @@ server <- function(input, output, session) {
             fixFormat <- iraceResults$parameters
             fixFormat$names <- params
 
-            png(filename = paste0("tempPlotFrequency", i, ".png"))
+            png(filename = paste0("tempPlotFrequency", i, ".png"), width = 550, height = 555, res = 80)
             parameterFrequency(configurations, fixFormat)
             dev.off()
             limit <- (max*i) + 1;
@@ -271,7 +310,7 @@ server <- function(input, output, session) {
         req(input$selectedParametersCandidates)
 
         last <- length(iraceResults$iterationElites)
-        conf <- getConfigurationByIteration(iraceResults = iraceResults, iterations = c(input$iterationPlotsCandidates[1], input$iterationPlotsCandidates[2]))
+        conf <- getConfigurationByIteration(iraceResults = iraceResults, iterations = input$iterationPlotsCandidates[1]:input$iterationPlotsCandidates[2])
         
         max <- 12
         limit <- 1
@@ -328,7 +367,6 @@ server <- function(input, output, session) {
         )
         points(fes,values)
         text(fes, values, elites, pos = 1)
-        #dev.off()
     })
 
     observeEvent(input$customSections, {
@@ -357,11 +395,27 @@ server <- function(input, output, session) {
     }, once = TRUE)
 
     observeEvent(input$requestPlottingCandidates, {
+        req(input$selectedParametersCandidates)
+        
         iterations <- input$requestPlottingCandidates;
-        print(input$requestPlottingCandidates)
+        parameters <- input$selectedParametersCandidates
 
-        frequencyPlot <- generateFrequencyPlot(iterations, iraceResults$parameters$names)
-        images <- list(frequency = frequencyPlot, parallel = 'data2')
+        frequencyPlot <- generateFrequencyPlot(iterations, parameters)
+        parallelCoordinatesPlot <- generateParallelCoordinatesPlot(iterations, parameters)
+        images <- list(frequency = frequencyPlot, parallel = parallelCoordinatesPlot)
+
+        session$sendCustomMessage("imagePlotCandidates", images)
+    })
+
+    observeEvent(input$requestPlottingPerfomance, {
+        req(input$selectedParametersCandidates)
+        
+        iterations <- input$requestPlottingCandidates;
+        parameters <- input$selectedParametersCandidates
+
+        frequencyPlot <- generateFrequencyPlot(iterations, parameters)
+        parallelCoordinatesPlot <- generateParallelCoordinatesPlot(iterations, parameters)
+        images <- list(frequency = frequencyPlot, parallel = parallelCoordinatesPlot)
 
         session$sendCustomMessage("imagePlotCandidates", images)
     })
