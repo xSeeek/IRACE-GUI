@@ -151,6 +151,31 @@ generateParallelCoordinatesPlot <- function(iterations, parameters)
     return(base64plots)
 }
 
+generateBoxPlot <- function(numberIteration)
+{
+    configurationPerIteration <- convertVectorToString(iraceResults$allElites[as.integer(numberIteration)][[1]])
+    results <- iraceResults$experiments
+    intersectedColumns <- formatColData(results, configurationPerIteration)
+    results <- subset(iraceResults$experiments, select=(intersectedColumns))
+    conf <- gl(ncol(results), nrow(results), labels = colnames(results))
+    pairwise.wilcox.test (as.vector(results), conf, paired = TRUE, p.adj = "bonf")
+
+    png(filename <- paste0("tempPlotBoxplot.png"), width = 2000, height = 3000, res = 400)
+    configurationsBoxplot(results, ylab = "Solution cost")
+    dev.off()
+
+    base64image <- base64Encode(readBin(filename, "raw", file.info(filename)[1, "size"]), "txt")
+    base64image <- paste0('data:image/png;base64,', base64image)
+
+    plot <- image_read("tempPlotBoxplot.png")
+    plot <- image_scale(plot, "x750")
+    image_write(plot, path = "../resources/images/boxPlot.png", format = "png")
+    results <- list(dir = '../resources/images/boxPlot.png', image = base64image)
+    removeTemporalPlots()
+
+    return(results)
+}
+
 server <- function(input, output, session) {
     if(length(ls(envir=.GlobalEnv, pattern="loadedCustomSection")) == 1)
     {
@@ -247,15 +272,10 @@ server <- function(input, output, session) {
         configurationsBoxplot (results, ylab = "Solution cost")
     })
 
-    output$boxPlotPerfomance <- renderPlot({
+    output$boxPlotPerfomance <- renderImage({
         req(input$iterationPlotsPerfomance)
-        configurationPerIteration <- convertVectorToString(iraceResults$allElites[as.integer(input$iterationPlotsPerfomance)][[1]])
-        results <- iraceResults$experiments
-        intersectedColumns <- formatColData(results, configurationPerIteration)
-        results <- subset(iraceResults$experiments, select=(intersectedColumns))
-        conf <- gl(ncol(results), nrow(results), labels = colnames(results))
-        pairwise.wilcox.test (as.vector(results), conf, paired = TRUE, p.adj = "bonf")
-        configurationsBoxplot (results, ylab = "Solution cost")
+        plot <- generateBoxPlot(input$iterationPlotsPerfomance)
+        list(src = plot$dir)
     })
 
     output$frecuencyCandidates <- renderImage({
@@ -397,7 +417,7 @@ server <- function(input, output, session) {
     observeEvent(input$requestPlottingCandidates, {
         req(input$selectedParametersCandidates)
         
-        iterations <- input$requestPlottingCandidates;
+        iterations <- input$requestPlottingCandidates
         parameters <- input$selectedParametersCandidates
 
         frequencyPlot <- generateFrequencyPlot(iterations, parameters)
@@ -408,15 +428,10 @@ server <- function(input, output, session) {
     })
 
     observeEvent(input$requestPlottingPerfomance, {
-        req(input$selectedParametersCandidates)
-        
-        iterations <- input$requestPlottingCandidates;
-        parameters <- input$selectedParametersCandidates
+        iteration <- input$requestPlottingPerfomance;
+        boxPlot <- generateBoxPlot(iteration)
+        image <- list(boxPlot = boxPlot$image)
 
-        frequencyPlot <- generateFrequencyPlot(iterations, parameters)
-        parallelCoordinatesPlot <- generateParallelCoordinatesPlot(iterations, parameters)
-        images <- list(frequency = frequencyPlot, parallel = parallelCoordinatesPlot)
-
-        session$sendCustomMessage("imagePlotCandidates", images)
+        session$sendCustomMessage("imagePlotPerfomance", image)
     })
 }
