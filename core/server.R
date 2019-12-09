@@ -434,4 +434,23 @@ server <- function(input, output, session) {
 
         session$sendCustomMessage("imagePlotPerfomance", image)
     })
+
+    observeEvent(input$requestBestSoFarIterations, {
+        bestSoFarIterations <- list()
+
+        bestSoFarIterations[[1]] <- iraceResults$parameters$names
+        for(i in 1:iraceResults$state$nbIterations)
+        {
+            bestConfigurations <- iraceResults$allElites[as.integer(i)]
+            bestConfiguration <- bestConfigurations[[1]][1]
+            detailsBestConfiguration <- getConfigurationById(iraceResults, ids = bestConfiguration)
+
+            meanValue <- colMeans(iraceResults$experiments[,iraceResults$iterationElites[as.integer(i)], drop=FALSE], na.rm=TRUE)
+
+            buildData <- list(id = bestConfiguration, mean = as.numeric(meanValue), paramData = detailsBestConfiguration)
+            bestSoFarIterations[[i + 1]] <- buildData
+        }
+
+        session$sendCustomMessage("bestSoFarAllIterations", bestSoFarIterations)
+    })
 }
