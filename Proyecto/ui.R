@@ -1,17 +1,22 @@
 library(shiny)
 library(shinythemes)
 library(shinydashboard)
+library(dashboardthemes)
 library(DT)
 library(ggplot2)
-library(irace)
+library(irace, lib.loc = "/usr/local/lib/R/site-library")
 
-skin <- Sys.getenv("DASHBOARD_SKIN")
-skin <- tolower(skin)
-if (skin == "")
-  skin <- "black"
+
+
+
+#skin <- Sys.getenv("DASHBOARD_SKIN")
+#skin <- tolower(skin)
+#if (skin == "")
+#  skin <- "black"
+
 
 header <- dashboardHeader(
-  title="IRACE",
+  title = "IRACE",
   tags$li(class = "dropdown",actionLink("status", "Setup")),
   tags$li(class = "dropdown",actionLink("status", "Runtime")),
   tags$li(class = "dropdown",actionLink("status", "Reports")),
@@ -26,25 +31,27 @@ sidebar <- dashboardSidebar(
         )
 )
   body <- dashboardBody(
+    shinyDashboardThemes(
+      theme = "grey_light"
+    ),
     tabItems(
       tabItem(tabName = "summary",
         fluidRow(
           box(title="Summary",
               status="primary",
-              "Num of Iterations: ",
-              textOutput("numIterations"),
-              "Num of Configurations",
-              textOutput("numConfigurations"),
-              "Num of Instances",
-              textOutput("numInstances"),
-              "Num of Elites Configurations",
-              textOutput("numElitesConfigurations")
+              h5("Irace Version: ", textOutput("iraceVersion",inline=TRUE)),
+              h5("Num of Iterations: ", textOutput("numIterations",inline=TRUE)),
+              h5("Num of Parameters: ", textOutput("numOfParameters",inline=TRUE)),
+              h5("Num of Configurations: ",textOutput("numConfigurations",inline=TRUE)),
+              h5("Num of Experiments Used so Far: ", textOutput("experimentsUsedSoFar",inline=TRUE), "/", textOutput("maxExperiments",inline=TRUE)),
+              h5("Num of Instances: ", textOutput("numInstances",inline=TRUE)),
+              h5(numericInput("iterationForElites","Select Iteration: ",value = 1,min = 1,max = iraceResults$state$nbIterations,width = "100px"),"Num of Elites Configurations: ",textOutput("numElitesConfigurations",inline=TRUE))
           )
         ),
           fluidRow(
             box(title = "Elite Configurations",
                 status = "primary",
-                numericInput("iterationsElites","Select Iteration",value = 1,min = 1,max = iraceResults$state$nbIterations),
+                numericInput("iterationsElites","Select Iteration",value = 1,min = 1,max = iraceResults$state$nbIterations, width = "100px"),
                 DT::dataTableOutput("elites"),
                 width = 15
             )
@@ -62,7 +69,7 @@ sidebar <- dashboardSidebar(
         box(title="Performance",
             status="primary",
             h1("BoxPlot"),
-            sliderInput("iterationBoxPlot","Select Iteration", min = 1, max = iraceResults$state$nbIterations, value = 1, dragRange = TRUE),
+            sliderInput("iterationBoxPlot","Select Iteration", min = 1, max = iraceResults$state$nbIterations, value = seq(1,3), dragRange = TRUE),
             plotOutput("boxPlotBestConfiguration"),
             h1("Peformance Plot"),
             plotOutput("performance")
@@ -71,16 +78,22 @@ sidebar <- dashboardSidebar(
     ),
     tabItem(tabName = "frequency",
       fluidRow(
-        box(title = "Frequency",
-            status = "primary",
-            h1("Sampling Frequency"),
-            sliderInput("iterationFrequency","Select Iteration",min = 1, max = iraceResults$state$nbIterations,value = c(1,2),dragRange = TRUE),
-            textInput("parametersFrequency","Enter a parameter: "),
-            plotOutput("frecuencyParameters"),
-            h1("Parallel Coordinates"),
-            sliderInput("iterationPC","Select Iteration",min = 1, max = iraceResults$state$nbIterations, value = c(1,2), dragRange = TRUE),
-            textInput("parametersParallelCoordinates","Enter a parameter: "),
-            plotOutput("paralelCoordinatesCandidates")
+        tags$div(style = 'overflow-y: auto;',
+          box(title = "Frequency",
+              status = "primary",
+              h1("Sampling Frequency"),
+              sliderInput("iterationFrequency","Select Iteration: ",min = 1, max = iraceResults$state$nbIterations,value = seq(1,5),dragRange = TRUE),
+              selectInput("parametersFrequency", "Parameters to be displayed: ", iraceResults$parameters$names, multiple = TRUE, width = 2500, selectize = TRUE),
+              plotOutput("frecuencyParameters")
+          )
+        ),
+        tags$div(style = 'overflow-y: auto;',
+          box(status = "primary",
+              h1("Parallel Coordinates"),
+              sliderInput("iterationPC","Select Iteration: ",min = 1, max = iraceResults$state$nbIterations, value = seq(1,3), dragRange = TRUE),
+              selectInput("parametersParallelCoordinates", "Parameters to be displayed: ", iraceResults$parameters$names, multiple = TRUE, width = 2500, selectize = TRUE),
+              plotOutput("paralelCoordinatesCandidates")
+          )
         )
       )
     )
@@ -90,4 +103,4 @@ sidebar <- dashboardSidebar(
 
 
 
-ui <- dashboardPage(header,sidebar, body, skin = skin)
+ui <- dashboardPage(header,sidebar, body)

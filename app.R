@@ -2,11 +2,18 @@ library(shiny)
 library(shinythemes)
 library(shinydashboard)
 library(DT)
-library(irace)
+library(irace, lib.loc = "/usr/local/lib/R/site-library")
+library(magick)
+      
+  
+packageVerification <- c("shiny", "irace","readr","magick","RCurl")
 
-  
-  
-packageVerification <- c("shiny", "irace","readr")
+
+local({r <- getOption("repos")
+r["CRAN"] <- "http://cran.us.r-project.org" 
+options(repos=r)
+})
+
 pkgCheck <- function(x)
 {
   if (!require(x,character.only = TRUE))
@@ -21,7 +28,7 @@ pkgCheck <- function(x)
 for (i in 1:length(packageVerification)) 
   pkgCheck(packageVerification[i])
 
-  path <- getwd()
+path <- getwd()
 path <- paste(path, "/ProyectoIRACE/IRACE-GUI/Proyecto", sep = "")
 
 options(shiny.port = 5000)
