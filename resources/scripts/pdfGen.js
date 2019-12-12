@@ -156,6 +156,11 @@ async function generatePDF(options)
     // CUSTOM SECTIONS
     await appendCustomSectionsPDF(doc);
 
+    var element = document.getElementsByTagName("iframe"), index;
+    for (index = element.length - 1; index >= 0; index--) {
+        element[index].parentNode.removeChild(element[index]);
+    }
+
     doc.setProperties({
         title: 'IRACE Report',	
         author: 'IRACE-GUI',
