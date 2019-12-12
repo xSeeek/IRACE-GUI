@@ -197,7 +197,7 @@ server <- function(input, output, session) {
         formatedDataBestConfiguration <- setupContentBestConfiguration(bestConfiguration)
 
         HTML('<b>&#9819Best-so-far</b>
-            <br>&#10132configurarion: &emsp;', bestConfiguration[[1]],
+            <br>&#10132configuration: &emsp;', bestConfiguration[[1]],
             '<br>&#10132mean value: &emsp;', (colMeans(iraceResults$experiments[,iraceResults$iterationElites[last], drop=FALSE], na.rm=TRUE)[[1]]),
             '<br>&#10132PARENT: &emsp;&emsp;', bestConfiguration[[length(bestConfiguration)]],
             '<br>&#10132Total instances tested: &emsp;', sum(!is.na(iraceResults$experiments[ ,iraceResults$iterationElites[length(iraceResults$iterationElites)] ])),
@@ -436,14 +436,16 @@ server <- function(input, output, session) {
     })
 
     observeEvent(input$requestBestSoFarIterations, {
+        params <- input$requestBestSoFarIterations
         bestSoFarIterations <- list()
 
-        bestSoFarIterations[[1]] <- iraceResults$parameters$names
+        bestSoFarIterations[[1]] <- params
         for(i in 1:iraceResults$state$nbIterations)
         {
             bestConfigurations <- iraceResults$allElites[as.integer(i)]
             bestConfiguration <- bestConfigurations[[1]][1]
             detailsBestConfiguration <- getConfigurationById(iraceResults, ids = bestConfiguration)
+            detailsBestConfiguration <- subset(detailsBestConfiguration, select = c('.ID.', params, '.PARENT.') )
 
             meanValue <- colMeans(iraceResults$experiments[,iraceResults$iterationElites[as.integer(i)], drop=FALSE], na.rm=TRUE)
 
