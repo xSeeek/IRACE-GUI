@@ -1,10 +1,99 @@
-async function generatePDF()
+function getOptionsPDF()
+{
+    var numberOfIterations = $('#numberOfIterations').html();
+    var options = [];
+    var index = 0;
+
+    if(!$("#dontIncludeCandidates").prop("checked"))
+    {
+        var iterations = [numberOfIterations - 1, numberOfIterations];
+        var allIterations = false;
+        if($("#allIterationCandidates").prop("checked"))
+        {
+            iterations = Array.apply(null, {length: numberOfIterations}).map(function(value, index){
+                return index + 1;
+            });
+            allIterations = true;
+        }
+        var data = {"candidates": true, "candidatesAllIterations": allIterations, "candidatesIterations": iterations};
+        options[index] = data;
+    }
+    else
+        options[index] = {"candidates": false};
+
+    index++;
+
+    if(!$("#dontIncludePerfomance").prop("checked"))
+    {
+        var iterations = [numberOfIterations];
+        var allIterations = false;
+        if($("#allIterationsPerfomance").prop("checked"))
+        {
+            iterations = Array.apply(null, {length: numberOfIterations}).map(function(value, index){
+                return index + 1;
+            });
+            allIterations = true;
+        }
+        var data = {"perfomance": true, "perfomanceAllIterations": allIterations, "perfomanceIterations": iterations};
+        options[index] = data;
+    }
+    else
+        options[index] = {"perfomance": false};
+
+    index++;
+
+    var values = $("#selectParametersPDF").val();
+    var parameters = values;
+
+    if($("#includeDetails").prop("checked") && parameters.length != 0)
+    {
+        var data = {"details": true, "parameters": parameters};
+        options[index] = data;
+    }
+    else
+        options[index] = {"details": false};
+
+    generatePDF(options);
+}
+
+$(function() {
+    enableAllIterationsCandidates();
+    enableAllIterationsPerfomance();
+    showButtonParameters();
+    $("#dontIncludeCandidates").click(enableAllIterationsCandidates);
+    $("#dontIncludePerfomance").click(enableAllIterationsPerfomance);
+    $("#includeDetails").click(showButtonParameters);
+});
+  
+function enableAllIterationsCandidates() {
+    if (!this.checked) {
+        $("#allIterationCandidates").removeAttr("disabled");
+    } else {
+        $("#allIterationCandidates").attr("disabled", true);
+    }
+}
+
+function enableAllIterationsPerfomance() {
+    if (!this.checked) {
+        $("#allIterationsPerfomance").removeAttr("disabled");
+    } else {
+        $("#allIterationsPerfomance").attr("disabled", true);
+    }
+}
+
+function showButtonParameters() {
+    if (this.checked) {
+        $("#buttonParametersPDF").removeAttr("hidden");
+    } else {
+        $("#buttonParametersPDF").attr("hidden", true);
+    }
+}
+
+async function generatePDF(options)
 {
     var doc = new jsPDF("portrait", "mm", "letter");
-    var options = {
-        pagesplit: true
-    };
     var date = new Date();
+    var index = 0;
 
     // HEADER
     doc.setFont("times", "bold");
@@ -22,13 +111,47 @@ async function generatePDF()
     await appendBestConfiguration(doc);
 
     // CANDIDATES
-    await appendCandidates(doc);
+    if(options[index]['candidates'] != false)
+    {
+        var iterations = options[index]['candidatesIterations'];
+        var lastTwo = 'Last two iterations';
+        await appendCandidates(doc, iterations, lastTwo);
+        if(options[index]['candidatesAllIterations'] == true)
+        {
+            var iterations = options[index]['candidatesIterations'];
+            var lastTwo = 'All iterations';
+            await appendCandidates(doc, iterations, lastTwo);
+        }
+    }
+    
+    index++;
 
     // PERFOMANCE
-    await appendPerfomance(doc);
+    if(options[index]['perfomance'] != false)
+    {
+        var iterations = options[index]['perfomanceIterations'][options[index]['perfomanceIterations'].length-1];
+        var textIteration = 'Last iteration';
+        await appendPerfomance(doc, iterations, textIteration, true)
+        if(options[index]['perfomanceAllIterations'] == true)
+        {
+            var iterations = options[index]['perfomanceIterations'];
+            for(var i = iterations.length - 2; i >= 0; i--)
+            {
+                if(i == 0)
+                    var textIteration = 'Iteration ' + iterations[i];
+                else
+                    var textIteration = 'Iterations ' + iterations[i] + " - " + iterations[i - 1];
+                await appendPerfomance(doc, iterations[i], textIteration, false)
+                i--;
+            }
+        }
+    }
+
+    index++;
 
     // DETAILS
-    await appendDetailsSectionPDF(doc);
+    if(options[index]['details'])
+        await appendDetailsSectionPDF(doc, options[index]['parameters']);
 
     // CUSTOM SECTIONS
     await appendCustomSectionsPDF(doc);
@@ -41,6 +164,7 @@ async function generatePDF()
 
     console.log('Save PDF');
     doc.save('IRACE' + date.getTime() + '.pdf');
+    return;
 }
 
 /* MAIN FUNCTIONS FOR THE GENERATION OF THE PDF */
@@ -76,7 +200,7 @@ async function appendBestConfiguration(doc)
     doc.text(20, 130, 'Best Configuration')
     doc.line(19, 131, 63, 131);
     doc.setFont("times", "normal");
-    doc.setFontSize(9);
+    doc.setFontSize(8);
     source = $('#boxPlotBestConfiguration').children('img')[0].src;
 
     await loadImage(source).then(formatedImage =>{
@@ -102,7 +226,7 @@ async function appendBestConfiguration(doc)
             doc.setFontSize(16);
             doc.text(72, 20, 'IRACE Autogenerated report');
             doc.setFont("times", "normal");
-            doc.setFontSize(9);
+            doc.setFontSize(8);
             yLine = 30;
             pageHeight = 265;
             doc.addPage();
@@ -111,7 +235,7 @@ async function appendBestConfiguration(doc)
     }
 }
 
-async function appendCandidates(doc)
+async function appendCandidates(doc, iterations, lastTwo)
 {
     doc.addPage();
     doc.setPage(doc.internal.getNumberOfPages());
@@ -124,13 +248,12 @@ async function appendCandidates(doc)
     doc.text(20, 35, 'Candidates')
     doc.line(19, 36, 55, 36);
     doc.setFontSize(11);
-    doc.text(20, 40, 'Last two iterations')
+    doc.text(20, 40, lastTwo)
     doc.setFont("times", "bold");
     doc.setFontSize(9);
     doc.text(50, 50, 'Frequency Plots')
     doc.text(142, 50, 'Parallel Coordinates Plots')
 
-    var iterations = [8, 9];
     Shiny.onInputChange("requestPlottingCandidates", iterations);
     await waitForData(1).then(async plots =>{
         var yLine = 55;
@@ -192,8 +315,10 @@ async function appendCandidates(doc)
     })
 }
 
-async function appendPerfomance(doc)
+async function appendPerfomance(doc, iterations, textIteration, flagConvergence)
 {
+    var flagLastIteration = false;
+
     doc.addPage();
     doc.setPage(doc.internal.getNumberOfPages());
     doc.setFont("times", "bold");
@@ -205,31 +330,55 @@ async function appendPerfomance(doc)
     doc.text(20, 35, 'Perfomance')
     doc.line(19, 36, 48, 36);
     doc.setFontSize(11);
-    doc.text(20, 40, 'Last iteration')
+    doc.text(20, 40, textIteration)
     doc.setFont("times", "bold");
     doc.setFontSize(9);
-    doc.text(50, 50, 'Convergence Plot')
-    doc.text(46, 53, '(Valid for all iterations)')
-    doc.text(142, 50, 'BoxPlot elite configurations')
+    if(flagConvergence == true)
+    {
+        doc.text(50, 50, 'Convergence Plot')
+        doc.text(46, 53, '(Valid for all iterations)')
+        source = $('#convergencePerfomance').children('img')[0].src;
 
-    source = $('#convergencePerfomance').children('img')[0].src;
+        await loadImage(source).then(formatedImage =>{
+            doc.addImage(formatedImage, 20, 54, 80, 80);
+            console.log('Add image: Convergence plot')
+        });
+    }
+    else
+    {
+        if((iterations - 1) != 0)
+        {
+            var text = 'BoxPlot iteration ' + (iterations - 1)
+            doc.text(55, 50, text)
+            Shiny.onInputChange("requestPlottingPerfomance", iterations - 1);
+            await waitForData(2).then(async plot =>{
+                await loadImage(plot['boxPlot']).then(formatedImage =>{
+                    doc.addImage(formatedImage, 5, 53, 100, 130);
+                    console.log('Add image: Boxplot Perfomance')
+                });
+            });
+        }
+        else
+            flagLastIteration = true;
+    }
+    if(flagLastIteration)
+        xLine = 80
+    else
+        xLine = 150
 
-    await loadImage(source).then(formatedImage =>{
-        doc.addImage(formatedImage, 20, 54, 80, 80);
-        console.log('Add image: Convergence plot')
-    });
+    var text = 'BoxPlot iteration ' + iterations;
+    doc.text(xLine, 50, text)
 
-    var iteration = 9;
-    Shiny.onInputChange("requestPlottingPerfomance", iteration);
+    Shiny.onInputChange("requestPlottingPerfomance", iterations);
     await waitForData(2).then(async plot =>{
         await loadImage(plot['boxPlot']).then(formatedImage =>{
-            doc.addImage(formatedImage, 100, 53, 100, 130);
+            doc.addImage(formatedImage, (xLine - 45), 53, 100, 130);
             console.log('Add image: Boxplot Perfomance')
         });
     });
 }
 
-async function appendDetailsSectionPDF(doc)
+async function appendDetailsSectionPDF(doc, params)
 {
     doc.addPage();
     doc.setPage(doc.internal.getNumberOfPages());
@@ -247,15 +396,13 @@ async function appendDetailsSectionPDF(doc)
     doc.setFontSize(9);
     doc.setFont("times", "normal");
 
-    Shiny.onInputChange("requestBestSoFarIterations", true);
+    Shiny.onInputChange("requestBestSoFarIterations", params);
     await waitForData(3).then(async valuesTable =>{
         var yLine = 50;
         var pageHeight = 265;
         for(i = 1; i < valuesTable.length; i++)
         {
             doc.setFontSize(9);
-            if(yLine != 25)
-                yLine += 10
             doc.setFont("times", "bold");
             doc.text(20, yLine, ('Iteration ' + i))
             yLine += 5
@@ -288,7 +435,7 @@ async function appendDetailsSectionPDF(doc)
                 doc.setFont("times", "bold");
                 doc.text(20, yLine, valuesTable[0][j] + ':')
                 doc.setFont("times", "normal");
-                if(valuesTable[i]['paramData'][valuesTable[0][j]][0] == null)
+                if(valuesTable[i]['paramData'][valuesTable[0][j]] == null)
                     doc.text(20 + width + 2, yLine, 'NA')
                 else
                     doc.text(20 + width + 2, yLine, '' + valuesTable[i]['paramData'][valuesTable[0][j]][0])
@@ -300,7 +447,7 @@ async function appendDetailsSectionPDF(doc)
                     doc.text(85, yLine, valuesTable[0][j + 1] + ': ')
                     doc.setFont("times", "normal");
 
-                    if(valuesTable[i]['paramData'][valuesTable[0][j + 1]][0] == null)
+                    if(valuesTable[i]['paramData'][valuesTable[0][j + 1]] == null)
                         doc.text(85 + width + 2, yLine, 'NA')
                     else
                         doc.text(85 + width + 2, yLine, "" + valuesTable[i]['paramData'][valuesTable[0][j + 1]][0])
@@ -314,7 +461,7 @@ async function appendDetailsSectionPDF(doc)
                     doc.text(150, yLine, valuesTable[0][j + 1] + ': ')
                     doc.setFont("times", "normal");
 
-                    if(valuesTable[i]['paramData'][valuesTable[0][j + 1]][0] == null)
+                    if(valuesTable[i]['paramData'][valuesTable[0][j + 1]] == null)
                         doc.text(150 + width + 2, yLine, 'NA')
                     else
                         doc.text(150 + width + 2, yLine, "" + valuesTable[i]['paramData'][valuesTable[0][j + 1]][0])
@@ -335,6 +482,7 @@ async function appendDetailsSectionPDF(doc)
                     doc.setPage(doc.internal.getNumberOfPages());
                 }
             }
+            yLine += 5;
         }
     });
 }

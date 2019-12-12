@@ -9,7 +9,7 @@
         <script src="shared/jquery.js" type="text/javascript"></script>
         <script src="shared/shiny.js" type="text/javascript"></script>
         <link rel="stylesheet" type="text/css" href="shared/shiny.css"/>
-        <script src="../resources/dependences/bootstrap/js/bootstrap.min.js"></script>
+        <script src="../resources/dependences/bootstrap/js/bootstrap.bundle.js"></script>
         <link rel="stylesheet" href="../resources/dependences/bootstrap/css/bootstrap.css">
 
         <!-- include datatables css/js -->
@@ -28,6 +28,9 @@
         <script src="../resources/dependences/jsPDF/dist/jspdf.debug.js"></script>
         <script src="../resources/dependences/html2canvas/html2canvas-0.4.1.js"></script>
         <script src="../resources/dependences/jsPDF/plugins/jsPDF-AutoTable/dist/jspdf.plugin.autotable.js"></script>
+
+        <!-- include selectize-->
+        <script src="../resources/dependences/selectize/dist/js/selectize.js"></script>
 
         <!-- include customs js -->
         <script src="../resources/scripts/alerts.js" type="text/javascript"></script>
@@ -84,7 +87,7 @@
                             </span>
                         </span>
                         <a class="list-group-item">
-                            <button type="button" onclick="generatePDF()" class="btn btn-link">Save PDF</button>
+                            <button type="button" class="btn btn-link" data-toggle="modal" data-target="#preferencesPDF">Save PDF</button>
                         </a>
                         <a class="list-group-item">
                             <button type="button" onclick="getAllCustomSections()" class="btn btn-link">Save Report</button>
@@ -131,7 +134,7 @@
                                             </tr>  
                                             <tr>
                                                 <th>nbIterations: </th>
-                                                <td>{{ iraceResults$state$nbIterations }}</td>
+                                                <td id="numberOfIterations">{{ iraceResults$state$nbIterations }}</td>
                                             </tr>  
                                         </table>
                                     </div>
@@ -355,7 +358,7 @@
         <br>
         </div>
     </body>
-    <!-- Modal -->
+    <!-- Modal Parametros Candidatos-->
     <div class="modal fade bd-example-modal-lg" id="parametersModal" tabindex="-1" role="dialog" aria-labelledby="parametersSelection" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
             <div class="modal-content">
@@ -367,6 +370,111 @@
                 </div>
                 <div class="modal-body">
                     {{selectedParametersCandidates}}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-danger" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Preferencias PDF-->
+    <div class="modal fade bd-example-modal-lg" id="preferencesPDF" tabindex="-1" role="dialog" aria-labelledby="preferencesPDF" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">PDF Configuration</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-sm-9">
+                                <b>Candidates</b>
+                                <br>
+                                By default, only adds the plots of the last two iterations.
+                                <div class="row">
+                                    <div class="col-8 col-sm-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="" id="allIterationCandidates">
+                                            <label class="form-check-label" for="allIterationCandidates">
+                                                Include all iterations
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-4 col-sm-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="" id="dontIncludeCandidates">
+                                            <label class="form-check-label" for="dontIncludeCandidates">
+                                                Do not include in the report
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <br>
+                                <b>Perfomance</b>
+                                <div class="row">
+                                    <div class="col-8 col-sm-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="" id="allIterationsPerfomance">
+                                            <label class="form-check-label" for="allIterationsPerfomance">
+                                                Include all iterations
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-4 col-sm-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="" id="dontIncludePerfomance">
+                                            <label class="form-check-label" for="dontIncludePerfomance">
+                                                Do not include in the report
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <br>
+                                <b>Details</b>
+                                <br>
+                                Only adds the best-so-far configuration of each iteration.
+                                <div class="row">
+                                    <div class="col-8 col-sm-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="" id="includeDetails">
+                                            <label class="form-check-label" for="includeDetails">
+                                                Include in the report
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-4 col-sm-6">
+                                        <div class="form-check">
+                                            <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#parametersDetailsPDF" id="buttonParametersPDF">Select Parameters</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="getOptionsPDF()">Export PDF</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Parametros PDF-->
+    <div class="modal fade bd-example-modal-lg" id="parametersDetailsPDF" tabindex="-1" role="dialog" aria-labelledby="parametersDetailsPDF" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Parameters Selection (Only afects PDF Report)</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <select multiple id="selectParametersPDF">
+                    </select>       
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-danger" data-dismiss="modal">Close</button>

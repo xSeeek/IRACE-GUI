@@ -6,6 +6,19 @@ window.onload = function(){
         });
     }, 1000);
     updateInput();
+    getParameters();
+}
+
+function getParameters()
+{
+    var options = [];
+    var index = 0;
+    $("#selectedParametersCandidates option").each(function()
+    {
+        options[index] = {text:$(this).html(), value:$(this).val()}
+        index++;
+    });
+    var $select = $('#selectParametersPDF').selectize({options:options});
 }
 
 function updateInput()
