@@ -91,6 +91,8 @@ function showButtonParameters() {
 
 async function generatePDF(options)
 {
+    showLoading();
+
     var doc = new jsPDF("portrait", "mm", "letter");
     var date = new Date();
     var index = 0;
@@ -105,17 +107,21 @@ async function generatePDF(options)
     doc.text(20, 40, 'Date of the report: ' + date);
 
     // SUMMARY
+    updateTextStatus("Generating Summary");
     await appendSummary(doc);
 
     // BEST CONFIGURATION
+    updateTextStatus("Generating Best Configuration");
     await appendBestConfiguration(doc);
 
     // CANDIDATES
     if(options[index]['candidates'] != false)
     {
+        showLoading();
+        await updateTextStatus("Generating Candidates Section");
         var iterations = options[index]['candidatesIterations'];
         var lastTwo = 'Last two iterations';
-        await appendCandidates(doc, iterations, lastTwo);
+        await appendCandidates(doc, [options[index]['candidatesIterations'][options[index]['candidatesIterations'].length-2], options[index]['candidatesIterations'][options[index]['candidatesIterations'].length-1]], lastTwo);
         if(options[index]['candidatesAllIterations'] == true)
         {
             var iterations = options[index]['candidatesIterations'];
@@ -129,6 +135,8 @@ async function generatePDF(options)
     // PERFOMANCE
     if(options[index]['perfomance'] != false)
     {
+        showLoading();
+        updateTextStatus("Generating Perfomance Section");
         var iterations = options[index]['perfomanceIterations'][options[index]['perfomanceIterations'].length-1];
         var textIteration = 'Last iteration';
         await appendPerfomance(doc, iterations, textIteration, true)
@@ -151,9 +159,15 @@ async function generatePDF(options)
 
     // DETAILS
     if(options[index]['details'])
+    {
+        showLoading();
+        updateTextStatus("Generating Details by Iteration");
         await appendDetailsSectionPDF(doc, options[index]['parameters']);
+    }
 
     // CUSTOM SECTIONS
+    showLoading();
+    updateTextStatus("Generating Custom Sections");
     await appendCustomSectionsPDF(doc);
 
     var element = document.getElementsByTagName("iframe"), index;
@@ -169,6 +183,10 @@ async function generatePDF(options)
 
     console.log('Save PDF');
     doc.save('IRACE' + date.getTime() + '.pdf');
+
+    swal.close();
+    confirmMessage("PDF generated successfully");
+
     return;
 }
 

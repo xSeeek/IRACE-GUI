@@ -21,7 +21,7 @@ async function inputText(message, placeholder)
             if (!value)
                 return 'A name is required'
         }
-    })
+    });
     if(input)
         return input;
     return null;
@@ -49,4 +49,24 @@ async function confirmDelete(title, message, titleConfirmation, messageConfigura
         return false;
     });
     return status;
+}
+
+function showLoading()
+{
+    Swal.fire({
+        title: "Generating PDF...",
+        text: "Please wait, this may take a longer time depending on the number of parameters",
+        icon: 'success',
+        showConfirmButton: false,
+        allowEscapeKey: false,
+        allowOutsideClick: false,
+        onOpen: () => {
+            swal.showLoading();
+        }
+    })
+}
+
+function updateTextStatus(msg)
+{
+    Swal.update({text: msg})
 }
