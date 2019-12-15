@@ -14,22 +14,6 @@ updateFile <- function()
   return(file)
 }
 
-  
-fileReaderData <- reactiveFileReader(500,
-                                     NULL,
-                                     filePath = 'resources/test-dummy/acotsp-arena/irace.Rdata', 
-                                     readFunc = updateFile())
-
-server <- function(input, output) {
-  absolutePath <- getwd()
-  resourcesPath <- paste(absolutePath, "../resources", sep = "")
-
-  
-  addResourcePath(prefix = 'resources', directoryPath = '../resources')
-  
-  print(resourcesPath)
-  
-}
 
 removeTemporalPlots <- function()
 {
@@ -179,7 +163,6 @@ summary <- function(input,output,session){
     invalidateLater(1000, session)
     output$numElitesConfigurations <- renderText({
       req(input$iterationForElites)
-      showingData <- fileReaderData
       for(i in iraceResults$allElites[as.integer(input$iterationForElites)])
       {
         c(i)
@@ -204,29 +187,33 @@ summary <- function(input,output,session){
     req(input$iterationFrequency)
     req(input$parametersFrequency)
     invalidateLater(1000, session)
+    
+    
     iterationsFrequencyParameters <- seq(input$iterationFrequency[1],input$iterationFrequency[2])
     print(iterationsFrequencyParameters)
+    
+    
     conf <- getConfigurationByIteration(iraceResults = iraceResults, iterations = iterationsFrequencyParameters)
     max <- 12
     limit <- 1
     params <- c()
-    numberOfParameters <- ceiling(length(iterationsFrequencyParameters)/max)
+    numberOfParameters <- ceiling(length(input$parametersFrequency)/max)
     for(i in 1: numberOfParameters)
     {
       k <- 1
       for(j in limit:(max*i))
       {
-        if(length(input$selectedParametersCandidates) >= j)
+        if(length(input$parametersFrequency) >= j)
         {
-          params[k] <- input$selectedParametersCandidates[j]
+          params[k] <- input$parametersFrequency[j]
           k <- k + 1
         }
       }
       
       fixFormat <- iraceResults$parameters
-      fixFormat$names <- input$parametersFrequency
+      fixFormat$names <- params
       
-      png(filename <- paste0("plotFrequency",i,".png"), width = 500, height = 535, res = 80)
+      png(filename = paste0("plotFrequency",i,".png"), width = 550, height = 555, res = 80)
       print(png(filename <- paste0("plotFrequency", i, ".png"), width = 550, height = 555, res = 80))
       parameterFrequency(conf, fixFormat)
       dev.off()
@@ -241,13 +228,14 @@ summary <- function(input,output,session){
         finalPlot <- image_read(paste0("plotFrequency",i,".png"))
         next
       }
-      image <- image_read(paste0("tempPlotFrequency",i, ".png"))
+      image <- image_read(paste0("plotFrequency",i,".png"))
+      print(image)
       finalPlot <- image_append(c(finalPlot, image), stack = TRUE)
     }
     removeTemporalPlots()
-    image_write(finalPlot, path = "../Proyecto/frequencyPlot.png", format = "png")
-    print(image_write(finalPlot, path = "../Proyecto/frequencyPlot.png", format = "png"))
-    list(src = "../Proyecto/frequencyPlot.png")
+    image_write(finalPlot, path = "../resources/images/frequencyPlot.png", format = "png")
+    print(image_write(finalPlot, path = "../resources/images/frequencyPlot.png", format = "png"))
+    list(src = "../resources/images/frequencyPlot.png")
   })
   
     output$paralelCoordinatesCandidates <- renderImage({
@@ -298,8 +286,8 @@ summary <- function(input,output,session){
       finalPlot <- image_append(c(finalPlot, image), stack = TRUE)
     }
     removeTemporalPlots()
-    image_write(finalPlot, path = "../Proyecto/parallelPlot.png", format = "png")
-    list(src = "../Proyecto/parallelPlot.png")
+    image_write(finalPlot, path = "../resources/images/parallelPlot.png", format = "png")
+    list(src = "../resources/images/parallelPlot.png")
   })
     
     output$boxPlotBestConfiguration <- renderPlot({

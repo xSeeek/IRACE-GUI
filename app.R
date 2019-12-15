@@ -10,8 +10,8 @@ packageVerification <- c("shiny", "irace","readr","magick","RCurl")
 
 
 local({r <- getOption("repos")
-r["CRAN"] <- "http://cran.us.r-project.org" 
-options(repos=r)
+  r["CRAN"] <- "http://cran.us.r-project.org" 
+  options(repos=r)
 })
 
 pkgCheck <- function(x)
@@ -27,9 +27,10 @@ pkgCheck <- function(x)
 
 for (i in 1:length(packageVerification)) 
   pkgCheck(packageVerification[i])
-
+setPath <- setwd("~/ProyectoIRACE/IRACE-GUI")
 path <- getwd()
-path <- paste(path, "/ProyectoIRACE/IRACE-GUI/Proyecto", sep = "")
+path <- paste(path, "/Proyecto", sep = "")
+
 
 options(shiny.port = 5000)
 runApp(appDir = path)
