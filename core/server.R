@@ -51,7 +51,9 @@ setupContentBestConfiguration <- function(dataToFormat)
 {
     formatedData <- ""
     for(i in 2:(length(dataToFormat)-1))
-        formatedData <- paste0(formatedData, '<br>&#10132', colnames(dataToFormat[i]), ': &emsp;', dataToFormat[i])
+    {
+        formatedData <- paste(formatedData, '<br>&#10132', colnames(dataToFormat[i]), ': &emsp;', dataToFormat[i], sep = "", collapse = NULL)
+    }
     return(formatedData)
 }
 
@@ -202,20 +204,17 @@ server <- function(input, output, session) {
             '<br>&#10132PARENT: &emsp;&emsp;', bestConfiguration[[length(bestConfiguration)]],
             '<br>&#10132Total instances tested: &emsp;', sum(!is.na(iraceResults$experiments[ ,iraceResults$iterationElites[length(iraceResults$iterationElites)] ])),
             '<br>
-            <br><b>Description of the best-so-far configurarion</b>', formatedDataBestConfiguration)
+            <br><b>Description of the best-so-far configuration</b>', formatedDataBestConfiguration)
     })
 
-    output$iterationSelected <- renderUI({
+    output$bestSoFarSelected <- renderUI({
         req(input$iterationDetails)
         bestConfigurations <- iraceResults$allElites[as.integer(input$iterationDetails)]
         bestConfigurationID <- bestConfigurations[[1]][1]
         detailsBestConfiguration <- getConfigurationById(iraceResults, ids = bestConfigurationID)
-        dataTable = createTableEliteConfigurations(bestConfigurations[[1]])
         parameters = setupContentTable(iraceResults$parameters$names, '<th>', '</th>');
         bestConfigurationData = setupContentTable(detailsBestConfiguration, '<td>', '</td>');
         meanValue = colMeans(iraceResults$experiments[,iraceResults$iterationElites[as.integer(input$iterationDetails)], drop=FALSE], na.rm=TRUE)
-
-        defineButton = "type='button' onclick='copyTableIntoSection('bestSoFarIterationSelect', 'bestSoFarIteration')'"
 
         HTML('<b>Best-so-far configuration: </b>', bestConfigurationID, '<br><b>mean value: </b>', meanValue[[1]]
         , '<br><br><b>Description of the best-so-far configuration:</b><br>
@@ -231,16 +230,19 @@ server <- function(input, output, session) {
                 <tr>', bestConfigurationData, '</tr>
             </tbody>
         </table>
-        <div class="input-group">
-            <select class="custom-select section" id="bestSoFarIterationSelect">
-                <option selected disabled>Select a section to copy best-so-far configuration table</option>
-            </select>
-            <div class="input-group-append">
-                <button class="btn btn-outline-primary">Copy</button>
-            </div>
-        </div>
-        <br>
-        <br><b>Elite configurations: </b><br>
+        <br>'
+        )
+    })
+
+    output$eliteConfigurationSelected <- renderUI({
+        req(input$iterationDetails)
+        bestConfigurations <- iraceResults$allElites[as.integer(input$iterationDetails)]
+        bestConfigurationID <- bestConfigurations[[1]][1]
+        detailsBestConfiguration <- getConfigurationById(iraceResults, ids = bestConfigurationID)
+        dataTable = createTableEliteConfigurations(bestConfigurations[[1]])
+        parameters = setupContentTable(iraceResults$parameters$names, '<th>', '</th>');
+
+        HTML('<br><b>Elite configurations: </b><br>
         <table class="table table-bordered table-sm display" id="bestSoFarConfigsIteration">
             <thead>
                 <tr>
@@ -251,15 +253,7 @@ server <- function(input, output, session) {
             <tbody>'
                 , dataTable,
             '</tbody>
-        </table>
-        <div class="input-group">
-            <select class="custom-select section" id="eliteConfigurationSelect">
-                <option selected disabled>Select a section to copy elite configurations table</option>
-            </select>
-            <div class="input-group-append">
-                <button class="btn btn-outline-primary" type="button" onclick="copyTableIntoSection(eliteConfigurationSelect, bestSoFarConfigsIteration)">Copy</button>
-            </div>
-        </div>'
+        </table>'
         )
     })
 
@@ -454,5 +448,10 @@ server <- function(input, output, session) {
         }
 
         session$sendCustomMessage("bestSoFarAllIterations", bestSoFarIterations)
+    })
+
+    output$bestSoFarTableDetails <- DT::renderDataTable({
+        #bestConfiguration <- getConfigurationById(iraceResults, ids=110)
+        datatable(iraceResults$allConfigurations)
     })
 }
