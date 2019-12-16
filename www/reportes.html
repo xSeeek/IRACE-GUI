@@ -345,7 +345,30 @@
                                 </div>
                                 <div class="row">
                                     <div class="col shiny-html-output">
-                                        {{ selectedIteration }}
+                                        {{ bestSoFarSelected }}
+                                        <br>
+                                        <div class="input-group">
+                                            <select class="custom-select section" id="bestSoFarIterationSelect">
+                                                <option selected disabled>Select a section to copy best-so-far configuration table</option>
+                                            </select>
+                                            <div class="input-group-append">
+                                                <button class="btn btn-outline-primary" type="button" onclick="copyTableIntoSection('bestSoFarIterationSelect', 'bestSoFarIteration', true)">Copy</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col shiny-html-output">
+                                        {{ eliteConfigurationSelected }}
+                                        <br>
+                                        <div class="input-group">
+                                            <select class="custom-select section" id="eliteConfigurationSelect">
+                                                <option selected disabled>Select a section to copy elite configurations table</option>
+                                            </select>
+                                            <div class="input-group-append">
+                                                <button class="btn btn-outline-primary" type="button" onclick="copyTableIntoSection('eliteConfigurationSelect', 'bestSoFarConfigsIteration', false)">Copy</button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

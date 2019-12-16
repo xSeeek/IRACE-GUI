@@ -134,16 +134,55 @@ function copyContentIntoSection(selectID, idDataToCopy, isImg)
     $('#' + selectData + 'Text').summernote('pasteHTML', clone.getElementsByTagName('img'));
 }
 
-function copyTableIntoSection(selectID, idDataToCopy)
+async function copyTableIntoSection(selectID, tableID, bestTable)
 {
     var selectData = document.getElementById(selectID).value;
+    var oTable = document.getElementById(tableID);
+    var rowLength = oTable.rows.length;
+    var formatedHTML = "";
+   
+    for (var i = 1; i < rowLength; i++){
 
-    let clone = $('#' + (idDataToCopy)).slice();
-    clone.attr("id", (idDataToCopy +  selectID));
-    clone.removeClass('display');
-    clone.DataTable().destroy();
+        var header = oTable.rows.item(0).cells;
+        var oCells = oTable.rows.item(i).cells;
+        var cellLength = oCells.length;
 
-    $('#' + selectData + 'Text').summernote('pasteHTML', clone);
+        if(bestTable)
+        {
+            formatedHTML += await '<div><b>' + (header.item(0).textContent + ": </b>" + oCells.item(0).textContent) + "&emsp;";
+            formatedHTML += await '<b>' + (header.item(cellLength - 1).textContent + ": </b>" + oCells.item(cellLength - 1).textContent) + "<br>";
+            cellLength -= 1;
+        }
+        else
+            formatedHTML += await '<div><b>' + (header.item(0).textContent + ": </b>" + oCells.item(0).textContent) + "<br>";
+
+        for(var j = 1; j < cellLength; j++){
+            var string = "";
+
+            if(header.item(j) != null && j != cellLength)
+            {
+                string += await '<b>' + (header.item(j).textContent + ": </b>" + oCells.item(j).textContent) + "&emsp;";
+                j++;
+            }
+            if(header.item(j) != null && j != cellLength)
+            {
+                string += await '<b>' + (header.item(j).textContent + ": </b>" + oCells.item(j).textContent) + "&emsp;";
+                j++;
+            }
+            if(header.item(j) != null && j != cellLength)
+            {
+                string += await '<b>' + (header.item(j).textContent + ": </b>" + oCells.item(j).textContent) + "&emsp;";
+                j++;
+            }
+            if(header.item(j) != null && j != cellLength)
+                string += await '<b>' + (header.item(j).textContent + ": </b>" + oCells.item(j).textContent) + "<br>";
+
+            formatedHTML += string;
+        }
+        formatedHTML += '</div>'
+    }
+
+    await $('#' + selectData + 'Text').summernote('pasteHTML', (formatedHTML));
 }
 
 async function removeSection(sectionID)
