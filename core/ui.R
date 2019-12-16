@@ -1,10 +1,16 @@
 addResourcePath(prefix = 'resources', directoryPath = '../resources')
 
+skin <- Sys.getenv("DASHBOARD_SKIN")
+skin <- tolower(skin)
+if (skin == "")
+  skin <- "black"
+
 junk <- dir(pattern="tempPlot")
 file.remove(junk)
 
 htmlTemplate("../www/reportes.html",
   # CORE DATA
+  skin = skin,
   loadReport = fileInput("reportLoader", "Load Report", multiple = FALSE, accept = c("application/x-r-data", ".Rdata"), width = 200, placeholder = "Load"),
 
   # SUMMARY PARAMETERS
@@ -13,7 +19,8 @@ htmlTemplate("../www/reportes.html",
 
   # DETAILS BY ITERATION PARAMETERS
   selectDetailsIteration = selectInput("iterationDetails", "Iteration:", 1:iraceResults$state$nbIterations),
-  selectedIteration = htmlOutput('iterationSelected'),
+  bestSoFarSelected = htmlOutput('bestSoFarSelected'),
+  eliteConfigurationSelected = htmlOutput('eliteConfigurationSelected'),
 
   # CANDIDATES PARAMETERS
   selectedParametersCandidates = selectInput("selectedParametersCandidates", "Parameters to be displayed: ", iraceResults$parameters$names, selected = iraceResults$parameters$names, multiple = TRUE, width = 2500, selectize = TRUE),
