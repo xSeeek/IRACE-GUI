@@ -544,10 +544,14 @@ function formatBestConfiguration()
     var formatedData = [];
     var index = 0;
 
-    for(i = 0; i < data.length; i++)
+    for(var i = 0; i < data.length; i++)
         if(data[i] != "")
         {
-            formatedData[index] = data[i].replace(/\s+/g, '');  
+            var string = data[i].replace(/\s+/g, ' ');
+            string = string.split(':');
+            formatedData[index] = string[0];
+            if(string[1] != undefined)
+                formatedData[index] = formatedData[index] + ": " + string[1].replace(/\s+/g, '');
             index++;
         }
     return formatedData;
@@ -560,10 +564,8 @@ function loadImage(src)
         let img = new Image(),
             canvas = document.createElement("canvas"),
             ctx = canvas.getContext("2d");
-            // upscale the canvas content
             canvas.width = 1920 * devicePixelRatio;
             canvas.height = 1080 * devicePixelRatio;
-            // downscale the presentation
             canvas.style.width = (canvas.width / devicePixelRatio).toString() + "px";
             canvas.style.height = (canvas.height / devicePixelRatio).toString() + "px";
         img.onload = () => {
