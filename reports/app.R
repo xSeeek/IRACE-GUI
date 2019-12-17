@@ -18,17 +18,17 @@ pkgCheck <- function(x)
 for (i in 1:length(packageVerification)) 
     pkgCheck(packageVerification[i])
 
-options(shiny.port = 5000)
+options(shiny.port = 5003)
 options(shiny.host  = '127.0.0.1')
 
 path <- getwd()
-path <- paste(path, "/core", sep = "")
+path <- paste(path, "/reports/core", sep = "")
 
 if(length(ls(envir=.GlobalEnv, pattern="iraceResults")) == 0)
-    load('resources/data/iraceResults.Rdata', envir=.GlobalEnv)
+    load(paste0(getwd(), '/reports/resources/data/iraceResults.Rdata'), envir=.GlobalEnv)
 
 repeat{
-    browseURL("http://127.0.0.1:5000/")
+    browseURL("http://127.0.0.1:5003/")
     returnData = runApp(appDir = path)
     if(length(returnData) != 0)
     {
