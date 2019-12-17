@@ -19,6 +19,9 @@ function getParameters()
         index++;
     });
     var $select = $('#selectParametersPDF').selectize({options:options});
+    
+    var selectize = $select[0].selectize; // Get selectize instance
+    selectize.setValue(Object.keys(selectize.options)); // Set all selectize options using setValue() method
 }
 
 function updateInput()
