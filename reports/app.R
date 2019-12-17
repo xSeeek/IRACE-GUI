@@ -21,13 +21,17 @@ for (i in 1:length(packageVerification))
 options(shiny.port = 5003)
 options(shiny.host  = '127.0.0.1')
 
-print(pathRDATA)
-
 path <- getwd()
 path <- paste(path, "/reports/core", sep = "")
 
 if(length(ls(envir=.GlobalEnv, pattern="iraceResults")) == 0)
-    load(pathRDATA, envir=.GlobalEnv)
+{
+    if(length(ls(envir=.GlobalEnv, pattern="pathRDATA")) != 0)
+        load(pathRDATA, envir=.GlobalEnv)
+    else
+        load(paste0(getwd(), '/reports/resources/data/iraceResults.Rdata'), envir=.GlobalEnv)
+}
+        
 
 repeat{
     browseURL("http://127.0.0.1:5003/")
