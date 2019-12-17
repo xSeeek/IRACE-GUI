@@ -87,7 +87,7 @@ function insertHTMLSection(id, name)
             '</div>' +
         '</div>' +
     '<br class="' + id + ' customSection">'
-    var div = document.getElementsByTagName("BODY")[0];
+    var div = document.getElementsByClassName("content-wrapper")[0];
     div.insertAdjacentHTML('beforeend', textData);
 
     var buttonUpdate = document.getElementById(id + "Button");
