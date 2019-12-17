@@ -5,31 +5,37 @@ local({r <- getOption("repos")
     options(repos=r)
 })
 
-pkgCheck <- function(x)
+pkgCheck <- function(packages)
 {
-    if (!require(x,character.only = TRUE))
+    for(package in packages)
     {
-        install.packages(x,dep=TRUE)
-        if(!library(x,character.only = TRUE)) 
-            stop("Package not found")
-    }
+        # if package is installed locally, load
+        if(package %in% rownames(installed.packages()))
+            do.call('library', list(package))
+
+        # if package is not installed locally, download, then load
+        else 
+        {
+            install.packages(package)
+            do.call("library", list(package))
+        }
+    } 
 }
 
-for (i in 1:length(packageVerification)) 
-    pkgCheck(packageVerification[i])
+pkgCheck(packageVerification)
 
 options(shiny.port = 5003)
 options(shiny.host  = '127.0.0.1')
 
 path <- getwd()
-path <- paste(path, "/core", sep = "")
+path <- paste(path, "/reports/core", sep = "")
 
 if(length(ls(envir=.GlobalEnv, pattern="iraceResults")) == 0)
 {
     if(length(ls(envir=.GlobalEnv, pattern="pathRDATA")) != 0)
         load(pathRDATA, envir=.GlobalEnv)
     else
-        load(paste0(getwd(), '/resources/data/iraceResults.Rdata'), envir=.GlobalEnv)
+        load(paste0(getwd(), '/reports/resources/data/iraceResults.Rdata'), envir=.GlobalEnv)
 }
         
 
