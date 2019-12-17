@@ -178,7 +178,7 @@ generateBoxPlot <- function(numberIteration)
     return(results)
 }
 
-server <- function(input, output, session) {
+server <- function(input, output, session) {    
     if(length(ls(envir=.GlobalEnv, pattern="loadedCustomSection")) == 1)
     {
         if(length(ls(envir=.GlobalEnv, pattern="customSectionsNames")) == 0)

@@ -2,6 +2,8 @@
 <html>
 
     <head>
+        {{headContent()}}
+        <title>IRACE GUI - Main</title>
         <script src="shared/jquery.js" type="text/javascript"></script>
         <script src="shared/shiny.js" type="text/javascript"></script>
         <link rel="stylesheet" type="text/css" href="shared/shiny.css"/>
@@ -16,15 +18,13 @@
         <div class="container px-lg-5">
             <div class="row mx-lg-n5">
                 <div class="col py-3 px-lg-5 border bg-light" align="center">
-                    <a href="reportes.html" class="btn btn-outline-primary">
-                        Ingreso de parámetros 
-                        <br>para nueva optimización
+                    <a class="btn btn-outline-primary">
+                        Create new scenario
                     </a>
                 </div>
                 <div class="col py-3 px-lg-5 border bg-light" align="center">
-                    <a href="reportes.html" class="btn btn-outline-primary">
-                        Sección de generación e 
-                        <br>importación de reportes
+                    <a class="btn btn-outline-primary">
+                        {{ loadReport }}
                     </a>
                 </div>
             </div>

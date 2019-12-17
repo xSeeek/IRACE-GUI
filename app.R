@@ -1,8 +1,15 @@
-library(shiny)
-library(shinythemes)
-options(shiny.port = 3000)
+library('shiny')
+options(shiny.port = 5000)
+options(shiny.host  = '127.0.0.1')
 
-server <- function(input, output) {
-}
+path <- getwd()
+path <- paste(path, "/core", sep = "")
 
-shinyApp(ui = htmlTemplate("www/index.html"), server)
+browseURL("http://127.0.0.1:5000/")
+returnData = runApp(appDir = path)
+path <- getwd()
+path <- paste(path, "/reports/app.R", sep = "")
+assign("loadedCustomSection", TRUE, envir=.GlobalEnv, inherits = FALSE)
+assign("pathRDATA", returnData, envir=.GlobalEnv, inherits = FALSE)
+print("Loading reports section...")
+source(path)
