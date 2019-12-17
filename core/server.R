@@ -109,8 +109,23 @@ generateFrequencyPlot <- function(iterations, parameters)
 
         limit <- (max*i) + 1;
     }
+    finalPlot <- NULL
+    for(i in 1:numberOfParameters)
+    {
+        if(is.null(finalPlot))
+        {
+            finalPlot <- image_read(paste0("tempPlotFrequency", i, ".png"))
+            next
+        }
+        image <- image_read(paste0("tempPlotFrequency", i, ".png"))
+        finalPlot <- image_append(c(finalPlot, image), stack = TRUE)
+    }
+    finalPlot <- image_scale(finalPlot, "x550")
+    image_write(finalPlot, path = "../resources/images/frequencyPlot.png", format = "png")
+    results <- list(dir = '../resources/images/frequencyPlot.png', image = base64plots)
+
     removeTemporalPlots()
-    return(base64plots)
+    return(results)
 }
 
 generateParallelCoordinatesPlot <- function(iterations, parameters)
@@ -149,8 +164,23 @@ generateParallelCoordinatesPlot <- function(iterations, parameters)
 
         limit <- (max*i) + 1;
     }
+    finalPlot <- NULL
+    for(i in 1:numberOfParameters)
+    {
+        if(is.null(finalPlot))
+        {
+            finalPlot <- image_read(paste0("tempPlotParallel", i, ".png"))
+            next
+        }
+        image <- image_read(paste0("tempPlotParallel", i, ".png"))
+        finalPlot <- image_append(c(finalPlot, image), stack = TRUE)
+    }
+    finalPlot <- image_scale(finalPlot, "x480")
+    image_write(finalPlot, path = "../resources/images/parallelPlot.png", format = "png")
+    results <- list(dir = '../resources/images/parallelPlot.png', image = base64plots)
+
     removeTemporalPlots()
-    return(base64plots)
+    return(results)
 }
 
 generateBoxPlot <- function(numberIteration)
@@ -272,99 +302,34 @@ server <- function(input, output, session) {
         list(src = plot$dir)
     })
 
+    paramsCandidates <- reactive({
+        validate(
+            need(length(input$selectedParametersCandidates) >= 2, "At least two parameters are necessary to generate the plots.")
+        )
+    })
+
     output$frecuencyCandidates <- renderImage({
         req(input$iterationPlotsCandidates)
         req(input$selectedParametersCandidates)
+        paramsCandidates()
 
-        configurations <- getConfigurationByIteration(iraceResults = iraceResults, iterations = input$iterationPlotsCandidates[1]:input$iterationPlotsCandidates[2])
+        iterations <- input$iterationPlotsCandidates[1]:input$iterationPlotsCandidates[2]
+        params <- input$selectedParametersCandidates
 
-        max <- 12
-        limit <- 1
-        params <- c()
-        numberOfParameters <- ceiling(length(input$selectedParametersCandidates)/max)
-        for(i in 1: numberOfParameters)
-        {
-            k <- 1
-            for(j in limit:(max*i))
-            {
-                if(length(input$selectedParametersCandidates) >= j)
-                {
-                    params[k] <- input$selectedParametersCandidates[j]
-                    k <- k + 1
-                }
-            }
-
-            # TEMPORAL FIX DUE IMPLEMENTATION OF THE PLOT
-            fixFormat <- iraceResults$parameters
-            fixFormat$names <- params
-
-            png(filename = paste0("tempPlotFrequency", i, ".png"), width = 550, height = 555, res = 80)
-            parameterFrequency(configurations, fixFormat)
-            dev.off()
-            limit <- (max*i) + 1;
-        }
-        finalPlot <- NULL
-        for(i in 1:numberOfParameters)
-        {
-            if(is.null(finalPlot))
-            {
-                finalPlot <- image_read(paste0("tempPlotFrequency", i, ".png"))
-                next
-            }
-            image <- image_read(paste0("tempPlotFrequency", i, ".png"))
-            finalPlot <- image_append(c(finalPlot, image), stack = TRUE)
-        }
-        removeTemporalPlots()
-        image_write(finalPlot, path = "../resources/images/frequencyPlot.png", format = "png")
-        list(src = "../resources/images/frequencyPlot.png")
+        frequencyPlot <- generateFrequencyPlot(iterations, params)
+        list(src = frequencyPlot$dir)
     })
 
     output$parallelCoordinatesCandidates <- renderImage({
         req(input$iterationPlotsCandidates)
         req(input$selectedParametersCandidates)
+        paramsCandidates()
 
-        last <- length(iraceResults$iterationElites)
-        conf <- getConfigurationByIteration(iraceResults = iraceResults, iterations = input$iterationPlotsCandidates[1]:input$iterationPlotsCandidates[2])
-        
-        max <- 12
-        limit <- 1
-        params <- c()
-        numberOfParameters <- ceiling(length(input$selectedParametersCandidates)/max)
-        for(i in 1: numberOfParameters)
-        {
-            k <- 1
-            for(j in limit:(max*i))
-            {
-                if(length(input$selectedParametersCandidates) >= j)
-                {
-                    params[k] <- input$selectedParametersCandidates[j]
-                    k <- k + 1
-                }
-            }
+        iterations <- input$iterationPlotsCandidates[1]:input$iterationPlotsCandidates[2]
+        params <- input$selectedParametersCandidates
 
-            # TEMPORAL FIX DUE IMPLEMENTATION OF THE PLOT
-            fixFormat <- iraceResults$parameters
-            fixFormat$names <- params
-
-            png(filename = paste0("tempPlotParallel", i, ".png"))
-            parallelCoordinatesPlot (conf, fixFormat, hierarchy = FALSE)
-            dev.off()
-            limit <- (max*i) + 1;
-        }
-        finalPlot <- NULL
-        for(i in 1:numberOfParameters)
-        {
-            if(is.null(finalPlot))
-            {
-                finalPlot <- image_read(paste0("tempPlotParallel", i, ".png"))
-                next
-            }
-            image <- image_read(paste0("tempPlotParallel", i, ".png"))
-            finalPlot <- image_append(c(finalPlot, image), stack = TRUE)
-        }
-        removeTemporalPlots()
-        image_write(finalPlot, path = "../resources/images/parallelPlot.png", format = "png")
-        list(src = "../resources/images/parallelPlot.png")
+        paralelCoordinates <- generateParallelCoordinatesPlot(iterations, params)
+        list(src = paralelCoordinates$dir)
     })
 
     output$convergencePerfomance <- renderPlot({
@@ -416,7 +381,7 @@ server <- function(input, output, session) {
 
         frequencyPlot <- generateFrequencyPlot(iterations, parameters)
         parallelCoordinatesPlot <- generateParallelCoordinatesPlot(iterations, parameters)
-        images <- list(frequency = frequencyPlot, parallel = parallelCoordinatesPlot)
+        images <- list(frequency = frequencyPlot$image, parallel = parallelCoordinatesPlot$image)
 
         session$sendCustomMessage("imagePlotCandidates", images)
     })
