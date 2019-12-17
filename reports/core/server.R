@@ -422,9 +422,9 @@ server <- function(input, output, session) {
         iterations <- input$requestPlottingCandidates
         parameters <- input$selectedParametersCandidates
 
-        frequencyPlot <- generateFrequencyPlot(iterations, parameters, TRUE, FALSE)
-        parallelCoordinatesPlot <- generateParallelCoordinatesPlot(iterations, parameters, TRUE, FALSE)
-        images <- list(frequency = frequencyPlot$image, parallel = parallelCoordinatesPlot$image)
+        frequencyPlot <- generateFrequencyPlot(iterations, parameters)
+        parallelCoordinatesPlot <- generateParallelCoordinatesPlot(iterations, parameters)
+        images <- list(frequency = frequencyPlot, parallel = parallelCoordinatesPlot)
 
         session$sendCustomMessage("imagePlotCandidates", images)
     })

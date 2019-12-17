@@ -1,4 +1,4 @@
-packageVerification <- c("shiny", "irace", "safer", "magick", "shinythemes", "shinydashboard", "DT", "RCurl")
+packageVerification <- c("shiny", "irace", "magick", "shinythemes", "shinydashboard", "DT", "RCurl")
 
 local({r <- getOption("repos")
     r["CRAN"] <- "http://cran.us.r-project.org" 
@@ -22,14 +22,14 @@ options(shiny.port = 5003)
 options(shiny.host  = '127.0.0.1')
 
 path <- getwd()
-path <- paste(path, "/reports/core", sep = "")
+path <- paste(path, "/core", sep = "")
 
 if(length(ls(envir=.GlobalEnv, pattern="iraceResults")) == 0)
 {
     if(length(ls(envir=.GlobalEnv, pattern="pathRDATA")) != 0)
         load(pathRDATA, envir=.GlobalEnv)
     else
-        load(paste0(getwd(), '/reports/resources/data/iraceResults.Rdata'), envir=.GlobalEnv)
+        load(paste0(getwd(), '/resources/data/iraceResults.Rdata'), envir=.GlobalEnv)
 }
         
 
