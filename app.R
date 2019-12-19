@@ -4,7 +4,7 @@ library(shinydashboard)
 library(DT)
 library(irace, lib.loc = "/usr/local/lib/R/site-library")
 library(magick)
-      
+        
   
 packageVerification <- c("shiny", "irace","readr","magick","RCurl")
 
@@ -13,7 +13,7 @@ local({r <- getOption("repos")
   r["CRAN"] <- "http://cran.us.r-project.org" 
   options(repos=r)
 })
-
+    
 pkgCheck <- function(x)
 {
   if (!require(x,character.only = TRUE))
@@ -24,7 +24,6 @@ pkgCheck <- function(x)
   }
 }
   
-
 for (i in 1:length(packageVerification)) 
   pkgCheck(packageVerification[i])
 setPath <- setwd("~/ProyectoIRACE/IRACE-GUI")

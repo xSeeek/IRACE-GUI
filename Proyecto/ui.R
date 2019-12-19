@@ -43,8 +43,8 @@ sidebar <- dashboardSidebar(
               h5("Num of Iterations: ", textOutput("numIterations",inline=TRUE)),
               h5("Num of Parameters: ", textOutput("numOfParameters",inline=TRUE)),
               h5("Num of Configurations: ",textOutput("numConfigurations",inline=TRUE)),
-              h5("Num of Experiments Used so Far: ", textOutput("experimentsUsedSoFar",inline=TRUE), "/", textOutput("maxExperiments",inline=TRUE)),
-              h5("Num of Instances: ", textOutput("numInstances",inline=TRUE)),
+              h5("Num of Experiments Used so Far: ", textOutput("experimentsUsedSoFar",inline=TRUE), " / ", textOutput("maxExperiments",inline=TRUE)),
+              h5("Num of Instances: ", textOutput("numInstancesUsedSoFar",inline=TRUE), " / ", textOutput("numOfInstances",inline=TRUE)),
               h5(numericInput("iterationForElites","Select Iteration: ",value = 1,min = 1,max = iraceResults$state$nbIterations,width = "100px"),"Num of Elites Configurations: ",textOutput("numElitesConfigurations",inline=TRUE))
           )
         ),
