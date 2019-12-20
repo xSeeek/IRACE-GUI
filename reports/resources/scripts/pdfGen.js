@@ -214,6 +214,7 @@ async function appendSummary(doc)
         margin: {left: 125},
         theme: 'plain'
     });
+    return;
 }
 
 async function appendBestConfiguration(doc)
@@ -256,6 +257,7 @@ async function appendBestConfiguration(doc)
             doc.setPage(doc.internal.getNumberOfPages());
         }
     }
+    return;
 }
 
 async function appendCandidates(doc, iterations, lastTwo)
@@ -336,6 +338,7 @@ async function appendCandidates(doc, iterations, lastTwo)
             }
         }
     })
+    return;
 }
 
 async function appendPerfomance(doc, iterations, textIteration, flagConvergence)
@@ -399,6 +402,7 @@ async function appendPerfomance(doc, iterations, textIteration, flagConvergence)
             console.log('Add image: Boxplot Perfomance')
         });
     });
+    return;
 }
 
 async function appendDetailsSectionPDF(doc, params)
@@ -508,6 +512,7 @@ async function appendDetailsSectionPDF(doc, params)
             yLine += 5;
         }
     });
+    return;
 }
 
 async function appendCustomSectionsPDF(doc)
@@ -534,6 +539,7 @@ async function appendCustomSectionsPDF(doc)
             console.log('Add custom section: ' + name)
         });
     }
+    return;
 }
 
 /* UTILITY FUNCTIONS */
@@ -576,6 +582,7 @@ function loadImage(src)
         img.onerror = reject
         img.src = src
     })
+    return;
 }
 
 function loadHTMLImage(htmlString, doc)
@@ -646,6 +653,7 @@ function loadHTMLImage(htmlString, doc)
             }
         });
     });
+    return;
 }
 
 /* COMUNICATION WITH BACK-END R */
@@ -676,4 +684,5 @@ function waitForData(required)
                     resolve(params)
                 });
         });
+    return;
 }
