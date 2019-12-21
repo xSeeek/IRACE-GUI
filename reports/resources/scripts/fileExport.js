@@ -32,12 +32,17 @@ async function getAllCustomSections()
 
 function appendCustomSections(customSections)
 {
-    if(customSections['names'][0].length == 1)
-        appendSections(customSections['names'], customSections['ids'], customSections['content'])
+    if(customSections['names'] != undefined)
+    {
+        if(customSections['names'][0].length == 1)
+            appendSections(customSections['names'], customSections['ids'], customSections['content'])
+        else
+            for(i = 0; i < customSections['names'].length; i++)
+                appendSections(customSections['names'][i], customSections['ids'][i], customSections['content'][i])
+        confirmMessage("Report loaded successfully");
+    }
     else
-        for(i = 0; i < customSections['names'].length; i++)
-            appendSections(customSections['names'][i], customSections['ids'][i], customSections['content'][i])
-    confirmMessage("Report loaded successfully");
+        confirmMessage("Rdata  loaded successfully");
 }
 
 function appendSections(name, id, data)
