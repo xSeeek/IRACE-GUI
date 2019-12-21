@@ -11,7 +11,7 @@ server <- function(input, output, session) {
     session$onSessionEnded(function() {
         if(flagStop == FALSE)
         {
-            print('CALLED SESSION ENDED')
+            print('SESSION ENDED BY MAIN APP')
             assign("flagStop", TRUE, envir=.GlobalEnv,inherits = FALSE)
             session$sendCustomMessage(type = "closeWindow", message = "message")
             stopApp()

@@ -207,6 +207,11 @@ async function removeSection(sectionID)
         $('.' + sectionID).remove();
 }
 
+function backToMainMenu()
+{
+    Shiny.onInputChange("backMainMenu", true);
+}
+
 Shiny.addCustomMessageHandler('closeWindow', 
     function(m) 
     {

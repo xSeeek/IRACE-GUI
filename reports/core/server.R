@@ -193,9 +193,10 @@ server <- function(input, output, session) {
     }
 
     session$onSessionEnded(function() {
+        print('SESSION ENDED BY REPORTS APP')
         if(recentlyLoadedReports == FALSE)
         {
-            status <- list(goto = 0)
+            status <- list(goto = -1)
             session$sendCustomMessage(type = "closeWindow", message = "message")
             stopApp(returnValue = invisible(status))
         }
@@ -424,6 +425,13 @@ server <- function(input, output, session) {
         removeTemporalPlots()
 
         status <- list(goto = 2, path = dataToLoad$datapath)
+        session$sendCustomMessage(type = "closeWindow", message = "message")
+        stopApp(returnValue = invisible(status))
+    }, once = TRUE)
+
+    observeEvent(input$backMainMenu, {
+        status <- list(goto = 0)
+        assign("recentlyLoadedReports", TRUE, envir=.GlobalEnv,inherits = FALSE)
         session$sendCustomMessage(type = "closeWindow", message = "message")
         stopApp(returnValue = invisible(status))
     }, once = TRUE)
