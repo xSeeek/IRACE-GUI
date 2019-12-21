@@ -192,6 +192,15 @@ server <- function(input, output, session) {
         session$sendCustomMessage("loadCustomSections", dataSelect)
     }
 
+    session$onSessionEnded(function() {
+        if(recentlyLoadedReports == FALSE)
+        {
+            status <- list(goto = 0)
+            stopApp(returnValue = invisible(status))
+        }
+        assign("recentlyLoadedReports", FALSE, envir=.GlobalEnv,inherits = FALSE)
+    })
+
     output$bestConfigurationsDetails <- renderUI({
         last <- length(iraceResults$iterationElites)
         id <- iraceResults$iterationElites[last]
@@ -413,7 +422,8 @@ server <- function(input, output, session) {
 
         removeTemporalPlots()
 
-        stopApp(returnValue = invisible(dataToLoad$datapath))
+        status <- list(goto = 2, path = dataToLoad$datapath)
+        stopApp(returnValue = invisible(status))
     }, once = TRUE)
 
     observeEvent(input$requestPlottingCandidates, {
@@ -454,9 +464,8 @@ server <- function(input, output, session) {
             buildData <- list(id = bestConfiguration, mean = as.numeric(meanValue), paramData = detailsBestConfiguration)
             bestSoFarIterations[[i + 1]] <- buildData
         }
-
         session$sendCustomMessage("bestSoFarAllIterations", bestSoFarIterations)
-    })
+    }, once = TRUE)
 
     output$bestSoFarTableDetails <- DT::renderDataTable({
         #bestConfiguration <- getConfigurationById(iraceResults, ids=110)

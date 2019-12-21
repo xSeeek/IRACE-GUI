@@ -5,6 +5,8 @@ options(shiny.host  = '127.0.0.1')
 path <- getwd()
 path <- paste(path, "/core", sep = "")
 
+assign("flagStop", FALSE, envir=.GlobalEnv,inherits = FALSE)
+
 browseURL("http://127.0.0.1:5000/")
 returnData = runApp(appDir = path)
 if(length(returnData) != 0 && returnData$goto == 1)
@@ -17,6 +19,7 @@ if(length(returnData) != 0 && returnData$goto == 2)
     path <- paste(path, "/reports/app.R", sep = "")
     assign("loadedCustomSection", TRUE, envir=.GlobalEnv, inherits = FALSE)
     assign("pathRDATA", returnData$path, envir=.GlobalEnv, inherits = FALSE)
+    assign("recentlyLoadedReports", FALSE, envir=.GlobalEnv,inherits = FALSE)
     print("Loading reports section...")
     source(path)
 }
