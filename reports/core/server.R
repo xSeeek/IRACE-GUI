@@ -274,7 +274,7 @@ server <- function(input, output, session) {
 
     paramsCandidates <- reactive({
         validate(
-            need(length(input$selectedParametersCandidates) >= 2, "At least two parameters are necessary to generate the plots.")
+            need(length(input$selectedParametersCandidates) >= 2, "ERROR: At least two parameters are necessary to generate the plots.")
         )
     })
 
