@@ -32,12 +32,17 @@ async function getAllCustomSections()
 
 function appendCustomSections(customSections)
 {
-    if(customSections['names'][0].length == 1)
-        appendSections(customSections['names'], customSections['ids'], customSections['content'])
+    if(customSections['names'] != undefined)
+    {
+        if(customSections['names'][0].length == 1)
+            appendSections(customSections['names'], customSections['ids'], customSections['content'])
+        else
+            for(i = 0; i < customSections['names'].length; i++)
+                appendSections(customSections['names'][i], customSections['ids'][i], customSections['content'][i])
+        confirmMessage("Report loaded successfully");
+    }
     else
-        for(i = 0; i < customSections['names'].length; i++)
-            appendSections(customSections['names'][i], customSections['ids'][i], customSections['content'][i])
-    confirmMessage("Report loaded successfully");
+        confirmMessage("Rdata  loaded successfully");
 }
 
 function appendSections(name, id, data)
@@ -52,16 +57,19 @@ function appendSections(name, id, data)
         selectSections[k].appendChild(objOption);
     }
 
+    var newSectionContainer = document.createElement('li');
+    newSectionContainer.className = "nav-item " + id;
+    newSectionContainer.id = name + 'List';
+
     var newSection = document.createElement('a');
     newSection.href = "#" + id + 'Frame';
     newSection.id = id;
-    newSection.className = "badge badge-light " + id;
-    newSection.style = "color: green; font-size: 18px;";
+    newSection.className = "nav-link " + id;
+    newSection.text = name;
+    newSectionContainer.appendChild(newSection);
 
-    var div = document.getElementById('sectionsMenu');
-    var idNewSection = '#' + id;
-    div.appendChild(newSection);
-    $(idNewSection).text('*' + name);
+    var div = document.getElementById('buttonCustomSections');
+    $(newSectionContainer.outerHTML).insertBefore(div);
 
     insertHTMLSection(id, name);
     $('#' + id + 'Text').summernote('code', data);

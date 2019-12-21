@@ -192,6 +192,17 @@ server <- function(input, output, session) {
         session$sendCustomMessage("loadCustomSections", dataSelect)
     }
 
+    session$onSessionEnded(function() {
+        print('SESSION ENDED BY REPORTS APP')
+        if(recentlyLoadedReports == FALSE)
+        {
+            status <- list(goto = -1)
+            session$sendCustomMessage(type = "closeWindow", message = "message")
+            stopApp(returnValue = invisible(status))
+        }
+        assign("recentlyLoadedReports", FALSE, envir=.GlobalEnv,inherits = FALSE)
+    })
+
     output$bestConfigurationsDetails <- renderUI({
         last <- length(iraceResults$iterationElites)
         id <- iraceResults$iterationElites[last]
@@ -274,7 +285,7 @@ server <- function(input, output, session) {
 
     paramsCandidates <- reactive({
         validate(
-            need(length(input$selectedParametersCandidates) >= 2, "At least two parameters are necessary to generate the plots.")
+            need(length(input$selectedParametersCandidates) >= 2, "ERROR: At least two parameters are necessary to generate the plots.")
         )
     })
 
@@ -413,7 +424,16 @@ server <- function(input, output, session) {
 
         removeTemporalPlots()
 
-        stopApp(returnValue = invisible(dataToLoad$datapath))
+        status <- list(goto = 2, path = dataToLoad$datapath)
+        session$sendCustomMessage(type = "closeWindow", message = "message")
+        stopApp(returnValue = invisible(status))
+    }, once = TRUE)
+
+    observeEvent(input$backMainMenu, {
+        status <- list(goto = 0)
+        assign("recentlyLoadedReports", TRUE, envir=.GlobalEnv,inherits = FALSE)
+        session$sendCustomMessage(type = "closeWindow", message = "message")
+        stopApp(returnValue = invisible(status))
     }, once = TRUE)
 
     observeEvent(input$requestPlottingCandidates, {
@@ -422,9 +442,9 @@ server <- function(input, output, session) {
         iterations <- input$requestPlottingCandidates
         parameters <- input$selectedParametersCandidates
 
-        frequencyPlot <- generateFrequencyPlot(iterations, parameters, TRUE, FALSE)
-        parallelCoordinatesPlot <- generateParallelCoordinatesPlot(iterations, parameters, TRUE, FALSE)
-        images <- list(frequency = frequencyPlot$image, parallel = parallelCoordinatesPlot$image)
+        frequencyPlot <- generateFrequencyPlot(iterations, parameters)
+        parallelCoordinatesPlot <- generateParallelCoordinatesPlot(iterations, parameters)
+        images <- list(frequency = frequencyPlot, parallel = parallelCoordinatesPlot)
 
         session$sendCustomMessage("imagePlotCandidates", images)
     })
@@ -454,9 +474,8 @@ server <- function(input, output, session) {
             buildData <- list(id = bestConfiguration, mean = as.numeric(meanValue), paramData = detailsBestConfiguration)
             bestSoFarIterations[[i + 1]] <- buildData
         }
-
         session$sendCustomMessage("bestSoFarAllIterations", bestSoFarIterations)
-    })
+    }, once = TRUE)
 
     output$bestSoFarTableDetails <- DT::renderDataTable({
         #bestConfiguration <- getConfigurationById(iraceResults, ids=110)

@@ -2,7 +2,11 @@ window.onload = function(){
     setTimeout(function(){
         $('table.display').DataTable({
             "scrollX": true,
-            "scrollY": true
+            "scrollY": true,
+            columnDefs: [
+                { width: 140, targets: 0 }
+            ],
+            fixedColumns: true
         });
     }, 1000);
     updateInput();
@@ -34,7 +38,11 @@ function setDatatables(){
     setTimeout(function(){
         $('table.display').DataTable({
             "scrollX": true,
-            "scrollY": true
+            "scrollY": true,
+            columnDefs: [
+                { width: 140, targets: 0 }
+            ],
+            fixedColumns: true
         });
     }, 100);
 }
@@ -43,19 +51,24 @@ async function createNewSection()
     var newSectionName = await inputText("Please, enter the name for the new section:", "Name of the section");
     if (newSectionName != null && newSectionName != 'A name is required')
     {
-        var newSection = document.createElement('a');
         var randomNum = Math.floor(Math.random() * 101);
-        newSection.href = "#" + newSectionName.replace(/\s/g, "") + randomNum + 'Frame';
-        newSection.id = newSectionName.replace(/\s/g, "") + randomNum;
-        newSection.className = "badge badge-light " + newSection.id;
-        newSection.style = "color: green; font-size: 18px;";
+        var sectionName = newSectionName.replace(/\s/g, "") + randomNum;
 
-        var div = document.getElementById('sectionsMenu');
-        var idNewSection = '#' + (newSectionName.replace(/\s/g, "")) + randomNum;
-        div.appendChild(newSection);
-        $(idNewSection).text('*' + newSectionName);
+        var newSectionContainer = document.createElement('li');
+        newSectionContainer.className = "nav-item " + sectionName;
+        newSectionContainer.id = sectionName + 'List';
+
+        var newSection = document.createElement('a');
+        newSection.href = "#" + sectionName + 'Frame';
+        newSection.id = sectionName;
+        newSection.className = "nav-link " + sectionName;
+        newSection.text = newSectionName;
+        newSectionContainer.appendChild(newSection);
+
+        var div = document.getElementById('buttonCustomSections');
+        $(newSectionContainer.outerHTML).insertBefore(div);
+
         insertHTMLSection(newSectionName.replace(/\s/g, "") + randomNum, newSectionName)
-
         addSectionsToSelect(newSectionName, (newSectionName.replace(/\s/g, "") + randomNum))
     }
 }
@@ -87,7 +100,7 @@ function insertHTMLSection(id, name)
             '</div>' +
         '</div>' +
     '<br class="' + id + ' customSection">'
-    var div = document.getElementsByTagName("BODY")[0];
+    var div = document.getElementsByClassName("content-wrapper")[0];
     div.insertAdjacentHTML('beforeend', textData);
 
     var buttonUpdate = document.getElementById(id + "Button");
@@ -193,3 +206,15 @@ async function removeSection(sectionID)
     if(await confirmDelete("Delete Section", "This action can't be undone", "Delete", "Custom section deleted") == true)
         $('.' + sectionID).remove();
 }
+
+function backToMainMenu()
+{
+    Shiny.onInputChange("backMainMenu", true);
+}
+
+Shiny.addCustomMessageHandler('closeWindow', 
+    function(m) 
+    {
+        console.log('Close window');
+        window.close();
+    });
