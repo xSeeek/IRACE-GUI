@@ -2,7 +2,11 @@ window.onload = function(){
     setTimeout(function(){
         $('table.display').DataTable({
             "scrollX": true,
-            "scrollY": true
+            "scrollY": true,
+            columnDefs: [
+                { width: 140, targets: 0 }
+            ],
+            fixedColumns: true
         });
     }, 1000);
     updateInput();
@@ -34,7 +38,11 @@ function setDatatables(){
     setTimeout(function(){
         $('table.display').DataTable({
             "scrollX": true,
-            "scrollY": true
+            "scrollY": true,
+            columnDefs: [
+                { width: 140, targets: 0 }
+            ],
+            fixedColumns: true
         });
     }, 100);
 }
