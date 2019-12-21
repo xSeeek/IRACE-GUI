@@ -59,7 +59,7 @@
                     <a id="status" href="#" class="action-button" style="color: black;">Setup</a>
                 </li>
                 <li class="dropdown" style="margin-right:10px;">
-                    <a id="status" href="#" class="action-button" style="color: black;">Runtime</a>
+                    <a id="status" href="#" class="action-button" style="color: black;" aria-disabled="true">Runtime</a>
                 </li>
                 <li class="dropdown" style="margin-right:10px;">
                     <a id="status" href="#" class="action-button" style="color: black;">Reports</a>
@@ -186,7 +186,10 @@
             <div class="row justify-content-center">
                 <div class="col-md-12 overflow-auto" id="summary">
                     <div class="card">
-                        <div class="card-header">Summary</div>
+                        <div class="card-header">
+                            Summary
+                            <button type="button" class="btn btn-outline-warning btn-sm" data-toggle="modal" data-target="#infoSummary" style="float: right;"><i class="fas fa-info-circle"></i></button>
+                        </div>
                         <div class="card=body">
                             <div class="container">
                                 <div class="row">
@@ -266,7 +269,10 @@
             <div class="row justify-content-center">
                 <div class="col-md-12">
                     <div class="card">
-                        <div class="card-header" id="bestConfiguration">Best Configuration</div>
+                        <div class="card-header" id="bestConfiguration">
+                            Best Configuration
+                            <button type="button" class="btn btn-outline-warning btn-sm" data-toggle="modal" data-target="#infoBestConfiguration" style="float: right;"><i class="fas fa-info-circle"></i></button>
+                        </div>
                         <div class="card=body">
                             <div class="container" style="overflow:auto; height:500px;">
                                 <div class="row">
@@ -298,7 +304,10 @@
             <div class="row justify-content-center">
                 <div class="col-md-12">
                     <div class="card">
-                        <div class="card-header" id="candidates">Candidates</div>
+                        <div class="card-header" id="candidates">
+                            Candidates
+                            <button type="button" class="btn btn-outline-warning btn-sm" data-toggle="modal" data-target="#infoCandidates" style="float: right;"><i class="fas fa-info-circle"></i></button>
+                        </div>
                         <div class="card=body overflow-auto">
                             <br>
                             <div class="container">
@@ -344,7 +353,10 @@
             <div class="row justify-content-center">
                 <div class="col-md-12">
                     <div class="card">
-                        <div class="card-header" id="perfomance">Perfomance</div>
+                        <div class="card-header" id="perfomance">
+                            Perfomance
+                            <button type="button" class="btn btn-outline-warning btn-sm" data-toggle="modal" data-target="#infoPerfomance" style="float: right;"><i class="fas fa-info-circle"></i></button>
+                        </div>
                         <div class="card=body" style="overflow:auto; height:900px;">
                             <br>
                             <div class="container">
@@ -390,7 +402,10 @@
             <div class="row justify-content-center">
                 <div class="col-md-12 overflow-auto">
                     <div class="card">
-                        <div class="card-header" id="details">Details by iteration</div>
+                        <div class="card-header" id="details">
+                            Details by iteration
+                            <button type="button" class="btn btn-outline-warning btn-sm" data-toggle="modal" data-target="#infoDetailsIteration" style="float: right;"><i class="fas fa-info-circle"></i></button>
+                        </div>
                         <div class="card=body" style="overflow:auto; height:850px;">
                             <br>
                             <div class="container">
