@@ -206,3 +206,10 @@ async function removeSection(sectionID)
     if(await confirmDelete("Delete Section", "This action can't be undone", "Delete", "Custom section deleted") == true)
         $('.' + sectionID).remove();
 }
+
+Shiny.addCustomMessageHandler('closeWindow', 
+    function(m) 
+    {
+        console.log('Close window');
+        window.close();
+    });

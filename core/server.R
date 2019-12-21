@@ -4,6 +4,7 @@ server <- function(input, output, session) {
         status <- list(goto = 2, path = dataToLoad$datapath)
 
         assign("flagStop", TRUE, envir=.GlobalEnv,inherits = FALSE)
+        session$sendCustomMessage(type = "closeWindow", message = "message")
         stopApp(returnValue = invisible(status))
     }, once = TRUE)
 
@@ -12,6 +13,7 @@ server <- function(input, output, session) {
         {
             print('CALLED SESSION ENDED')
             assign("flagStop", TRUE, envir=.GlobalEnv,inherits = FALSE)
+            session$sendCustomMessage(type = "closeWindow", message = "message")
             stopApp()
         }
     })

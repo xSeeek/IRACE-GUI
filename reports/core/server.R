@@ -196,6 +196,7 @@ server <- function(input, output, session) {
         if(recentlyLoadedReports == FALSE)
         {
             status <- list(goto = 0)
+            session$sendCustomMessage(type = "closeWindow", message = "message")
             stopApp(returnValue = invisible(status))
         }
         assign("recentlyLoadedReports", FALSE, envir=.GlobalEnv,inherits = FALSE)
@@ -423,6 +424,7 @@ server <- function(input, output, session) {
         removeTemporalPlots()
 
         status <- list(goto = 2, path = dataToLoad$datapath)
+        session$sendCustomMessage(type = "closeWindow", message = "message")
         stopApp(returnValue = invisible(status))
     }, once = TRUE)
 
