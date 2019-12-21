@@ -219,14 +219,19 @@ server <- function(input, output, session) {
     })
 
     output$bestSoFarSelected <- renderUI({
-        req(input$iterationDetails)
-        bestConfigurations <- iraceResults$allElites[as.integer(input$iterationDetails)]
-        bestConfigurationID <- bestConfigurations[[1]][1]
-        detailsBestConfiguration <- getConfigurationById(iraceResults, ids = bestConfigurationID)
-        parameters = setupContentTable(iraceResults$parameters$names, '<th>', '</th>');
-        bestConfigurationData = setupContentTable(detailsBestConfiguration, '<td>', '</td>');
-        meanValue = colMeans(iraceResults$experiments[,iraceResults$iterationElites[as.integer(input$iterationDetails)], drop=FALSE], na.rm=TRUE)
-
+        withProgress(message = 'Generating table: Best-so-far', value = 0, {
+            incProgress(1/10, detail = paste("Preconfiguring..."))
+            req(input$iterationDetails)
+            incProgress(2/10, detail = paste("Obtaining data..."))
+            bestConfigurations <- iraceResults$allElites[as.integer(input$iterationDetails)]
+            bestConfigurationID <- bestConfigurations[[1]][1]
+            detailsBestConfiguration <- getConfigurationById(iraceResults, ids = bestConfigurationID)
+            incProgress(6/10, detail = paste("Configuring table..."))
+            parameters = setupContentTable(iraceResults$parameters$names, '<th>', '</th>');
+            bestConfigurationData = setupContentTable(detailsBestConfiguration, '<td>', '</td>');
+            meanValue = colMeans(iraceResults$experiments[,iraceResults$iterationElites[as.integer(input$iterationDetails)], drop=FALSE], na.rm=TRUE)
+            incProgress(10/10, detail = paste("Finishing..."))
+        })
         HTML('<b>Best-so-far configuration: </b>', bestConfigurationID, '<br><b>mean value: </b>', meanValue[[1]]
         , '<br><br><b>Description of the best-so-far configuration:</b><br>
         <table class="table table-bordered table-sm display" id="bestSoFarIteration">
@@ -246,12 +251,18 @@ server <- function(input, output, session) {
     })
 
     output$eliteConfigurationSelected <- renderUI({
-        req(input$iterationDetails)
-        bestConfigurations <- iraceResults$allElites[as.integer(input$iterationDetails)]
-        bestConfigurationID <- bestConfigurations[[1]][1]
-        detailsBestConfiguration <- getConfigurationById(iraceResults, ids = bestConfigurationID)
-        dataTable = createTableEliteConfigurations(bestConfigurations[[1]])
-        parameters = setupContentTable(iraceResults$parameters$names, '<th>', '</th>');
+        withProgress(message = 'Generating table: Elite configurations', value = 0, {
+            incProgress(1/10, detail = paste("Preconfiguring..."))
+            req(input$iterationDetails)
+            incProgress(2/10, detail = paste("Obtaining data..."))
+            bestConfigurations <- iraceResults$allElites[as.integer(input$iterationDetails)]
+            bestConfigurationID <- bestConfigurations[[1]][1]
+            detailsBestConfiguration <- getConfigurationById(iraceResults, ids = bestConfigurationID)
+            incProgress(6/10, detail = paste("Configuring table..."))
+            dataTable = createTableEliteConfigurations(bestConfigurations[[1]])
+            parameters = setupContentTable(iraceResults$parameters$names, '<th>', '</th>');
+            incProgress(10/10, detail = paste("Finishing..."))
+        })
 
         HTML('<br><b>Elite configurations: </b><br>
         <table class="table table-bordered table-sm display" id="bestSoFarConfigsIteration">
@@ -269,17 +280,27 @@ server <- function(input, output, session) {
     })
 
     output$boxPlotBestConfiguration <- renderPlot({
-        last <- length(iraceResults$iterationElites)
-        id <- paste0(iraceResults$iterationElites[last])
-        results <- subset(iraceResults$experiments, select=c(id))
-        conf <- gl(ncol(results), nrow(results), labels = colnames(results))
-        pairwise.wilcox.test (as.vector(results), conf, paired = TRUE, p.adj = "bonf")
+        withProgress(message = 'Plotting: Boxplot Perfomance', value = 0, {
+            incProgress(1/10, detail = paste("Preconfiguring..."))
+            last <- length(iraceResults$iterationElites)
+            id <- paste0(iraceResults$iterationElites[last])
+            results <- subset(iraceResults$experiments, select=c(id))
+            conf <- gl(ncol(results), nrow(results), labels = colnames(results))
+            incProgress(2/10, detail = paste("Rendering plots..."))
+            pairwise.wilcox.test (as.vector(results), conf, paired = TRUE, p.adj = "bonf")
+            incProgress(10/10, detail = paste("Finishing..."))
+        })
         configurationsBoxplot (results, ylab = "Solution cost")
     })
 
     output$boxPlotPerfomance <- renderImage({
-        req(input$iterationPlotsPerfomance)
-        plot <- generateBoxPlot(input$iterationPlotsPerfomance)
+        withProgress(message = 'Plotting: Boxplot Perfomance', value = 0, {
+            incProgress(1/10, detail = paste("Preconfiguring..."))
+            req(input$iterationPlotsPerfomance)
+            incProgress(2/10, detail = paste("Rendering plots..."))
+            plot <- generateBoxPlot(input$iterationPlotsPerfomance)
+            incProgress(10/10, detail = paste("Finishing..."))
+        })
         list(src = plot$dir)
     })
 
@@ -290,99 +311,114 @@ server <- function(input, output, session) {
     })
 
     output$frecuencyCandidates <- renderImage({
-        req(input$iterationPlotsCandidates)
-        req(input$selectedParametersCandidates)
-        paramsCandidates()
+        withProgress(message = 'Plotting: Frequency Plot', value = 0, {
+            incProgress(1/10, detail = paste("Preconfiguring..."))
+            req(input$iterationPlotsCandidates)
+            req(input$selectedParametersCandidates)
+            paramsCandidates()
 
-        configurations <- getConfigurationByIteration(iraceResults = iraceResults, iterations = input$iterationPlotsCandidates[1]:input$iterationPlotsCandidates[2])
+            configurations <- getConfigurationByIteration(iraceResults = iraceResults, iterations = input$iterationPlotsCandidates[1]:input$iterationPlotsCandidates[2])
 
-        max <- 12
-        limit <- 1
-        params <- c()
-        numberOfParameters <- ceiling(length(input$selectedParametersCandidates)/max)
-        for(i in 1: numberOfParameters)
-        {
-            k <- 1
-            for(j in limit:(max*i))
+            max <- 12
+            limit <- 1
+            params <- c()
+            numberOfParameters <- ceiling(length(input$selectedParametersCandidates)/max)
+            incProgress(2/10, detail = paste("Rendering plots..."))
+            for(i in 1: numberOfParameters)
             {
-                if(length(input$selectedParametersCandidates) >= j)
+                k <- 1
+                for(j in limit:(max*i))
                 {
-                    params[k] <- input$selectedParametersCandidates[j]
-                    k <- k + 1
+                    if(length(input$selectedParametersCandidates) >= j)
+                    {
+                        params[k] <- input$selectedParametersCandidates[j]
+                        k <- k + 1
+                    }
                 }
+
+                # TEMPORAL FIX DUE IMPLEMENTATION OF THE PLOT
+                fixFormat <- iraceResults$parameters
+                fixFormat$names <- params
+
+                png(filename = paste0("tempPlotFrequency", i, ".png"), width = 550, height = 555, res = 80)
+                parameterFrequency(configurations, fixFormat)
+                dev.off()
+                limit <- (max*i) + 1;
             }
-
-            # TEMPORAL FIX DUE IMPLEMENTATION OF THE PLOT
-            fixFormat <- iraceResults$parameters
-            fixFormat$names <- params
-
-            png(filename = paste0("tempPlotFrequency", i, ".png"), width = 550, height = 555, res = 80)
-            parameterFrequency(configurations, fixFormat)
-            dev.off()
-            limit <- (max*i) + 1;
-        }
-        finalPlot <- NULL
-        for(i in 1:numberOfParameters)
-        {
-            if(is.null(finalPlot))
+            incProgress(6/10, detail = paste("Concatenating images..."))
+            finalPlot <- NULL
+            for(i in 1:numberOfParameters)
             {
-                finalPlot <- image_read(paste0("tempPlotFrequency", i, ".png"))
-                next
+                if(is.null(finalPlot))
+                {
+                    finalPlot <- image_read(paste0("tempPlotFrequency", i, ".png"))
+                    next
+                }
+                image <- image_read(paste0("tempPlotFrequency", i, ".png"))
+                finalPlot <- image_append(c(finalPlot, image), stack = TRUE)
             }
-            image <- image_read(paste0("tempPlotFrequency", i, ".png"))
-            finalPlot <- image_append(c(finalPlot, image), stack = TRUE)
-        }
-        removeTemporalPlots()
-        image_write(finalPlot, path = "../resources/images/frequencyPlot.png", format = "png")
+            incProgress(9/10, detail = paste("Removing temporal plots..."))
+            removeTemporalPlots()
+            image_write(finalPlot, path = "../resources/images/frequencyPlot.png", format = "png")
+            incProgress(10/10, detail = paste("Finishing..."))
+        })
         list(src = "../resources/images/frequencyPlot.png")
     })
 
     output$parallelCoordinatesCandidates <- renderImage({
-        req(input$iterationPlotsCandidates)
-        req(input$selectedParametersCandidates)
-        paramsCandidates()
+        withProgress(message = 'Plotting: Parallel Coordinates', value = 0, {
+            incProgress(1/10, detail = paste("Preconfiguring..."))
 
-        last <- length(iraceResults$iterationElites)
-        conf <- getConfigurationByIteration(iraceResults = iraceResults, iterations = input$iterationPlotsCandidates[1]:input$iterationPlotsCandidates[2])
-        
-        max <- 12
-        limit <- 1
-        params <- c()
-        numberOfParameters <- ceiling(length(input$selectedParametersCandidates)/max)
-        for(i in 1: numberOfParameters)
-        {
-            k <- 1
-            for(j in limit:(max*i))
+            req(input$iterationPlotsCandidates)
+            req(input$selectedParametersCandidates)
+            paramsCandidates()
+
+            last <- length(iraceResults$iterationElites)
+            conf <- getConfigurationByIteration(iraceResults = iraceResults, iterations = input$iterationPlotsCandidates[1]:input$iterationPlotsCandidates[2])
+            
+            max <- 12
+            limit <- 1
+            params <- c()
+            numberOfParameters <- ceiling(length(input$selectedParametersCandidates)/max)
+            incProgress(2/10, detail = paste("Rendering plots..."))
+            for(i in 1: numberOfParameters)
             {
-                if(length(input$selectedParametersCandidates) >= j)
+                k <- 1
+                for(j in limit:(max*i))
                 {
-                    params[k] <- input$selectedParametersCandidates[j]
-                    k <- k + 1
+                    if(length(input$selectedParametersCandidates) >= j)
+                    {
+                        params[k] <- input$selectedParametersCandidates[j]
+                        k <- k + 1
+                    }
                 }
+
+                # TEMPORAL FIX DUE IMPLEMENTATION OF THE PLOT
+                fixFormat <- iraceResults$parameters
+                fixFormat$names <- params
+
+                png(filename = paste0("tempPlotParallel", i, ".png"))
+                parallelCoordinatesPlot (conf, fixFormat, hierarchy = FALSE)
+                dev.off()
+                limit <- (max*i) + 1;
             }
-
-            # TEMPORAL FIX DUE IMPLEMENTATION OF THE PLOT
-            fixFormat <- iraceResults$parameters
-            fixFormat$names <- params
-
-            png(filename = paste0("tempPlotParallel", i, ".png"))
-            parallelCoordinatesPlot (conf, fixFormat, hierarchy = FALSE)
-            dev.off()
-            limit <- (max*i) + 1;
-        }
-        finalPlot <- NULL
-        for(i in 1:numberOfParameters)
-        {
-            if(is.null(finalPlot))
+            incProgress(6/10, detail = paste("Concatenating images..."))
+            finalPlot <- NULL
+            for(i in 1:numberOfParameters)
             {
-                finalPlot <- image_read(paste0("tempPlotParallel", i, ".png"))
-                next
+                if(is.null(finalPlot))
+                {
+                    finalPlot <- image_read(paste0("tempPlotParallel", i, ".png"))
+                    next
+                }
+                image <- image_read(paste0("tempPlotParallel", i, ".png"))
+                finalPlot <- image_append(c(finalPlot, image), stack = TRUE)
             }
-            image <- image_read(paste0("tempPlotParallel", i, ".png"))
-            finalPlot <- image_append(c(finalPlot, image), stack = TRUE)
-        }
-        removeTemporalPlots()
-        image_write(finalPlot, path = "../resources/images/parallelPlot.png", format = "png")
+            incProgress(9/10, detail = paste("Removing temporal plots..."))
+            removeTemporalPlots()
+            image_write(finalPlot, path = "../resources/images/parallelPlot.png", format = "png")
+            incProgress(10/10, detail = paste("Finishing..."))
+        })
         list(src = "../resources/images/parallelPlot.png")
     })
 
