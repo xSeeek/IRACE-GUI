@@ -197,7 +197,6 @@ function checkForChanges()
 {
     if((!$.fn.DataTable.isDataTable( '#bestSoFarSelected' )) && !$('#bestSoFarSelected').hasClass('recalculating'))
     {
-        console.log('si');
         setTimeout(function(){
             $('table.display').DataTable({
                 "scrollX": true,
