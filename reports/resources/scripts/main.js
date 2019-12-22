@@ -217,6 +217,15 @@ function backToMainMenu()
     Shiny.onInputChange("backMainMenu", true);
 }
 
+function sendPreferences(status)
+{
+    var randomNum = Math.floor(Math.random() * 101);
+    if(status == 1)
+        Shiny.onInputChange("enablePlottingCandidates", randomNum);
+    if(status == 2)
+        Shiny.onInputChange("blockPlottingCandidates", randomNum);
+}
+
 Shiny.addCustomMessageHandler('closeWindow', 
     function(m) 
     {

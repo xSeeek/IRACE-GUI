@@ -324,7 +324,7 @@
                                         {{ parallelCoordinatesCandidates }}
                                     </div>
                                     <div class="col">
-                                        <button type="button" class="btn btn-outline-warning btn-lg btn-block" data-toggle="modal" data-target="#parametersModal">
+                                        <button type="button" class="btn btn-outline-danger btn-lg btn-block" data-toggle="modal" data-target="#parametersModal" onclick="sendPreferences(2)">
                                             Open parameters selection
                                         </button>
                                         <br>
@@ -463,7 +463,7 @@
                     {{selectedParametersCandidates}}
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-danger" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-outline-danger" data-dismiss="modal" onclick="sendPreferences(1)">Close</button>
                 </div>
             </div>
         </div>

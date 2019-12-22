@@ -279,7 +279,7 @@ async function appendCandidates(doc, iterations, lastTwo)
     doc.text(50, 50, 'Frequency Plots')
     doc.text(142, 50, 'Parallel Coordinates Plots')
 
-    Shiny.onInputChange("requestPlottingCandidates", iterations);
+    Shiny.onInputChange("requestPlottingCandidates", {iterations: iterations, ran: Math.random()});
     await waitForData(1).then(async plots =>{
         var yLine = 55;
         var imgHeight = 95;
@@ -376,7 +376,7 @@ async function appendPerfomance(doc, iterations, textIteration, flagConvergence)
         {
             var text = 'BoxPlot iteration ' + (iterations - 1)
             doc.text(55, 50, text)
-            Shiny.onInputChange("requestPlottingPerfomance", iterations - 1);
+            Shiny.onInputChange("requestPlottingPerfomance", {iterations: (iterations - 1), ran: Math.random()});
             await waitForData(2).then(async plot =>{
                 await loadImage(plot['boxPlot']).then(formatedImage =>{
                     doc.addImage(formatedImage, 5, 53, 100, 130);
@@ -395,7 +395,7 @@ async function appendPerfomance(doc, iterations, textIteration, flagConvergence)
     var text = 'BoxPlot iteration ' + iterations;
     doc.text(xLine, 50, text)
 
-    Shiny.onInputChange("requestPlottingPerfomance", iterations);
+    Shiny.onInputChange("requestPlottingPerfomance", {iterations: iterations, ran: Math.random()});
     await waitForData(2).then(async plot =>{
         await loadImage(plot['boxPlot']).then(formatedImage =>{
             doc.addImage(formatedImage, (xLine - 45), 53, 100, 130);
@@ -423,7 +423,7 @@ async function appendDetailsSectionPDF(doc, params)
     doc.setFontSize(9);
     doc.setFont("times", "normal");
 
-    Shiny.onInputChange("requestBestSoFarIterations", params);
+    Shiny.onInputChange("requestBestSoFarIterations", {params: params, ran: Math.random()});
     await waitForData(3).then(async valuesTable =>{
         var yLine = 50;
         var pageHeight = 265;

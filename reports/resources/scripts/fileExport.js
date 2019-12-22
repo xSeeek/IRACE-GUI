@@ -21,12 +21,12 @@ async function getAllCustomSections()
             arrayOfSections[i-1] = $("#" + sectionsNames[i].value + "Text").summernote("code");
         }
 
-        Shiny.onInputChange("customSections", arrayOfSections);
+        Shiny.onInputChange("customSections", {arrayOfSections: arrayOfSections, ran: Math.random()});
         Shiny.onInputChange("customSectionsNames", arrayNameSections);
         Shiny.onInputChange("customSectionsIDS", arrayIDSections);
         Shiny.onInputChange("reportName", newReportName);
 
-        confirmMessage("Report saved in reports folder inside the app folder")
+        confirmMessage("Report saved in saved folder, inside the app folder")
     }
 }
 
