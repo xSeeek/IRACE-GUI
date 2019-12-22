@@ -68,15 +68,15 @@ checkIfExists <- function(fileName, flagDelete)
     return(FALSE)
 }
 
-removeTemporalPlots <- function()
+removeTemporalPlots <- function(patternData)
 {
-    junk <- dir(pattern="tempPlot")
+    junk <- dir(pattern=patternData)
     file.remove(junk)
 }
 
 generateFrequencyPlot <- function(iterations, parameters)
 {
-    configurations <- getConfigurationByIteration(iraceResults = iraceResults, iterations = iterations[1]:iterations[2])
+    configurations <- getConfigurationByIteration(iraceResults = iraceResults, iterations = as.integer(iterations[1]):as.integer(iterations[2]))
 
     max <- 12
     limit <- 1
@@ -109,14 +109,14 @@ generateFrequencyPlot <- function(iterations, parameters)
 
         limit <- (max*i) + 1;
     }
-    removeTemporalPlots()
+    removeTemporalPlots('tempPlotFrequency')
     return(base64plots)
 }
 
 generateParallelCoordinatesPlot <- function(iterations, parameters)
 {
     last <- length(iraceResults$iterationElites)
-    conf <- getConfigurationByIteration(iraceResults = iraceResults, iterations = iterations[1]:iterations[2])
+    conf <- getConfigurationByIteration(iraceResults = iraceResults, iterations = as.integer(iterations[1]):as.integer(iterations[2]))
     
     max <- 12
     limit <- 1
@@ -149,7 +149,7 @@ generateParallelCoordinatesPlot <- function(iterations, parameters)
 
         limit <- (max*i) + 1;
     }
-    removeTemporalPlots()
+    removeTemporalPlots('tempPlotParallel')
     return(base64plots)
 }
 
@@ -173,10 +173,12 @@ generateBoxPlot <- function(numberIteration)
     plot <- image_scale(plot, "x750")
     image_write(plot, path = "../resources/images/boxPlot.png", format = "png")
     results <- list(dir = '../resources/images/boxPlot.png', image = base64image)
-    removeTemporalPlots()
+    removeTemporalPlots('tempPlotBoxplot')
 
     return(results)
 }
+
+plan(multiprocess)
 
 server <- function(input, output, session) {    
     if(length(ls(envir=.GlobalEnv, pattern="loadedCustomSection")) == 1)
@@ -311,19 +313,20 @@ server <- function(input, output, session) {
     })
 
     output$frecuencyCandidates <- renderImage({
-        withProgress(message = 'Plotting: Frequency Plot', value = 0, {
-            incProgress(1/10, detail = paste("Preconfiguring..."))
-            req(input$iterationPlotsCandidates)
-            req(input$selectedParametersCandidates)
-            paramsCandidates()
+        progress <- AsyncProgress$new(message = 'Plotting: Frequency Plot', detail = 'This may take a while...', value = 0)
+        progress$inc(1/10, detail = paste("Preconfiguring..."))
+        req(input$iterationPlotsCandidates)
+        req(input$selectedParametersCandidates)
+        paramsCandidates()
 
-            configurations <- getConfigurationByIteration(iraceResults = iraceResults, iterations = input$iterationPlotsCandidates[1]:input$iterationPlotsCandidates[2])
+        configurations <- getConfigurationByIteration(iraceResults = iraceResults, iterations = input$iterationPlotsCandidates[1]:input$iterationPlotsCandidates[2])
 
-            max <- 12
-            limit <- 1
-            params <- c()
-            numberOfParameters <- ceiling(length(input$selectedParametersCandidates)/max)
-            incProgress(2/10, detail = paste("Rendering plots..."))
+        max <- 12
+        limit <- 1
+        params <- c()
+        numberOfParameters <- ceiling(length(input$selectedParametersCandidates)/max)
+        progress$inc(2/10, detail = paste("Rendering plots..."))
+        future({
             for(i in 1: numberOfParameters)
             {
                 k <- 1
@@ -345,7 +348,8 @@ server <- function(input, output, session) {
                 dev.off()
                 limit <- (max*i) + 1;
             }
-            incProgress(6/10, detail = paste("Concatenating images..."))
+        }) %...>%(function(result) {
+            progress$inc(6/10, detail = paste("Concatenating images..."))
             finalPlot <- NULL
             for(i in 1:numberOfParameters)
             {
@@ -357,30 +361,33 @@ server <- function(input, output, session) {
                 image <- image_read(paste0("tempPlotFrequency", i, ".png"))
                 finalPlot <- image_append(c(finalPlot, image), stack = TRUE)
             }
-            incProgress(9/10, detail = paste("Removing temporal plots..."))
-            removeTemporalPlots()
+            progress$inc(9/10, detail = paste("Removing temporal plots..."))
+            removeTemporalPlots('tempPlotFrequency')
             image_write(finalPlot, path = "../resources/images/frequencyPlot.png", format = "png")
-            incProgress(10/10, detail = paste("Finishing..."))
+        })%...>% (function(result) {
+            progress$inc(10/10, detail = paste("Finishing..."))
+            progress$close()
+            list(src = "../resources/images/frequencyPlot.png")
         })
-        list(src = "../resources/images/frequencyPlot.png")
     })
 
     output$parallelCoordinatesCandidates <- renderImage({
-        withProgress(message = 'Plotting: Parallel Coordinates', value = 0, {
-            incProgress(1/10, detail = paste("Preconfiguring..."))
+        progress <- AsyncProgress$new(message = 'Plotting: Parallel Coordinates', detail = 'This may take a while...', value = 0)
+        progress$inc(1/10, detail = paste("Preconfiguring..."))
 
-            req(input$iterationPlotsCandidates)
-            req(input$selectedParametersCandidates)
-            paramsCandidates()
+        req(input$iterationPlotsCandidates)
+        req(input$selectedParametersCandidates)
+        paramsCandidates()
 
-            last <- length(iraceResults$iterationElites)
-            conf <- getConfigurationByIteration(iraceResults = iraceResults, iterations = input$iterationPlotsCandidates[1]:input$iterationPlotsCandidates[2])
-            
-            max <- 12
-            limit <- 1
-            params <- c()
-            numberOfParameters <- ceiling(length(input$selectedParametersCandidates)/max)
-            incProgress(2/10, detail = paste("Rendering plots..."))
+        last <- length(iraceResults$iterationElites)
+        conf <- getConfigurationByIteration(iraceResults = iraceResults, iterations = input$iterationPlotsCandidates[1]:input$iterationPlotsCandidates[2])
+        
+        max <- 12
+        limit <- 1
+        params <- c()
+        numberOfParameters <- ceiling(length(input$selectedParametersCandidates)/max)
+        progress$inc(2/10, detail = paste("Rendering plots..."))
+        future({
             for(i in 1: numberOfParameters)
             {
                 k <- 1
@@ -402,7 +409,8 @@ server <- function(input, output, session) {
                 dev.off()
                 limit <- (max*i) + 1;
             }
-            incProgress(6/10, detail = paste("Concatenating images..."))
+        }) %...>%(function(result) {
+            progress$inc(6/10, detail = paste("Concatenating images..."))
             finalPlot <- NULL
             for(i in 1:numberOfParameters)
             {
@@ -414,12 +422,14 @@ server <- function(input, output, session) {
                 image <- image_read(paste0("tempPlotParallel", i, ".png"))
                 finalPlot <- image_append(c(finalPlot, image), stack = TRUE)
             }
-            incProgress(9/10, detail = paste("Removing temporal plots..."))
-            removeTemporalPlots()
+            progress$inc(9/10, detail = paste("Removing temporal plots..."))
+            removeTemporalPlots('tempPlotParallel')
             image_write(finalPlot, path = "../resources/images/parallelPlot.png", format = "png")
-            incProgress(10/10, detail = paste("Finishing..."))
+        })%...>% (function(result) {
+            progress$inc(10/10, detail = paste("Finishing..."))
+            progress$close()
+            list(src = "../resources/images/parallelPlot.png")
         })
-        list(src = "../resources/images/parallelPlot.png")
     })
 
     output$convergencePerfomance <- renderPlot({
@@ -439,13 +449,11 @@ server <- function(input, output, session) {
     })
 
     observeEvent(input$customSections, {
-        customSections <- input$customSections
+        customSections <- input$customSections$arrayOfSections
         customSectionsNames <- input$customSectionsNames
         customSectionsIDS <- input$customSectionsIDS
         checkIfExists(paste0("../resources/data/", input$reportName, ".RData"), TRUE)
-        dir.create("../reports/")
-        save(iraceResults, customSections, customSectionsNames, customSectionsIDS, file = paste0("../reports/", input$reportName, ".RData"))
-        #encrypt_file(paste0("../resources/data/", input$reportName, ".RData"), outfile = paste0("../resources/data/", input$reportName, ".RData"))
+        save(iraceResults, customSections, customSectionsNames, customSectionsIDS, file = paste0("../../saved/", input$reportName, ".RData"))
     })
 
     observeEvent(input$reportLoader, {
@@ -458,10 +466,10 @@ server <- function(input, output, session) {
         if(length(ls(envir=.GlobalEnv, pattern="customSections")) != 0)
             rm(customSections, envir = .GlobalEnv)
 
-        removeTemporalPlots()
+        removeTemporalPlots('tempPlot')
 
-        status <- list(goto = 2, path = dataToLoad$datapath)
         session$sendCustomMessage(type = "closeWindow", message = "message")
+        status <- list(goto = 2, path = dataToLoad$datapath)
         stopApp(returnValue = invisible(status))
     }, once = TRUE)
 
@@ -474,8 +482,9 @@ server <- function(input, output, session) {
 
     observeEvent(input$requestPlottingCandidates, {
         req(input$selectedParametersCandidates)
+        print(input$requestPlottingCandidates$iterations)
         
-        iterations <- input$requestPlottingCandidates
+        iterations <- input$requestPlottingCandidates$iterations
         parameters <- input$selectedParametersCandidates
 
         frequencyPlot <- generateFrequencyPlot(iterations, parameters)
@@ -483,18 +492,20 @@ server <- function(input, output, session) {
         images <- list(frequency = frequencyPlot, parallel = parallelCoordinatesPlot)
 
         session$sendCustomMessage("imagePlotCandidates", images)
-    })
+        return(NULL)
+    }, once = FALSE)
 
     observeEvent(input$requestPlottingPerfomance, {
-        iteration <- input$requestPlottingPerfomance;
+        iteration <- input$requestPlottingPerfomance$iterations;
         boxPlot <- generateBoxPlot(iteration)
         image <- list(boxPlot = boxPlot$image)
 
         session$sendCustomMessage("imagePlotPerfomance", image)
-    })
+        return(NULL)
+    }, once = FALSE)
 
     observeEvent(input$requestBestSoFarIterations, {
-        params <- input$requestBestSoFarIterations
+        params <- input$requestBestSoFarIterations$params
         bestSoFarIterations <- list()
 
         bestSoFarIterations[[1]] <- params
@@ -511,10 +522,17 @@ server <- function(input, output, session) {
             bestSoFarIterations[[i + 1]] <- buildData
         }
         session$sendCustomMessage("bestSoFarAllIterations", bestSoFarIterations)
-    }, once = TRUE)
+        return(NULL)
+    }, once = FALSE)
 
-    output$bestSoFarTableDetails <- DT::renderDataTable({
-        #bestConfiguration <- getConfigurationById(iraceResults, ids=110)
-        datatable(iraceResults$allConfigurations)
-    })
+    observeEvent(input$enablePlottingCandidates, {
+        assign("enablePlotting", TRUE, envir=.GlobalEnv, inherits = FALSE)
+        return(NULL)
+    }, once = FALSE)
+
+    observeEvent(input$blockPlottingCandidates, {
+        objs <- ls(pos = ".GlobalEnv")
+        rm(list = objs[grep("enablePlotting", objs)], pos = ".GlobalEnv")
+        return(NULL)
+    }, once = FALSE)
 }

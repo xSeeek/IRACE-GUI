@@ -1,4 +1,4 @@
-packageVerification <- c("shiny", "irace", "magick", "shinybusy", "RCurl")
+packageVerification <- c("shiny", "irace", "magick", "promises", "future", "RCurl", "ipc")
 
 local({r <- getOption("repos")
     r["CRAN"] <- "http://cran.us.r-project.org" 
@@ -24,7 +24,8 @@ pkgCheck(packageVerification)
 
 options(shiny.port = 5003)
 options(shiny.host  = '127.0.0.1')
-#options(shiny.trace=TRUE)
+#options(shiny.trace = TRUE)
+options(shiny.sanitize.errors= TRUE)
 
 setwd('./reports')
 path <- getwd()
@@ -43,8 +44,9 @@ if(length(ls(envir=.GlobalEnv, pattern="iraceResults")) == 0)
     load(pathRDATA, envir=.GlobalEnv)
 }
 
-assign("recentlyLoadedReports", FALSE, envir=.GlobalEnv,inherits = FALSE)
-assign("flagStop", TRUE, envir=.GlobalEnv,inherits = FALSE)
+assign("recentlyLoadedReports", FALSE, envir=.GlobalEnv, inherits = FALSE)
+assign("flagStop", TRUE, envir=.GlobalEnv, inherits = FALSE)
+assign("enablePlotting", TRUE, envir=.GlobalEnv, inherits = FALSE)
 backMainMenu <- FALSE
 
 repeat{
