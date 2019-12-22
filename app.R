@@ -5,6 +5,11 @@ options(shiny.host  = '127.0.0.1')
 path <- getwd()
 path <- paste(path, "/core", sep = "")
 
+if(!dir.exists("./shared/"))
+    dir.create("./shared/")
+if(!dir.exists("./saved/"))
+    dir.create("./saved/")
+
 assign("flagStop", FALSE, envir=.GlobalEnv,inherits = FALSE)
 
 browseURL("http://127.0.0.1:5000/")
