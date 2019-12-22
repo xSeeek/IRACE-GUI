@@ -27,6 +27,7 @@ sidebar <- dashboardSidebar(
           menuItem("Summary", tabName = "summary", icon = icon("dashboard")),
           menuItem("Performance", icon = icon("th"), tabName = "performance"),
           menuItem("Frequency",tabName = "frequency" ,icon = icon("bar-chart-o")),
+          menuItem("Info", icon = icon("info"), href = "http://iridia.ulb.ac.be/irace/"),
           menuItem("Back to Setup", icon = icon("file-code-o"), tabName = "target")
         )
 )

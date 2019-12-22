@@ -9,8 +9,8 @@ library(magick)
 packageVerification <- c("shiny", "irace","readr","magick","RCurl")
 
 
-local({r <- getOption("repos")
-  r["CRAN"] <- "http://cran.us.r-project.org" 
+  local({r <- getOption("repos")
+    r["CRAN"] <- "http://cran.us.r-project.org" 
   options(repos=r)
 })
     
