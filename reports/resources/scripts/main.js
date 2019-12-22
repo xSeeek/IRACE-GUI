@@ -1,16 +1,9 @@
 window.onload = function(){
-    setTimeout(function(){
-        $('table.display').DataTable({
-            "scrollX": true,
-            "scrollY": true,
-            columnDefs: [
-                { width: 140, targets: 0 }
-            ],
-            fixedColumns: true
-        });
-    }, 1000);
     updateInput();
     getParameters();
+    setTimeout(function(){
+        checkForChanges();
+    }, 6000);
 }
 
 function getParameters()
@@ -34,18 +27,11 @@ function updateInput()
     select.setAttribute('onchange','setDatatables();');
 }
 
-function setDatatables(){
-    setTimeout(function(){
-        $('table.display').DataTable({
-            "scrollX": true,
-            "scrollY": true,
-            columnDefs: [
-                { width: 140, targets: 0 }
-            ],
-            fixedColumns: true
-        });
-    }, 100);
+function setDatatables()
+{
+   checkForChanges();
 }
+
 async function createNewSection()
 {
     var newSectionName = await inputText("Please, enter the name for the new section:", "Name of the section");
@@ -207,9 +193,37 @@ async function removeSection(sectionID)
         $('.' + sectionID).remove();
 }
 
+function checkForChanges()
+{
+    if((!$.fn.DataTable.isDataTable( '#bestSoFarSelected' )) && !$('#bestSoFarSelected').hasClass('recalculating'))
+    {
+        setTimeout(function(){
+            $('table.display').DataTable({
+                "scrollX": true,
+                "scrollY": true,
+                columnDefs: [
+                    { width: 140, targets: 0 }
+                ],
+                fixedColumns: true
+            });
+        }, 250);
+    }
+    else
+        setTimeout(checkForChanges, 250);
+}
+
 function backToMainMenu()
 {
     Shiny.onInputChange("backMainMenu", true);
+}
+
+function sendPreferences(status)
+{
+    var randomNum = Math.floor(Math.random() * 101);
+    if(status == 1)
+        Shiny.onInputChange("enablePlottingCandidates", randomNum);
+    if(status == 2)
+        Shiny.onInputChange("blockPlottingCandidates", randomNum);
 }
 
 Shiny.addCustomMessageHandler('closeWindow', 
