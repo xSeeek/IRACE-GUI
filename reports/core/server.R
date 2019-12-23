@@ -320,7 +320,7 @@ server <- function(input, output, session) {
         input$iterationPlotsCandidates
     })
 
-    paramsCand <- debounce(paramsInput, 1000)
+    paramsCand <- debounce(paramsInput, 2500)
     itersCand <- debounce(itersInput, 1000)
 
     output$frecuencyCandidates <- renderImage({
