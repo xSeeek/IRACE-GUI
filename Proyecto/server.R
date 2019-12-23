@@ -15,12 +15,11 @@ updateFile <- function()
 }
 
 
-removeTemporalPlots <- function()
+removeTemporalPlots <- function(patternData)
 {
-  junk <- dir(pattern="tempPlot")
+  junk <- dir(pattern=patternData)
   file.remove(junk)
 }
-
 summary <- shinyServer(function(input,output,session){
   
   conf <- length(iraceResults$allConfigurations$.ID.)
@@ -163,8 +162,8 @@ repeat{
           fixFormat <- iraceResults$parameters
           fixFormat$names <- params
           
-          png(filename = paste0("plotFrequency",i,".png"), width = 550, height = 555, res = 80)
-          print(png(filename <- paste0("plotFrequency", i, ".png"), width = 550, height = 555, res = 80))
+          png(filename = paste0("tempPlotFrequency",i,".png"), width = 550, height = 555, res = 80)
+          print(png(filename <- paste0("tempPlotFrequency", i, ".png"), width = 550, height = 555, res = 80))
           parameterFrequency(conf, fixFormat)
           dev.off()
           print(dev.off())
@@ -175,19 +174,18 @@ repeat{
         {
           if(is.null(finalPlot))
           {
-            finalPlot <- image_read(paste0("plotFrequency",i,".png"))
+            finalPlot <- image_read(paste0("tempPlotFrequency",i,".png"))
             next
           }
-          image <- image_read(paste0("plotFrequency",i,".png"))
+          image <- image_read(paste0("tempPlotFrequency",i,".png"))
           print(image)
           finalPlot <- image_append(c(finalPlot, image), stack = TRUE)
         }
-        removeTemporalPlots()
+        removeTemporalPlots('tempPlotFrequency')
         image_write(finalPlot, path = "../resources/images/frequencyPlot.png", format = "png")
         print(image_write(finalPlot, path = "../resources/images/frequencyPlot.png", format = "png"))
         list(src = "../resources/images/frequencyPlot.png")
       })
-      
         output$paralelCoordinatesCandidates <- renderImage({
         req(input$iterationPC)
         req(input$parametersParallelCoordinates)
@@ -198,7 +196,7 @@ repeat{
         last <- length(iraceResults$iterationElites)
         conf <- getConfigurationByIteration(iraceResults = iraceResults,iterations = unique(iterationsPC))
         
-        max <- length(iraceResults$parameters$names)
+        max <- 12
         limit <- 1
         params <- c()
         numberOfParameters <- ceiling(length(input$parametersParallelCoordinates)/max)
@@ -235,15 +233,15 @@ repeat{
           image <- image_read(paste0("tempPlotParallel", i, ".png"))
           finalPlot <- image_append(c(finalPlot, image), stack = TRUE)
         }
-        removeTemporalPlots()
+        removeTemporalPlots('tempPlotParallel')
         image_write(finalPlot, path = "../resources/images/parallelPlot.png", format = "png")
         list(src = "../resources/images/parallelPlot.png")
       })
         output$boxPlotBestConfiguration <- renderPlot({
           req(input$iterationBoxPlot)
-          print(input$iterationBoxPlot)
           invalidateLater(4000, session)
           iterationsBoxPlot <- seq(input$iterationBoxPlot[1],input$iterationBoxPlot[2])
+          print(iterationsBoxPlot)
           configurationID <- unique(unlist(iraceResults$allElites[iterationsBoxPlot]))
           results <- iraceResults$experiments[,configurationID,drop = FALSE]
           conf <- gl(ncol(results),
