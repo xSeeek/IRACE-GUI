@@ -23,7 +23,7 @@ removeTemporalPlots <- function()
 
 summary <- shinyServer(function(input,output,session){
   
-  
+  conf <- length(iraceResults$allConfigurations$.ID.)
   iterations <- iraceResults$state$nbIterations
   count <- 0
   bestConfiguration <- data.frame()
