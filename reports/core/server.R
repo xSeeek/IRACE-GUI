@@ -505,7 +505,7 @@ server <- function(input, output, session) {
     }, once = FALSE)
 
     observeEvent(input$requestBestSoFarIterations, {
-        params <- input$requestBestSoFarIterations$params
+        params <- unlist(input$requestBestSoFarIterations$params)
         bestSoFarIterations <- list()
 
         bestSoFarIterations[[1]] <- params
