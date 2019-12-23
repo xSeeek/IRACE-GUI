@@ -1,4 +1,27 @@
-library('shiny')
+packageVerification <- c("shiny")
+
+local({r <- getOption("repos")
+    r["CRAN"] <- "http://cran.us.r-project.org" 
+    options(repos=r)
+})
+
+pkgCheck <- function(packages)
+{
+    for(package in packages)
+    {
+        if(package %in% rownames(installed.packages()))
+            do.call('library', list(package))
+
+        else 
+        {
+            install.packages(package)
+            do.call("library", list(package))
+        }
+    } 
+}
+
+pkgCheck(packageVerification)
+
 options(shiny.port = 5000)
 options(shiny.host  = '127.0.0.1')
 
