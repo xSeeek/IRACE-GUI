@@ -229,6 +229,5 @@ function sendPreferences(status)
 Shiny.addCustomMessageHandler('closeWindow', 
     function(m) 
     {
-        console.log('Close window');
         window.close();
     });
