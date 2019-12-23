@@ -46,7 +46,6 @@ if(length(ls(envir=.GlobalEnv, pattern="iraceResults")) == 0)
 
 assign("recentlyLoadedReports", FALSE, envir=.GlobalEnv, inherits = FALSE)
 assign("flagStop", TRUE, envir=.GlobalEnv, inherits = FALSE)
-assign("enablePlotting", TRUE, envir=.GlobalEnv, inherits = FALSE)
 backMainMenu <- FALSE
 
 repeat{
