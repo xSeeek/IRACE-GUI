@@ -373,13 +373,14 @@ server <- function(input, output, session) {
                 image <- image_read(paste0("tempPlotFrequency", i, ".png"))
                 finalPlot <- image_append(c(finalPlot, image), stack = TRUE)
             }
-            progress$inc(9/10, detail = paste("Removing temporal plots..."))
-            removeTemporalPlots('tempPlotFrequency')
             image_write(finalPlot, path = "../resources/images/frequencyPlot.png", format = "png")
         })%...>% (function(result) {
-            progress$inc(10/10, detail = paste("Finishing..."))
-            progress$close()
+            progress$inc(9/10, detail = paste("Finishing..."))
             list(src = "../resources/images/frequencyPlot.png")
+        })%>%finally(function(){
+            progress$inc(10/10, detail = paste("Removing temporal plots..."))
+            removeTemporalPlots('tempPlotFrequency')
+            progress$close()
         })
     })
 
@@ -435,13 +436,14 @@ server <- function(input, output, session) {
                 image <- image_read(paste0("tempPlotParallel", i, ".png"))
                 finalPlot <- image_append(c(finalPlot, image), stack = TRUE)
             }
-            progress$inc(9/10, detail = paste("Removing temporal plots..."))
-            removeTemporalPlots('tempPlotParallel')
             image_write(finalPlot, path = "../resources/images/parallelPlot.png", format = "png")
         })%...>% (function(result) {
-            progress$inc(10/10, detail = paste("Finishing..."))
-            progress$close()
+            progress$inc(9/10, detail = paste("Finishing..."))
             list(src = "../resources/images/parallelPlot.png")
+        })%>%finally(function(){
+            progress$inc(10/10, detail = paste("Removing temporal plots..."))
+            removeTemporalPlots('tempPlotParallel')
+            progress$close()
         })
     })
 
