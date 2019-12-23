@@ -308,23 +308,35 @@ server <- function(input, output, session) {
 
     paramsCandidates <- reactive({
         validate(
-            need(length(input$selectedParametersCandidates) >= 2, "ERROR: At least two parameters are necessary to generate the plots.")
+            need(length(paramsCand()) >= 2, "ERROR: At least two parameters are necessary to generate the plots.")
         )
     })
 
+    paramsInput <- reactive({
+        input$selectedParametersCandidates
+    })
+
+    itersInput <- reactive({
+        input$iterationPlotsCandidates
+    })
+
+    paramsCand <- debounce(paramsInput, 1000)
+    itersCand <- debounce(itersInput, 1000)
+
     output$frecuencyCandidates <- renderImage({
+        paramsCandidates()
+        parameters <- paramsCand()
+        iterations <- itersCand()
+
         progress <- AsyncProgress$new(message = 'Plotting: Frequency Plot', detail = 'This may take a while...', value = 0)
         progress$inc(1/10, detail = paste("Preconfiguring..."))
-        req(input$iterationPlotsCandidates)
-        req(input$selectedParametersCandidates)
-        paramsCandidates()
+        req(iterations)
 
-        configurations <- getConfigurationByIteration(iraceResults = iraceResults, iterations = input$iterationPlotsCandidates[1]:input$iterationPlotsCandidates[2])
-
+        configurations <- getConfigurationByIteration(iraceResults = iraceResults, iterations = iterations[1]:iterations[2])
         max <- 12
         limit <- 1
         params <- c()
-        numberOfParameters <- ceiling(length(input$selectedParametersCandidates)/max)
+        numberOfParameters <- ceiling(length(parameters)/max)
         progress$inc(2/10, detail = paste("Rendering plots..."))
         future({
             for(i in 1: numberOfParameters)
@@ -332,9 +344,9 @@ server <- function(input, output, session) {
                 k <- 1
                 for(j in limit:(max*i))
                 {
-                    if(length(input$selectedParametersCandidates) >= j)
+                    if(length(parameters) >= j)
                     {
-                        params[k] <- input$selectedParametersCandidates[j]
+                        params[k] <- parameters[j]
                         k <- k + 1
                     }
                 }
@@ -372,20 +384,21 @@ server <- function(input, output, session) {
     })
 
     output$parallelCoordinatesCandidates <- renderImage({
+        paramsCandidates()
+        parameters <- paramsCand()
+        iterations <- itersCand()
+
         progress <- AsyncProgress$new(message = 'Plotting: Parallel Coordinates', detail = 'This may take a while...', value = 0)
         progress$inc(1/10, detail = paste("Preconfiguring..."))
-
-        req(input$iterationPlotsCandidates)
-        req(input$selectedParametersCandidates)
-        paramsCandidates()
+        req(iterations)
 
         last <- length(iraceResults$iterationElites)
-        conf <- getConfigurationByIteration(iraceResults = iraceResults, iterations = input$iterationPlotsCandidates[1]:input$iterationPlotsCandidates[2])
+        conf <- getConfigurationByIteration(iraceResults = iraceResults, iterations = iterations[1]:iterations[2])
         
         max <- 12
         limit <- 1
         params <- c()
-        numberOfParameters <- ceiling(length(input$selectedParametersCandidates)/max)
+        numberOfParameters <- ceiling(length(parameters)/max)
         progress$inc(2/10, detail = paste("Rendering plots..."))
         future({
             for(i in 1: numberOfParameters)
@@ -393,9 +406,9 @@ server <- function(input, output, session) {
                 k <- 1
                 for(j in limit:(max*i))
                 {
-                    if(length(input$selectedParametersCandidates) >= j)
+                    if(length(parameters) >= j)
                     {
-                        params[k] <- input$selectedParametersCandidates[j]
+                        params[k] <- parameters[j]
                         k <- k + 1
                     }
                 }
@@ -505,7 +518,7 @@ server <- function(input, output, session) {
     }, once = FALSE)
 
     observeEvent(input$requestBestSoFarIterations, {
-        params <- input$requestBestSoFarIterations$params
+        params <- unlist(input$requestBestSoFarIterations$params)
         bestSoFarIterations <- list()
 
         bestSoFarIterations[[1]] <- params
@@ -522,17 +535,6 @@ server <- function(input, output, session) {
             bestSoFarIterations[[i + 1]] <- buildData
         }
         session$sendCustomMessage("bestSoFarAllIterations", bestSoFarIterations)
-        return(NULL)
-    }, once = FALSE)
-
-    observeEvent(input$enablePlottingCandidates, {
-        assign("enablePlotting", TRUE, envir=.GlobalEnv, inherits = FALSE)
-        return(NULL)
-    }, once = FALSE)
-
-    observeEvent(input$blockPlottingCandidates, {
-        objs <- ls(pos = ".GlobalEnv")
-        rm(list = objs[grep("enablePlotting", objs)], pos = ".GlobalEnv")
         return(NULL)
     }, once = FALSE)
 }

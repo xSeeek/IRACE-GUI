@@ -54,6 +54,7 @@ function getOptionsPDF()
         options[index] = {"details": false};
 
     generatePDF(options);
+    return;
 }
 
 $(function() {
