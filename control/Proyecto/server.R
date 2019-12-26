@@ -3,18 +3,17 @@ library(shinythemes)
 library(shinydashboard)
 library(DT)
 library(ggplot2)
-library(irace, lib.loc = "/usr/local/lib/R/site-library")
 library(readr)
 library(magick)
+library(irace)
 absolutePath <- getwd()
-load(file = '../resources/test-dummy/acotsp-arena/irace.Rdata', envir=.GlobalEnv)
+load(file = '../resources/irace-gcc.Rdata', envir=.GlobalEnv)
 updateFile <- function()
 {
-  load(file = '../resources/test-dummy/acotsp-arena/irace.Rdata', envir=.GlobalEnv)
+  load(file = '../resources/irace-gcc.Rdata', envir=.GlobalEnv)
   return(irace)
 }
-
-
+  
 removeTemporalPlots <- function(patternData)
 {
   junk <- dir(pattern=patternData)
@@ -80,7 +79,6 @@ repeat{
         iraceResults$irace.version
       })
       
-      
       output$experimentsUsedSoFar <- renderText({
         invalidateLater(4000,session)
         
@@ -136,7 +134,6 @@ repeat{
         req(input$iterationFrequency)
         req(input$parametersFrequency)
         invalidateLater(4000, session)
-        
         
         iterationsFrequencyParameters <- seq(input$iterationFrequency[1],input$iterationFrequency[2])
         print(iterationsFrequencyParameters)
@@ -269,10 +266,19 @@ repeat{
             
           })
     })
-    if(conf >= length(iraceResults$allConfigurations$.ID.))
+    if(1==1)
     {
       break
     }
-  }
+}
+  observe({
+    updateSliderInput(session, "iterationPC", min = 1, max = iraceResults$state$nbIterations, value = seq(1,3))
+    updateSliderInput(session, "iterationFrequency", min = 1, max = iraceResults$state$nbIterations, value = seq(1,3))
+    updateSliderInput(session, "iterationPerformance", min = 1, max = iraceResults$state$nbIterations, value = seq(1,3))
+    updateSliderInput(session, "iterationBoxPlot", min = 1, max = iraceResults$state$nbIterations, value = seq(1,3))
+    updateNumericInput(session, "iterationForElites", value = 1,min = 1, max = iraceResults$state$nbIterations)
+    updateNumericInput(session, "iterationsElites", value = 1,min = 1, max = iraceResults$state$nbIterations)
+    updateSelectInput(session,"parametersParallelCoordinates",choices = iraceResults$parameters$names)
+    updateSelectInput(session,"parametersFrequency",choices = iraceResults$parameters$names)
+  })
 })
-
