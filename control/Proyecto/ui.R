@@ -4,7 +4,7 @@ library(shinydashboard)
 library(dashboardthemes)
 library(DT)
 library(ggplot2)
-library(irace, lib.loc = "/usr/local/lib/R/site-library")
+library(irace)
 
 
 
