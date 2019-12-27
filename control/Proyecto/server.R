@@ -25,8 +25,6 @@ summary <- shinyServer(function(input,output,session){
   iterations <- iraceResults$state$nbIterations
   count <- 0
   bestConfiguration <- data.frame()
-
-  
   
 repeat{   
   withProgress({
