@@ -23,8 +23,8 @@ server <- function(input, output, session) {
     
     valuesTable<-reactiveValues()
     
-    if(file.exists(file.path("../Irace_scenario-setup/note.rds"))){
-        valuesTable$Data<-readRDS("../Irace_scenario-setup/note.rds")
+    if(file.exists(file.path("../shared/note.rds"))){
+        valuesTable$Data<-readRDS("../shared/note.rds")
     }else{
         valuesTable$Data<-readRDS("note.rds")
     }
@@ -253,18 +253,18 @@ server <- function(input, output, session) {
         input$saveData
         input$saveTarget
         
-        iraceFile = file.path("../Irace_scenario-setup")
+        iraceFile = file.path("../shared")
         
         
         ### if the directory does not exist, it is created
         
         if(!file.exists(iraceFile)){
-            dir.create(file.path("../Irace_scenario-setup"))
+            dir.create(file.path("../shared"))
             
         }
         
         ### the directory is set in the created folder
-        setwd("../Irace_scenario-setup") 
+        setwd("../shared") 
         
         
         
@@ -273,8 +273,8 @@ server <- function(input, output, session) {
     observeEvent(input$saveData,{
         if(input$saveData>0){
             x <- data.table(valuesTable$Data)
-            if(!file.exists(file.path("../Irace_scenario-setup/parameters.txt"))){
-                write.table(x,"../Irace_scenario-setup/parameters.txt",row.names = FALSE, col.names = FALSE,  sep = '\t', quote = F)
+            if(!file.exists(file.path("../shared/parameters.txt"))){
+                write.table(x,"../shared/parameters.txt",row.names = FALSE, col.names = FALSE,  sep = '\t', quote = F)
             }
             
             
@@ -282,19 +282,19 @@ server <- function(input, output, session) {
                 shinyalert("Please upload instance file",type = "error")
                 return()
             }
-            write.table(paste(readLines(input$file1$datapath)),"../Irace_scenario-setup/instances.txt",row.names = FALSE,col.names = FALSE, sep = '', quote = F)
+            write.table(paste(readLines(input$file1$datapath)),"../shared/instances.txt",row.names = FALSE,col.names = FALSE, sep = '', quote = F)
             
-            if(is.null(input$file2) && !file.exists(file.path("../Irace_scenario-setup/target-runner"))) { 
+            if(is.null(input$file2) && !file.exists(file.path("../shared/target-runner"))) { 
                 shinyalert("Please upload target script and save it",type = "error")
                 return()
             }
             
-            if(file.exists(file.path("../Irace_scenario-setup/target-runner"))) {
+            if(file.exists(file.path("../shared/target-runner"))) {
                 shinyalert("Files are saved! you can run IRACE",type = "success")
             }
             
             
-            if(file.exists(file.path("../Irace_scenario-setup/parameters.txt")) && file.exists(file.path("../Irace_scenario-setup/scenario.txt")) && file.exists(file.path("../Irace_scenario-setup/instances.txt")) && file.exists(file.path("../Irace_scenario-setup/target-runner"))){
+            if(file.exists(file.path("../shared/parameters.txt")) && file.exists(file.path("../shared/scenario.txt")) && file.exists(file.path("../shared/instances.txt")) && file.exists(file.path("../shared/target-runner"))){
                 enable("start")
             }
         }
@@ -305,8 +305,8 @@ server <- function(input, output, session) {
         if(input$saveTarget>0){
             if(is.null(input$file2)) { shinyalert("Please upload target script and save it",type = "error")
                 return()}
-            write.table(paste(input$query),"../Irace_scenario-setup/target-runner",row.names = FALSE,col.names = FALSE, sep = '', quote = F)
-            Sys.chmod("../Irace_scenario-setup/target-runner", "777", use_umask = FALSE)
+            write.table(paste(input$query),"../shared/target-runner",row.names = FALSE,col.names = FALSE, sep = '', quote = F)
+            Sys.chmod("../shared/target-runner", "777", use_umask = FALSE)
             shinyalert("Target saved",type = "success")
         }
     })
@@ -334,7 +334,7 @@ server <- function(input, output, session) {
 
             status <- list(goto = 1)
             setwd('../')
-            path <- paste0(getwd(), '/Irace_scenario-setup/acotsp-arena/irace.Rdata')
+            path <- paste0(getwd(), '/shared/acotsp-arena/irace.Rdata')
             assign("pathRDATA", path, envir=.GlobalEnv, inherits = FALSE)
             js$closewindow()
             assign("flagStop", TRUE, envir=.GlobalEnv,inherits = FALSE)
@@ -373,8 +373,8 @@ server <- function(input, output, session) {
                               
                               
                               
-            ),"../Irace_scenario-setup/scenario.txt",row.names = FALSE,col.names = FALSE, sep = "",quote = F)
-            if(file.exists(file.path("../Irace_scenario-setup/scenario.txt"))){
+            ),"../shared/scenario.txt",row.names = FALSE,col.names = FALSE, sep = "",quote = F)
+            if(file.exists(file.path("../shared/scenario.txt"))){
                 shinyalert("File Saved!")
             }
             
@@ -405,8 +405,8 @@ server <- function(input, output, session) {
                               
                               
                               
-            ),"../Irace_scenario-setup/scenario.txt",row.names = FALSE,col.names = FALSE, sep = "",quote = F)
-            if(file.exists(file.path("../Irace_scenario-setup/scenario.txt"))){
+            ),"../shared/scenario.txt",row.names = FALSE,col.names = FALSE, sep = "",quote = F)
+            if(file.exists(file.path("../shared/scenario.txt"))){
                 shinyalert("File Saved!")
             }
             

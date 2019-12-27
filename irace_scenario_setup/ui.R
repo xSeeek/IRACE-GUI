@@ -1,5 +1,5 @@
 if (!require("shiny")) install.packages("shiny", dependencies = TRUE) 
-if (!require("shinydashboard")) install.packages("shinyjs", dependencies = TRUE) 
+if (!require("shinydashboard")) install.packages("shinydashboard", dependencies = TRUE) 
 if (!require("DT")) install.packages("DT", dependencies = TRUE) 
 if (!require("shinythemes")) install.packages("shinythemes", dependencies = TRUE) 
 if (!require("shinyjs")) install.packages("shinyjs", dependencies = TRUE) 
@@ -60,12 +60,12 @@ body <- dashboardBody(
                               tabPanel("General Options",
                                        br(),
                                        shinyjs::useShinyjs(),
-                                       disabled(textInput("parameterFile", "Parameter File",'"../Irace_scenario-setup/parameters.txt"')),
+                                       disabled(textInput("parameterFile", "Parameter File",'"../shared/parameters.txt"')),
                                        disabled(textInput("trainInstancesDir","Training Instances Dir", '""')),
-                                       disabled(textInput("trainInstancesFile","Training Instances File",'"../Irace_scenario-setup/instances.txt"')),
-                                       disabled(textInput("scenarioFile","Scenario File",'"../Irace_scenario-setup/scenario.txt"')),
-                                       disabled(textInput("execDir","Exec Dir",'"../Irace_scenario-setup/acotsp-arena"')),
-                                       disabled(textInput("logFile","Log File",'"../Irace_scenario-setup/acotsp-arena/irace.Rdata"')),
+                                       disabled(textInput("trainInstancesFile","Training Instances File",'"../shared/instances.txt"')),
+                                       disabled(textInput("scenarioFile","Scenario File",'"../shared/scenario.txt"')),
+                                       disabled(textInput("execDir","Exec Dir",'"../shared/acotsp-arena"')),
+                                       disabled(textInput("logFile","Log File",'"../shared/acotsp-arena/irace.Rdata"')),
                                        numericInput("debugLevel","Debug Level",0),
                                        textInput("seed","Seed",""),
                                        textInput("repairConfiguration","Repair Configuration",'""'),
