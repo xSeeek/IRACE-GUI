@@ -27,13 +27,13 @@ for (i in 1:length(packageVerification))
   pkgCheck(packageVerification[i])
 
           
-options(shiny.port = 5000)
+options(shiny.port = 5002)
 options(shiny.host  = '127.0.0.1')
-setwd("/home/daser/ProyectoIRACE/IRACE-GUI/control")
+setwd('./control')
 path <- getwd()
 path <- paste(path, "/Proyecto", sep = "")
 
 load(paste0(getwd(), '/resources/test-dummy/acotsp-arena/irace.Rdata'), envir=.GlobalEnv)
     
-
+browseURL("http://127.0.0.1:5002/")
 runApp(appDir = path)
