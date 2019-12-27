@@ -334,6 +334,7 @@ server <- function(input, output, session) {
 
             status <- list(goto = 1)
             assign("flagStop", TRUE, envir=.GlobalEnv,inherits = FALSE)
+            assign("pathRDATA", "../shared/carpeta/irace.Rdata", envir=.GlobalEnv, inherits = FALSE)
             session$sendCustomMessage(type = "closeWindow", message = "message")
             stopApp(returnValue = invisible(status))
         }  
