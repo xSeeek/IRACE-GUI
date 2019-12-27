@@ -273,9 +273,9 @@ server <- function(input, output, session) {
     observeEvent(input$saveData,{
         if(input$saveData>0){
             x <- data.table(valuesTable$Data)
-            if(!file.exists(file.path("../shared/parameters.txt"))){
+          
                 write.table(x,"../shared/parameters.txt",row.names = FALSE, col.names = FALSE,  sep = '\t', quote = F)
-            }
+            
             
             
             if(is.null(input$file1)){
