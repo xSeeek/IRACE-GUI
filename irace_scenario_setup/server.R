@@ -328,13 +328,15 @@ server <- function(input, output, session) {
         if(input$acept_start>0){
             removeModal()
             shinyalert("IRACE is now running", type = "success")
-            parameters = readParameters(file="parameters.txt")
-            scenario = readScenario(filename="scenario.txt")
-            irace(scenario=scenario, parameters=parameters)
+            setwd('../irace_scenario_setup')
+            script <- paste0(getwd(), "/runIrace.R")
+            system(paste0("Rscript -e 'source(\"", script, "\")'"), wait=FALSE)
 
-            
-        }
-        
+            status <- list(goto = 1)
+            assign("pathRDATA", "../shared/carpeta/irace.Rdata", envir=.GlobalEnv, inherits = FALSE)
+            js$closewindow()
+            stopApp(returnValue = invisible(status))
+        }  
     })
     
     
@@ -462,6 +464,9 @@ server <- function(input, output, session) {
     
     output$targetScript <- renderText({ fileText() }) 
     output$targetPath <- renderText({input$file2$datapath}, quoted = FALSE)
-    
+
+    session$onSessionEnded(function() {
+        stopApp()
+    })
 }
 

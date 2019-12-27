@@ -41,6 +41,7 @@ sidebar <- dashboardSidebar(
           box(title="Summary",
               status="primary",
               h5("Irace Version: ", textOutput("iraceVersion",inline=TRUE)),
+              h5("Time of Execution: ", textOutput("timeOfExecution",inline=TRUE), " seconds"),
               h5("Num of Iterations: ", textOutput("numIterations",inline=TRUE)),
               h5("Num of Parameters: ", textOutput("numOfParameters",inline=TRUE)),
               h5("Num of Configurations: ",textOutput("numConfigurations",inline=TRUE)),

@@ -10,10 +10,9 @@ absolutePath <- getwd()
 load(file = '../resources/test-dummy/acotsp-arena/irace.Rdata', envir=.GlobalEnv)
 updateFile <- function()
 {
-  load(file = '../resources/test-dummy/actosp-arena/irace.Rdata', envir=.GlobalEnv)
+  load(file = '../resources/test-dummy/acotsp-arena/irace.Rdata', envir=.GlobalEnv)
   return(irace)
 }
-  
 removeTemporalPlots <- function(patternData)
 {
   junk <- dir(pattern=patternData)
@@ -25,8 +24,7 @@ summary <- shinyServer(function(input,output,session){
   iterations <- iraceResults$state$nbIterations
   count <- 0
   bestConfiguration <- data.frame()
-
-  
+  time <- 0
   
 repeat{   
   withProgress({
@@ -67,8 +65,17 @@ repeat{
       incProgress(2/15, message = "Updating Summary")
       Sys.sleep(0.5)
       #### SUMMARY ####
+      output$timeOfExecution <- renderText({
+        invalidateLater(4000,session)
+        while(iraceResults$state$completed == FALSE)
+        {
+          time = time + 1
+        }
+        time
+      })
       output$numOfParameters <- renderText({
         invalidateLater(4000,session)
+        updateFile()
         length(iraceResults$parameters$names)
       })
       
@@ -265,7 +272,7 @@ repeat{
             
           })
     })
-    if(1==1)
+    if(iraceResults$state$completed)
     {
       break
     }
