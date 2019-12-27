@@ -30,3 +30,10 @@ path <- paste(path, "/irace_scenario_setup", sep = "")
 
 browseURL("http://127.0.0.1:5001/")
 returnData = runApp(appDir = path)
+if(length(returnData) != 0 && returnData$goto == 1)
+{
+    path <- getwd()
+    path <- paste(path, "/control/app.R", sep = "")
+    print('Launching control app...')
+    source(path)
+}
