@@ -27,10 +27,11 @@ skin <- tolower(skin)
 if (skin == "")devtools::install_github("r-lib/pkgbuild")
 skin <- "black"
 
-
+jscode <- "shinyjs.closewindow = function() { window.close(); }"
 
 ###Client side
 sidebar <- dashboardSidebar( useShinyjs(),
+                            extendShinyjs(text = jscode),
                              sidebarMenu(
                                  menuItem("Options", tabName = "options", icon = icon("dashboard")),
                                  menuItem("Parameters", icon = icon("table"), tabName = "parametersTab"),

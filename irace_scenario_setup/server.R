@@ -333,9 +333,8 @@ server <- function(input, output, session) {
             system(paste0("Rscript -e 'source(\"", script, "\")'"), wait=FALSE)
 
             status <- list(goto = 1)
-            assign("flagStop", TRUE, envir=.GlobalEnv,inherits = FALSE)
             assign("pathRDATA", "../shared/carpeta/irace.Rdata", envir=.GlobalEnv, inherits = FALSE)
-            session$sendCustomMessage(type = "closeWindow", message = "message")
+            js$closewindow()
             stopApp(returnValue = invisible(status))
         }  
     })
@@ -465,6 +464,9 @@ server <- function(input, output, session) {
     
     output$targetScript <- renderText({ fileText() }) 
     output$targetPath <- renderText({input$file2$datapath}, quoted = FALSE)
-    
+
+    session$onSessionEnded(function() {
+        stopApp()
+    })
 }
 
