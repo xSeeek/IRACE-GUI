@@ -1,13 +1,12 @@
-library(shiny)
-library(shinythemes)
-library(shinydashboard)
-library(DT)
-library(irace)
-library(magick)
+
         
-  
-packageVerification <- c("shiny", "irace","readr","magick","RCurl")
-  
+
+packageVerification <- c("shiny", "irace","readr","magick","RCurl","shinydashboard","devtools")
+
+if(!require("dashboardthemes"))
+{
+  devtools::install_github("nik01010/dashboardthemes")
+}
 
   local({r <- getOption("repos")
     r["CRAN"] <- "http://cran.us.r-project.org" 
@@ -27,14 +26,14 @@ pkgCheck <- function(x)
 for (i in 1:length(packageVerification)) 
   pkgCheck(packageVerification[i])
 
-
-options(shiny.port = 5000)
+          
+options(shiny.port = 5002)
 options(shiny.host  = '127.0.0.1')
-setPath <- setwd("~/ProyectoIRACE/IRACE-GUI")
+setwd('./control')
 path <- getwd()
-path <- paste(path, "/control/Proyecto", sep = "")
+path <- paste(path, "/Proyecto", sep = "")
 
-load(paste0(getwd(), '/control/resources/test-dummy/acotsp-arena/irace.Rdata'), envir=.GlobalEnv)
+load(paste0(getwd(), '/resources/test-dummy/acotsp-arena/irace.Rdata'), envir=.GlobalEnv)
     
-
+browseURL("http://127.0.0.1:5002/")
 runApp(appDir = path)

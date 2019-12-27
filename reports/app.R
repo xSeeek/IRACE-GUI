@@ -62,7 +62,13 @@ repeat{
         }
         if(returnData$goto == 1)
         {
+            rm(iraceResults, envir = .GlobalEnv)
+            setwd('../')
+            path <- getwd()
+            path <- paste(path, "/irace_scenario_setup/app.R", sep = "")
             print("Loading setup section...")
+            source(path)
+            break
         }
         if(returnData$goto == 2)
         {

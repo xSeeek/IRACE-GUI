@@ -217,6 +217,11 @@ function backToMainMenu()
     Shiny.onInputChange("backMainMenu", true);
 }
 
+function loadSetup()
+{
+    Shiny.onInputChange("launchSetup", Math.random());
+}
+
 Shiny.addCustomMessageHandler('closeWindow', 
     function(m) 
     {

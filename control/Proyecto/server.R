@@ -7,10 +7,10 @@ library(readr)
 library(magick)
 library(irace)
 absolutePath <- getwd()
-load(file = '../resources/irace-gcc.Rdata', envir=.GlobalEnv)
+load(file = '../resources/test-dummy/acotsp-arena/irace.Rdata', envir=.GlobalEnv)
 updateFile <- function()
 {
-  load(file = '../resources/irace-gcc.Rdata', envir=.GlobalEnv)
+  load(file = '../resources/test-dummy/actosp-arena/irace.Rdata', envir=.GlobalEnv)
   return(irace)
 }
   
@@ -68,7 +68,6 @@ repeat{
       Sys.sleep(0.5)
       #### SUMMARY ####
       output$numOfParameters <- renderText({
-        updateFile()
         invalidateLater(4000,session)
         length(iraceResults$parameters$names)
       })

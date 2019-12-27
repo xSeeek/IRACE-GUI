@@ -284,17 +284,17 @@ server <- function(input, output, session) {
             }
             write.table(paste(readLines(input$file1$datapath)),"../Irace_scenario-setup/instances.txt",row.names = FALSE,col.names = FALSE, sep = '', quote = F)
             
-            if(is.null(input$file2) && !file.exists(file.path("../Irace_scenario-setup/target-runner.r"))) { 
+            if(is.null(input$file2) && !file.exists(file.path("../Irace_scenario-setup/target-runner"))) { 
                 shinyalert("Please upload target script and save it",type = "error")
                 return()
             }
             
-            if(file.exists(file.path("../Irace_scenario-setup/target-runner.r"))) {
+            if(file.exists(file.path("../Irace_scenario-setup/target-runner"))) {
                 shinyalert("Files are saved! you can run IRACE",type = "success")
             }
             
             
-            if(file.exists(file.path("../Irace_scenario-setup/parameters.txt")) && file.exists(file.path("../Irace_scenario-setup/scenario.txt")) && file.exists(file.path("../Irace_scenario-setup/instances.txt")) && file.exists(file.path("../Irace_scenario-setup/target-runner.r"))){
+            if(file.exists(file.path("../Irace_scenario-setup/parameters.txt")) && file.exists(file.path("../Irace_scenario-setup/scenario.txt")) && file.exists(file.path("../Irace_scenario-setup/instances.txt")) && file.exists(file.path("../Irace_scenario-setup/target-runner"))){
                 enable("start")
             }
         }
@@ -305,7 +305,8 @@ server <- function(input, output, session) {
         if(input$saveTarget>0){
             if(is.null(input$file2)) { shinyalert("Please upload target script and save it",type = "error")
                 return()}
-            write.table(paste(input$query),"../Irace_scenario-setup/target-runner.r",row.names = FALSE,col.names = FALSE, sep = '', quote = F)
+            write.table(paste(input$query),"../Irace_scenario-setup/target-runner",row.names = FALSE,col.names = FALSE, sep = '', quote = F)
+            Sys.chmod("../Irace_scenario-setup/target-runner", "777", use_umask = FALSE)
             shinyalert("Target saved",type = "success")
         }
     })
