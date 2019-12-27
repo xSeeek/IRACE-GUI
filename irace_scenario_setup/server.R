@@ -330,7 +330,7 @@ server <- function(input, output, session) {
             shinyalert("IRACE is now running", type = "success")
             setwd('../irace_scenario_setup')
             script <- paste0(getwd(), "/runIrace.R")
-            #system(paste0("Rscript -e 'source(\"", script, "\")'"), wait=FALSE)
+            system(paste0("Rscript -e 'source(\"", script, "\")'"), wait=FALSE)
 
             status <- list(goto = 1)
             assign("pathRDATA", "../shared/carpeta/irace.Rdata", envir=.GlobalEnv, inherits = FALSE)
