@@ -1,0 +1,29 @@
+###General Options
+
+ parameterFile= "../Irace_scenario-setup/parameters.txt" 
+ trainInstancesDir= "" 
+ trainInstancesFile= "../Irace_scenario-setup/instances.txt" 
+ scenarioFile= "../Irace_scenario-setup/scenario.txt" 
+ execDir=  "../Irace_scenario-setup/acotsp-arena" 
+ debugLevel= 0 
+ seed= NA 
+ repairConfiguration= "" 
+ postSelection= 0 
+ maxExperiments= 5000 
+ aclib= 0 
+
+ ###Elitist Race
+
+ elitist= 1 
+ elitistLimit= 2 
+ elitistNewInstances= 1 
+ ###Internal Irace Options
+
+ nbIterations= 0 
+
+ nbExperimentsPerIteration= 0 
+ minNbSurvival= 0 
+ nbConfigurations= 0 
+ mu= 5 
+ softRestart= 1 
+
