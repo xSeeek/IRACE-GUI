@@ -7,12 +7,18 @@ library(readr)
 library(magick)
 library(irace)
 absolutePath <- getwd()
-print(absolutePath)
 setwd('../')
-load(file = pathRDATA, envir=.GlobalEnv)
+load(pathRDATA, envir=.GlobalEnv)
 updateFile <- function()
 {
-  load(file = pathRDATA, envir=.GlobalEnv)
+  if(iraceResults$state$completed == TRUE)
+  {
+    assign("flagStop", TRUE, envir=.GlobalEnv,inherits = FALSE)
+    js$closewindow()
+    status <- list(goto = 1)
+    stopApp(returnValue = invisible(status))
+  }
+  load(pathRDATA, envir=.GlobalEnv)
   return(irace)
 }
 removeTemporalPlots <- function(patternData)
@@ -27,8 +33,8 @@ summary <- shinyServer(function(input,output,session){
   count <- 0
   bestConfiguration <- data.frame()
   time <- 0
+  statusIrace <- iraceResults$state$completed
   
-repeat{   
     #### TABLAS ####
       observe({
         invalidateLater(4000,session)
@@ -61,14 +67,6 @@ repeat{
         })
       })
       #### SUMMARY ####
-      output$timeOfExecution <- renderText({
-        invalidateLater(4000,session)
-        while(iraceResults$state$completed == FALSE)
-        {
-          time = time + 1
-        }
-        time
-      })
       output$numOfParameters <- renderText({
         invalidateLater(4000,session)
         updateFile()
@@ -265,15 +263,6 @@ repeat{
             text(fes, values, elites, pos = 1)
             
           })
-    if(iraceResults$state$completed)
-    {
-      assign("flagStop", TRUE, envir=.GlobalEnv,inherits = FALSE)
-      js$closewindow()
-      status <- list(goto = 1)
-      stopApp(returnValue = invisible(status))
-      break
-    }
-}
 
   observe({
     updateSliderInput(session, "iterationPC", min = 1, max = iraceResults$state$nbIterations, value = seq(1,3))
