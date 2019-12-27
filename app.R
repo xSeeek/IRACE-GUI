@@ -1,3 +1,6 @@
+# create local user library path (not present by default)
+dir.create(path = Sys.getenv("R_LIBS_USER"), showWarnings = FALSE, recursive = TRUE)
+
 packageVerification <- c("shiny")
 
 local({r <- getOption("repos")
@@ -39,7 +42,10 @@ browseURL("http://127.0.0.1:5000/")
 returnData = runApp(appDir = path)
 if(length(returnData) != 0 && returnData$goto == 1)
 {
-    print('To Setup section')
+    path <- getwd()
+    path <- paste(path, "/irace_scenario_setup/app.R", sep = "")
+    print('Loading setup section...')
+    source(path)
 }
 if(length(returnData) != 0 && returnData$goto == 2)
 {

@@ -495,6 +495,14 @@ server <- function(input, output, session) {
         stopApp(returnValue = invisible(status))
     }, once = TRUE)
 
+    observeEvent(input$launchSetup, {
+        status <- list(goto = 1)
+
+        assign("recentlyLoadedReports", TRUE, envir=.GlobalEnv,inherits = FALSE)
+        session$sendCustomMessage(type = "closeWindow", message = "message")
+        stopApp(returnValue = invisible(status))
+    }, once = TRUE)
+
     observeEvent(input$requestPlottingCandidates, {
         req(input$selectedParametersCandidates)
         print(input$requestPlottingCandidates$iterations)
