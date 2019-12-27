@@ -14,6 +14,8 @@ library(irace)
 #if (skin == "")
 #  skin <- "black"
 
+jscode <- "shinyjs.closewindow = function() { window.close(); }"
+assign("flagStop", FALSE, envir=.GlobalEnv,inherits = FALSE)
 
 header <- dashboardHeader(
   title = "IRACE",
@@ -32,6 +34,8 @@ sidebar <- dashboardSidebar(
         )
 )
   body <- dashboardBody(
+    useShinyjs(),
+    extendShinyjs(text = jscode),
     shinyDashboardThemes(
       theme = "grey_light"
     ),

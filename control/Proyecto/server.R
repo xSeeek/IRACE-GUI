@@ -8,10 +8,11 @@ library(magick)
 library(irace)
 absolutePath <- getwd()
 print(absolutePath)
-load(file = '../resources/test-dummy/acotsp-arena/irace.Rdata', envir=.GlobalEnv)
+setwd('../')
+load(file = pathRDATA, envir=.GlobalEnv)
 updateFile <- function()
 {
-  load(file = '../resources/test-dummy/acotsp-arena/irace.Rdata', envir=.GlobalEnv)
+  load(file = pathRDATA, envir=.GlobalEnv)
   return(irace)
 }
 removeTemporalPlots <- function(patternData)
@@ -266,9 +267,14 @@ repeat{
     })
     if(iraceResults$state$completed)
     {
+      assign("flagStop", TRUE, envir=.GlobalEnv,inherits = FALSE)
+      js$closewindow()
+      status <- list(goto = 1)
+      stopApp(returnValue = invisible(status))
       break
     }
 }
+
   observe({
     updateSliderInput(session, "iterationPC", min = 1, max = iraceResults$state$nbIterations, value = seq(1,3))
     updateSliderInput(session, "iterationFrequency", min = 1, max = iraceResults$state$nbIterations, value = seq(1,3))
@@ -279,4 +285,13 @@ repeat{
     updateSelectInput(session,"parametersParallelCoordinates",choices = iraceResults$parameters$names)
     updateSelectInput(session,"parametersFrequency",choices = iraceResults$parameters$names)
   })
+
+  session$onSessionEnded(function() {
+        if(flagStop == FALSE)
+        {
+            print('SESSION ENDED BY SETUP APP')
+            assign("flagStop", TRUE, envir=.GlobalEnv,inherits = FALSE)
+            stopApp()
+        }
+    })
 })

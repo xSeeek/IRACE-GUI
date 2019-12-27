@@ -1,5 +1,5 @@
 
-packageVerification <- c("shiny", "irace","readr","magick","RCurl","shinydashboard","devtools")
+packageVerification <- c("shiny", "irace","readr","magick","RCurl","shinydashboard","devtools", "shinyjs")
 
 if(!require("dashboardthemes"))
 {
@@ -27,11 +27,20 @@ for (i in 1:length(packageVerification))
           
 options(shiny.port = 5002)
 options(shiny.host  = '127.0.0.1')
-#setwd('./control')
+setwd('./control')
 path <- getwd()
 path <- paste(path, "/Proyecto", sep = "")
-load(paste0(getwd(),'/resources/test-dummy/acotsp-arena/irace.Rdata'), envir=.GlobalEnv)
-
+load(pathRDATA, envir=.GlobalEnv)
     
 browseURL("http://127.0.0.1:5002/")
-runApp(appDir = path)
+returnData = runApp(appDir = path)
+if(length(returnData) != 0 && returnData$goto == 1)
+{
+  setwd('../')
+  path <- paste(getwd(), "/reports/app.R", sep = "")
+  print(path)
+  assign("loadedCustomSection", TRUE, envir=.GlobalEnv, inherits = FALSE)
+  assign("recentlyLoadedReports", FALSE, envir=.GlobalEnv,inherits = FALSE)
+  print("Loading reports section...")
+  source(path)
+}

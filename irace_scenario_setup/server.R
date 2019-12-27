@@ -333,8 +333,11 @@ server <- function(input, output, session) {
             system(paste0("Rscript -e 'source(\"", script, "\")'"), wait=FALSE)
 
             status <- list(goto = 1)
-            assign("pathRDATA", "../shared/carpeta/irace.Rdata", envir=.GlobalEnv, inherits = FALSE)
+            setwd('../')
+            path <- paste0(getwd(), '/Irace_scenario-setup/acotsp-arena/irace.Rdata')
+            assign("pathRDATA", path, envir=.GlobalEnv, inherits = FALSE)
             js$closewindow()
+            assign("flagStop", TRUE, envir=.GlobalEnv,inherits = FALSE)
             stopApp(returnValue = invisible(status))
         }  
     })
@@ -466,7 +469,12 @@ server <- function(input, output, session) {
     output$targetPath <- renderText({input$file2$datapath}, quoted = FALSE)
 
     session$onSessionEnded(function() {
-        stopApp()
+        if(flagStop == FALSE)
+        {
+            print('SESSION ENDED BY SETUP APP')
+            assign("flagStop", TRUE, envir=.GlobalEnv,inherits = FALSE)
+            stopApp()
+        }
     })
 }
 
