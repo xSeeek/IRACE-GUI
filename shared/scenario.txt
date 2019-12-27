@@ -1,10 +1,10 @@
 ###General Options
 
- parameterFile= "../Irace_scenario-setup/parameters.txt" 
+ parameterFile= "../shared/parameters.txt" 
  trainInstancesDir= "" 
- trainInstancesFile= "../Irace_scenario-setup/instances.txt" 
- scenarioFile= "../Irace_scenario-setup/scenario.txt" 
- execDir=  "../Irace_scenario-setup/acotsp-arena" 
+ trainInstancesFile= "../shared/instances.txt" 
+ scenarioFile= "../shared/scenario.txt" 
+ execDir=  "../shared/acotsp-arena" 
  debugLevel= 0 
  seed= NA 
  repairConfiguration= "" 
