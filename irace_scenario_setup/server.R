@@ -333,7 +333,6 @@ server <- function(input, output, session) {
             #system(paste0("Rscript -e 'source(\"", script, "\")'"), wait=FALSE)
 
             status <- list(goto = 1)
-            assign("flagStop", TRUE, envir=.GlobalEnv,inherits = FALSE)
             assign("pathRDATA", "../shared/carpeta/irace.Rdata", envir=.GlobalEnv, inherits = FALSE)
             js$closewindow()
             stopApp(returnValue = invisible(status))
