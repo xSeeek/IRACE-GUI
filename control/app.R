@@ -27,7 +27,6 @@ for (i in 1:length(packageVerification))
           
 options(shiny.port = 5002)
 options(shiny.host  = '127.0.0.1')
-#setwd('./control')
 path <- getwd()
 path <- paste(path, "/Proyecto", sep = "")
 load(paste0(getwd(),'/resources/test-dummy/acotsp-arena/irace.Rdata'), envir=.GlobalEnv)
