@@ -29,10 +29,6 @@ summary <- shinyServer(function(input,output,session){
   time <- 0
   
 repeat{   
-  withProgress({
-    message = "Executing IRACE"
-    incProgress(1/15,message = "Rendering Tables")
-    Sys.sleep(0.5)
     #### TABLAS ####
       observe({
         invalidateLater(4000,session)
@@ -64,8 +60,6 @@ repeat{
                         ))
         })
       })
-      incProgress(2/15, message = "Updating Summary")
-      Sys.sleep(0.5)
       #### SUMMARY ####
       output$timeOfExecution <- renderText({
         invalidateLater(4000,session)
@@ -124,8 +118,6 @@ repeat{
           }
         })
       })
-      incProgress(3/15, message = "Rendering Plots")
-      Sys.sleep(0.5)
      #### PLOTS ####
       output$plotPerformance <- renderPlot({
         req(input$iterationPerformance)
@@ -273,7 +265,6 @@ repeat{
             text(fes, values, elites, pos = 1)
             
           })
-    })
     if(iraceResults$state$completed)
     {
       assign("flagStop", TRUE, envir=.GlobalEnv,inherits = FALSE)
