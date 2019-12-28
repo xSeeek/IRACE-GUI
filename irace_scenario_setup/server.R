@@ -443,6 +443,23 @@ server <- function(input, output, session) {
     # 
     # })
     # 
+      
+    observeEvent(input$infoModal,{
+        showModal(
+            modalDialog( title = tags$b("Setup information"),
+                         "To run IRACE correctly you have to save the following files:",br(),
+                         tags$b("Options"),"(there are default values so you don't have to fill in all inputs)",br(),
+                         tags$b("Parameters"),"(You can add, edit and delete parameters)",br(),
+                         tags$b("Instances"),"(You have to upload an instance file)",br(),
+                         tags$b("Target"), "(You have tu upload target-runner file, also you can edit and save it)",br(),br(),
+                         tags$b("Remember to press 'save' on each module and then press 'Save configuration'"),br(),
+                         "After all those steps, you can run IRACE."
+                         
+                ,easyClose = FALSE
+            )
+        )
+        
+    })
     
     
     
