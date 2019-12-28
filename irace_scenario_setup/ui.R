@@ -44,7 +44,9 @@ sidebar <- dashboardSidebar( useShinyjs(),
                                  br(),
                                  actionButton("saveData", "Save configuration", icon = icon("save")),
                                  br(),
-                                 disabled(actionButton("start", "Start", icon = icon("play")))
+                                 disabled(actionButton("start", "Start", icon = icon("play"))),
+                                 br(),
+                                 actionButton("infoModal","Info", icon = icon("info-circle"))
                              )
 )
 
