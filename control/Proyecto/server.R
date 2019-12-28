@@ -6,8 +6,10 @@ library(ggplot2)
 library(readr)
 library(magick)
 library(irace)
-absolutePath <- getwd()
+library(future)
+plan(multiprocess)
 setwd('../')
+print(getwd())
 load(pathRDATA, envir=.GlobalEnv)
 updateFile <- function()
 {
@@ -26,6 +28,13 @@ removeTemporalPlots <- function(patternData)
   junk <- dir(pattern=patternData)
   file.remove(junk)
 }
+
+extractPID <- function()
+{
+  process <- system("ps -ef | grep runIrace.R | awk '{print $2}'", intern = TRUE)
+  substr(process,1,5)
+  print(substr(process,1,5))
+}
 summary <- shinyServer(function(input,output,session){
   
   conf <- length(iraceResults$allConfigurations$.ID.)
@@ -34,27 +43,26 @@ summary <- shinyServer(function(input,output,session){
   bestConfiguration <- data.frame()
   time <- 0
   statusIrace <- iraceResults$state$completed
-  
+  process <- system("ps -ef | grep runIrace.R | awk '{print $2}'", intern = TRUE)
     #### TABLAS ####
       observe({
         invalidateLater(4000,session)
         output$elites <- DT::renderDataTable({
-          req(input$iterationsElites)
-          validate(
-            need(input$iterationsElites <= iraceResults$state$nbIterations, "Ingrese un valor valido")
-          )
-            allElitesID <- iraceResults$allElites
-            for(i in allElitesID[as.integer(input$iterationsElites)])
-            {
-              bestConfiguration <- getConfigurationById(iraceResults, ids=i)
-            }
-            DT::datatable(bestConfiguration,
-                          options = list(
-                            scrollX = TRUE,
-                            scrollY = TRUE
-                          ))
+            req(input$iterationsElites)
+            validate(
+              need(input$iterationsElites <= iraceResults$state$nbIterations, "Ingrese un valor valido")
+            )
+              allElitesID <- iraceResults$allElites
+              for(i in allElitesID[as.integer(input$iterationsElites)])
+              {
+                bestConfiguration <- getConfigurationById(iraceResults, ids=i)
+              }
+              DT::datatable(bestConfiguration,
+                            options = list(
+                              scrollX = TRUE,
+                              scrollY = TRUE
+                            ))
         })
-      })
       observe({
         invalidateLater(4000,session)
         output$dataTableAllConfigurations <- DT::renderDataTable({
@@ -67,55 +75,73 @@ summary <- shinyServer(function(input,output,session){
         })
       })
       #### SUMMARY ####
-      output$numOfParameters <- renderText({
-        invalidateLater(4000,session)
-        updateFile()
-        length(iraceResults$parameters$names)
-      })
-      
-      
-      output$iraceVersion <- renderText({
-        invalidateLater(4000,session)
-        iraceResults$irace.version
-      })
-      
-      output$experimentsUsedSoFar <- renderText({
-        invalidateLater(4000,session)
-        
-        iraceResults$state$experimentsUsedSoFar
-      })
-      output$maxExperiments <- renderText({
-        invalidateLater(4000, session)
-        iraceResults$scenario$maxExperiments
-      })
-      
-      output$numIterations <- renderText({
-        invalidateLater(4000, session)
-        iraceResults$state$nbIterations
-      })
-      output$numConfigurations <- renderText({
-        invalidateLater(4000, session)
-        conf <- length(iraceResults$allConfigurations$.ID.)
-      })
-      output$numInstancesUsedSoFar <- renderText({
-        invalidateLater(4000, session)
-        nrow(iraceResults$experiments)
-      })
-      #output$numOfInstances <- renderText({
-        #invalidateLater(4000,session)
-        #length(iraceResults$experiments)
-      #})
-      observe({
-        invalidateLater(4000, session)
-        output$numElitesConfigurations <- renderText({
-          req(input$iterationForElites)
-          for(i in iraceResults$allElites[as.integer(input$iterationForElites)])
-          {
-            c(i)
-            return(length(i))
-          }
+      withProgress(message = "Updating Summary", value = 0, {
+        incProgress(1/10,detail = paste("Updating Number of Parameters"))
+        Sys.sleep(0.5)
+        output$numOfParameters <- renderText({
+          invalidateLater(4000,session)
+          updateFile()
+          length(iraceResults$parameters$names)
         })
-      })
+        
+        
+        output$iraceVersion <- renderText({
+          invalidateLater(4000,session)
+          iraceResults$irace.version
+        })
+        incProgress(2/10,detail = paste("Updating Number of Experiments Used so Far"))
+        Sys.sleep(0.5)
+        output$experimentsUsedSoFar <- renderText({
+          invalidateLater(4000,session)
+          
+          iraceResults$state$experimentsUsedSoFar
+        })
+        output$maxExperiments <- renderText({
+          invalidateLater(4000, session)
+          iraceResults$scenario$maxExperiments
+        })
+        
+        output$numIterations <- renderText({
+          invalidateLater(4000, session)
+          iraceResults$state$nbIterations
+        })
+        incProgress(3/10,detail = paste("Updating Number of Configurations"))
+        Sys.sleep(0.5)
+        output$numConfigurations <- renderText({
+          invalidateLater(4000, session)
+          conf <- length(iraceResults$allConfigurations$.ID.)
+        })
+        incProgress(4/10,detail = paste("Updating Number of Instances Used so Far"))
+        Sys.sleep(0.5)
+        output$numInstancesUsedSoFar <- renderText({
+          invalidateLater(4000, session)
+          nrow(iraceResults$experiments)
+        })
+        incProgress(5/10,detail = paste("Updating Number of Instances"))
+        Sys.sleep(0.5)
+        output$numOfInstances <- renderText({
+          invalidateLater(4000,session)
+          length(iraceResults$scenario$instances)
+        })
+        incProgress(6/10,detail = paste("Updating Number of Elites Configurations"))
+        Sys.sleep(0.5)
+        observe({
+          invalidateLater(4000, session)
+          output$numElitesConfigurations <- renderText({
+            req(input$iterationForElites)
+            for(i in iraceResults$allElites[as.integer(input$iterationForElites)])
+            {
+              c(i)
+              return(length(i))
+            }
+          })
+        })
+        if(statusIrace == TRUE)
+        {
+          incProgress(10/10,detail = paste("Finishing"))
+          Sys.sleep(0.5)
+        }
+      }) 
      #### PLOTS ####
       output$plotPerformance <- renderPlot({
         req(input$iterationPerformance)
@@ -133,11 +159,11 @@ summary <- shinyServer(function(input,output,session){
         req(input$parametersFrequency)
         invalidateLater(4000, session)
         
-        iterationsFrequencyParameters <- seq(input$iterationFrequency[1],input$iterationFrequency[2])
-        print(iterationsFrequencyParameters)
         
         
-        conf <- getConfigurationByIteration(iraceResults = iraceResults, iterations = iterationsFrequencyParameters)
+        conf <- getConfigurationByIteration(iraceResults = iraceResults, iterations = input$iterationFrequency[1]:input$iterationFrequency[2])
+        print(input$parametersFrequency)
+        print(conf)
         max <- 12
         limit <- 1
         params <- c()
@@ -176,10 +202,11 @@ summary <- shinyServer(function(input,output,session){
           print(image)
           finalPlot <- image_append(c(finalPlot, image), stack = TRUE)
         }
+        print(getwd())
         removeTemporalPlots('tempPlotFrequency')
-        image_write(finalPlot, path = "../resources/images/frequencyPlot.png", format = "png")
-        print(image_write(finalPlot, path = "../resources/images/frequencyPlot.png", format = "png"))
-        list(src = "../resources/images/frequencyPlot.png")
+        image_write(finalPlot,path = paste0(getwd(),"/resources/images/frequencyPlot.png"), format = "png")
+        print(image_write(finalPlot,path = paste0(getwd(),"/resources/images/frequencyPlot.png"), format = "png"))
+        list(src = paste0(getwd(),"/resources/images/frequencyPlot.png"))
       })
         output$paralelCoordinatesCandidates <- renderImage({
         req(input$iterationPC)
@@ -229,8 +256,8 @@ summary <- shinyServer(function(input,output,session){
           finalPlot <- image_append(c(finalPlot, image), stack = TRUE)
         }
         removeTemporalPlots('tempPlotParallel')
-        image_write(finalPlot, path = "../resources/images/parallelPlot.png", format = "png")
-        list(src = "../resources/images/parallelPlot.png")
+        image_write(finalPlot,path = paste0(getwd(),"/resources/images/parallelPlot.png"), format = "png")
+        list(src = paste0(getwd(),"/resources/images/parallelPlot.png"))
       })
         output$boxPlotBestConfiguration <- renderPlot({
           req(input$iterationBoxPlot)
@@ -263,6 +290,17 @@ summary <- shinyServer(function(input,output,session){
             text(fes, values, elites, pos = 1)
             
           })
+  })
+    # FINISH IRACE #
+
+    output$processFinish <- renderText({
+      system("ps -ef | grep runIrace.R | awk '{print $2}'", intern = TRUE)
+    })
+
+    observeEvent(input$finishProcess,{
+      shinyalert("IRACE Finished",type="sucess")
+      system(paste("kill",extractPID()))
+    })
 
   observe({
     updateSliderInput(session, "iterationPC", min = 1, max = iraceResults$state$nbIterations, value = seq(1,3))

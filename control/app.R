@@ -1,5 +1,5 @@
 
-packageVerification <- c("shiny", "irace","readr","magick","RCurl","shinydashboard","devtools", "shinyjs")
+packageVerification <- c("shiny", "irace","readr","magick","RCurl","shinydashboard","devtools", "shinyjs","future","promises","shinyalert")
 
 if(!require("dashboardthemes"))
 {

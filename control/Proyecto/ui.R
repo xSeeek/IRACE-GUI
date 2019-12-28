@@ -5,8 +5,9 @@ library(dashboardthemes)
 library(DT)
 library(ggplot2)
 library(irace)
+library(shinyalert)
 
-
+useShinyalert()
 
 
 #skin <- Sys.getenv("DASHBOARD_SKIN")
@@ -30,7 +31,8 @@ sidebar <- dashboardSidebar(
           menuItem("Performance", icon = icon("th"), tabName = "performance"),
           menuItem("Frequency",tabName = "frequency" ,icon = icon("bar-chart-o")),
           menuItem("Info", icon = icon("info"), href = "http://iridia.ulb.ac.be/irace/"),
-          menuItem("Back to Setup", icon = icon("file-code-o"), tabName = "target")
+          menuItem("Back to Setup", icon = icon("file-code-o"), tabName = "target"),
+          actionButton("finishProcess", "Finish IRACE", icon = icon("times-circle"),style="color: #FF0000; background-color: #ffffff; border-color: #ffffff")
         )
 )
   body <- dashboardBody(
@@ -45,13 +47,14 @@ sidebar <- dashboardSidebar(
           box(title="Summary",
               status="primary",
               h5("Irace Version: ", textOutput("iraceVersion",inline=TRUE)),
+              h5("Test: ", textOutput("processFinish",inline=TRUE)),
               #h5("Time of Execution: ", textOutput("timeOfExecution",inline=TRUE), " seconds"),
               h5("Num of Iterations: ", textOutput("numIterations",inline=TRUE)),
               h5("Num of Parameters: ", textOutput("numOfParameters",inline=TRUE)),
               h5("Num of Configurations: ",textOutput("numConfigurations",inline=TRUE)),
               h5("Num of Experiments Used so Far: ", textOutput("experimentsUsedSoFar",inline=TRUE), " / ", textOutput("maxExperiments",inline=TRUE)),
-              h5("Num of Instances: ", textOutput("numInstancesUsedSoFar",inline=TRUE), " / ", textOutput("numOfInstances",inline=TRUE)),
-              h5(numericInput("iterationForElites","Select Iteration: ",value = 1,min = 1,max = iraceResults$state$nbIterations,width = "100px"),"Num of Elites Configurations: ",textOutput("numElitesConfigurations",inline=TRUE))
+              h5("Num of Instances Used so Far: ", textOutput("numInstancesUsedSoFar",inline=TRUE), " / ", textOutput("numOfInstances",inline=TRUE)),
+              h5(numericInput("iterationForElites","Select Iteration: ",value = 1,min = 1,max = iraceResults$state$nbIterations,width = "100px"),"Num of Elites Configurations: ",textOutput("numElitesConfigurations",inline=TRUE)),
           )
         ),
           fluidRow(
