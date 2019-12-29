@@ -32,7 +32,7 @@ sidebar <- dashboardSidebar(
           menuItem("Frequency",tabName = "frequency" ,icon = icon("bar-chart-o")),
           menuItem("Info", icon = icon("info"), href = "http://iridia.ulb.ac.be/irace/"),
           menuItem("Back to Setup", icon = icon("file-code-o"), tabName = "target"),
-          actionButton("finishProcess", "Finish IRACE", icon = icon("times-circle"),style="color: #FF0000; background-color: #ffffff; border-color: #ffffff")
+          actionButton("finish", "Finish IRACE", icon = icon("times-circle"),style="color: #FF0000; background-color: #ffffff; border-color: #ffffff")
         )
 )
   body <- dashboardBody(
