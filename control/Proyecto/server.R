@@ -77,7 +77,7 @@ summary <- shinyServer(function(input,output,session){
       #### SUMMARY ####
       withProgress(message = "Updating Summary", value = 0, {
         incProgress(1/10,detail = paste("Updating Number of Parameters"))
-        Sys.sleep(0.5)
+        Sys.sleep(0.2)
         output$numOfParameters <- renderText({
           invalidateLater(4000,session)
           updateFile()
@@ -90,7 +90,7 @@ summary <- shinyServer(function(input,output,session){
           iraceResults$irace.version
         })
         incProgress(2/10,detail = paste("Updating Number of Experiments Used so Far"))
-        Sys.sleep(0.5)
+        Sys.sleep(0.2)
         output$experimentsUsedSoFar <- renderText({
           invalidateLater(4000,session)
           
@@ -106,25 +106,25 @@ summary <- shinyServer(function(input,output,session){
           iraceResults$state$nbIterations
         })
         incProgress(3/10,detail = paste("Updating Number of Configurations"))
-        Sys.sleep(0.5)
+        Sys.sleep(0.2)
         output$numConfigurations <- renderText({
           invalidateLater(4000, session)
           conf <- length(iraceResults$allConfigurations$.ID.)
         })
         incProgress(4/10,detail = paste("Updating Number of Instances Used so Far"))
-        Sys.sleep(0.5)
+        Sys.sleep(0.2)
         output$numInstancesUsedSoFar <- renderText({
           invalidateLater(4000, session)
           nrow(iraceResults$experiments)
         })
         incProgress(5/10,detail = paste("Updating Number of Instances"))
-        Sys.sleep(0.5)
+        Sys.sleep(0.2)
         output$numOfInstances <- renderText({
           invalidateLater(4000,session)
           length(iraceResults$scenario$instances)
         })
         incProgress(6/10,detail = paste("Updating Number of Elites Configurations"))
-        Sys.sleep(0.5)
+        Sys.sleep(0.2)
         observe({
           invalidateLater(4000, session)
           output$numElitesConfigurations <- renderText({
@@ -139,7 +139,7 @@ summary <- shinyServer(function(input,output,session){
         if(statusIrace == TRUE)
         {
           incProgress(10/10,detail = paste("Finishing"))
-          Sys.sleep(0.5)
+          Sys.sleep(0.2)
         }
       }) 
      #### PLOTS ####
@@ -297,9 +297,22 @@ summary <- shinyServer(function(input,output,session){
       system("ps -ef | grep runIrace.R | awk '{print $2}'", intern = TRUE)
     })
 
-    observeEvent(input$finishProcess,{
-      shinyalert("IRACE Finished",type="sucess")
+    observeEvent(input$finish,{
+      showModal(
+        modalDialog(title = "Warning",
+                    paste("Are you sure to finish IRACE?"),
+                    footer = tagList(
+                      modalButton("Cancel"),
+                      actionButton("acept_finish","Yes")
+                    ),easyClose = TRUE)
+      )
+    })
+
+    observeEvent(input$acept_finish,{
       system(paste("kill",extractPID()))
+      print('SESSION ENDED BY SETUP APP')
+      assign("flagStop", TRUE, envir=.GlobalEnv,inherits = FALSE)
+      stopApp()
     })
 
   observe({
