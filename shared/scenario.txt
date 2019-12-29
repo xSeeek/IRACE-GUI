@@ -1,29 +1,30 @@
 ###General Options
 
- parameterFile= "../shared/parameters.txt" 
- trainInstancesDir= "" 
- trainInstancesFile= "../shared/instances.txt" 
- scenarioFile= "../shared/scenario.txt" 
- execDir=  "../shared/acotsp-arena" 
- debugLevel= 0 
- seed= NA 
- repairConfiguration= "" 
- postSelection= 0 
- maxExperiments= 5000 
- aclib= 0 
+parameterFile= "../shared/parameters.txt"
+trainInstancesDir= ""
+trainInstancesFile= "../shared/instances.txt"
+scenarioFile= "../shared/scenario.txt"
+execDir= "../shared/acotsp-arena"
+logFile= '../shared/acotsp-arena/2019-12-29 16:28:54.Rdata'
+debugLevel= 0
+seed= NA
+repairConfiguration= ""
+postSelection= 0
+maxExperiments= 5000
+aclib= 0
 
- ###Elitist Race
+###Elitist Race
 
- elitist= 1 
- elitistLimit= 2 
- elitistNewInstances= 1 
- ###Internal Irace Options
+elitist= 1
+elitistLimit= 2
+elitistNewInstances= 1
+###Internal Irace Options
 
- nbIterations= 0 
+nbIterations= 0
 
- nbExperimentsPerIteration= 0 
- minNbSurvival= 0 
- nbConfigurations= 0 
- mu= 5 
- softRestart= 1 
+nbExperimentsPerIteration= 0
+minNbSurvival= 0
+nbConfigurations= 0
+mu= 5
+softRestart= 1
 

@@ -381,27 +381,28 @@ server <- function(input, output, session) {
             
         }
         if(input$saveOptions>0 && input$elitist == FALSE){
-           write.table(paste("###General Options\n\n",
-                              "parameterFile= ",input$parameterFile,"\n",
-                              "trainInstancesDir= ",input$trainInstancesDir,"\n",
-                              "trainInstancesFile= ",input$trainInstancesFile,"\n",
-                              "scenarioFile= ",input$scenarioFile,"\n",
+        write.table(paste("###General Options\n\n",
+                              "parameterFile=",input$parameterFile,"\n",
+                              "trainInstancesDir=",input$trainInstancesDir,"\n",
+                              "trainInstancesFile=",input$trainInstancesFile,"\n",
+                              "scenarioFile=",input$scenarioFile,"\n",
                               "execDir= ",input$execDir,"\n",
-                              "logFile= ","'",input$logFile,Sys.time(),"-Irace",".Rdata","'","\n",
-                              "debugLevel= ",input$debugLevel,"\n",
-                              "seed= ",as.integer(input$seed),"\n",
-                              "repairConfiguration= ",input$repairConfiguration,"\n",
-                              "postSelection= ",input$postSelection,"\n",
-                              "aclib= ",as.integer(input$aclib),"\n\n",
+                              "logFile= ","'",input$logFile,Sys.time(),".Rdata","'","\n",
+                              "debugLevel=",input$debugLevel,"\n",
+                              "seed=",as.integer(input$seed),"\n",
+                              "repairConfiguration=",input$repairConfiguration,"\n",
+                              "postSelection=",input$postSelection,"\n",
+                              "aclib=",as.integer(input$aclib),"\n\n",
                               "###Elitist Race\n\n",
-                              "elitist= ",as.integer(input$elitist),"\n",
+                              "elitist=",as.integer(input$elitist),"\n",
                               "###Internal Irace Options\n\n",
-                              "nbIterations= ",input$nbIterations,"\n\n",
-                              "nbExperimentsPerIteration= ",input$nbExperimentsPerIteration,"\n",
-                              "minNbSurvival= ",input$minNbSurvival,"\n",
-                              "nbConfigurations= ",input$nbConfigurations,"\n",
-                              "mu= ",input$mu,"\n",
-                              "softRestart= ",as.integer(input$softRestart),"\n", sep = ""
+                              "nbIterations=",input$nbIterations,"\n\n",
+                              "nbExperimentsPerIteration=",input$nbExperimentsPerIteration,"\n",
+                              "minNbSurvival=",input$minNbSurvival,"\n",
+                              "nbConfigurations=",input$nbConfigurations,"\n",
+                              "mu=",input$mu,"\n",
+                              "softRestart=",as.integer(input$softRestart),"\n", sep = ""
+                            
                               
                               
                               
