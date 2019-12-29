@@ -67,7 +67,7 @@ body <- dashboardBody(
                                        disabled(textInput("trainInstancesFile","Training Instances File",'"../shared/instances.txt"')),
                                        disabled(textInput("scenarioFile","Scenario File",'"../shared/scenario.txt"')),
                                        disabled(textInput("execDir","Exec Dir",'"../shared/acotsp-arena"')),
-                                       disabled(textInput("logFile","Log File","../shared/")),
+                                       disabled(textInput("logFile","Log File","../")),
                                        numericInput("debugLevel","Debug Level",0),
                                        textInput("seed","Seed",""),
                                        textInput("repairConfiguration","Repair Configuration",'""'),
