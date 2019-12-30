@@ -227,3 +227,10 @@ Shiny.addCustomMessageHandler('closeWindow',
     {
         window.close();
     });
+
+Shiny.addCustomMessageHandler('invalidFiletype', 
+    function(m) 
+    {
+        errorMessage('Invalid file, please upload a valid RData file.')
+    });
+    errorMessage

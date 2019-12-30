@@ -9,6 +9,16 @@ function confirmMessage(message)
     })
 }
 
+function errorMessage(message)
+{
+    Swal.fire({
+        position: 'center',
+        icon: 'error',
+        title: message,
+        showConfirmButton: true
+    })
+}
+
 async function inputText(message, placeholder)
 {
     const { value: input } = await Swal.fire({

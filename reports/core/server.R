@@ -474,6 +474,12 @@ server <- function(input, output, session) {
     observeEvent(input$reportLoader, {
         dataToLoad <- input$reportLoader
 
+        if(dataToLoad$type != 'application/x-r-data')
+        {
+            session$sendCustomMessage(type = "invalidFiletype", message = "message")
+            return(NULL)
+        }
+
         if(length(ls(envir=.GlobalEnv, pattern="customSectionsNames")) != 0)
             rm(customSectionsNames, envir = .GlobalEnv)
         if(length(ls(envir=.GlobalEnv, pattern="customSectionsIDS")) != 0)
@@ -486,7 +492,7 @@ server <- function(input, output, session) {
         session$sendCustomMessage(type = "closeWindow", message = "message")
         status <- list(goto = 2, path = dataToLoad$datapath)
         stopApp(returnValue = invisible(status))
-    }, once = TRUE)
+    }, once = FALSE)
 
     observeEvent(input$backMainMenu, {
         status <- list(goto = 0)
