@@ -1,5 +1,3 @@
-absolutePath <- getwd()
-
 createTableEliteConfigurations <- function(configurationsData)
 {
     dataTable = c()
