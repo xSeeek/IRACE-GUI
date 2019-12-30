@@ -233,4 +233,3 @@ Shiny.addCustomMessageHandler('invalidFiletype',
     {
         errorMessage('Invalid file, please upload a valid RData file.')
     });
-    errorMessage
