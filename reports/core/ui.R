@@ -1,17 +1,11 @@
 addResourcePath(prefix = 'resources', directoryPath = '../resources')
 
-skin <- Sys.getenv("DASHBOARD_SKIN")
-skin <- tolower(skin)
-if (skin == "")
-  skin <- "black"
-
 junk <- dir(pattern="tempPlot")
 file.remove(junk)
 
 htmlTemplate("../www/reportes.html",
   # CORE DATA
-  skin = skin,
-  loadReport = fileInput("reportLoader", "Load Report", multiple = FALSE, accept = c("application/x-r-data", ".Rdata"), width = 200, placeholder = "Load"),
+  loadReport = fileInput("reportLoader", "Load Report", multiple = FALSE, accept=c('application/x-r-data', '.RData', '.Rdata'), width = 200),
 
   # SUMMARY PARAMETERS
   bestConfiguration = htmlOutput('bestConfigurationsDetails'),
