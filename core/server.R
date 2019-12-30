@@ -1,12 +1,22 @@
 server <- function(input, output, session) {
     observeEvent(input$reportLoader, {
-        dataToLoad <- input$reportLoader
-        status <- list(goto = 2, path = dataToLoad$datapath)
+        if(flagStop == FALSE)
+        {
+            dataToLoad <- input$reportLoader
 
-        assign("flagStop", TRUE, envir=.GlobalEnv,inherits = FALSE)
-        session$sendCustomMessage(type = "closeWindow", message = "message")
-        stopApp(returnValue = invisible(status))
-    }, once = TRUE)
+            if(dataToLoad$type != 'application/x-r-data')
+            {
+                session$sendCustomMessage(type = "invalidFiletype", message = "message")
+                return(NULL)
+            }
+
+            status <- list(goto = 2, path = dataToLoad$datapath)
+
+            assign("flagStop", TRUE, envir=.GlobalEnv,inherits = FALSE)
+            session$sendCustomMessage(type = "closeWindow", message = "message")
+            stopApp(returnValue = invisible(status))
+        }
+    }, once = FALSE)
 
     observeEvent(input$launchSetup, {
         status <- list(goto = 1)
