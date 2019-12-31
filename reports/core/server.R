@@ -113,7 +113,6 @@ generateFrequencyPlot <- function(iterations, parameters)
 
 generateParallelCoordinatesPlot <- function(iterations, parameters)
 {
-    last <- length(iraceResults$iterationElites)
     conf <- getConfigurationByIteration(iraceResults = iraceResults, iterations = as.integer(iterations[1]):as.integer(iterations[2]))
     
     max <- 12
@@ -153,24 +152,34 @@ generateParallelCoordinatesPlot <- function(iterations, parameters)
 
 generateBoxPlot <- function(numberIteration)
 {
+    errors <- FALSE
+    base64image <- NULL
+
     configurationPerIteration <- convertVectorToString(iraceResults$allElites[as.integer(numberIteration)][[1]])
     results <- iraceResults$experiments
     intersectedColumns <- formatColData(results, configurationPerIteration)
     results <- subset(iraceResults$experiments, select=(intersectedColumns))
     conf <- gl(ncol(results), nrow(results), labels = colnames(results))
-    pairwise.wilcox.test (as.vector(results), conf, paired = TRUE, p.adj = "bonf")
+    if(length(conf) == 0)
+    {
+        errors <- TRUE
+    }
+    else
+    {
+        pairwise.wilcox.test (as.vector(results), conf, paired = TRUE, p.adj = "bonf")
 
-    png(filename <- paste0("tempPlotBoxplot.png"), width = 2000, height = 3000, res = 400)
-    configurationsBoxplot(results, ylab = "Solution cost")
-    dev.off()
+        png(filename <- paste0("tempPlotBoxplot.png"), width = 2000, height = 3000, res = 400)
+        configurationsBoxplot(results, ylab = "Solution cost")
+        dev.off()
 
-    base64image <- base64Encode(readBin(filename, "raw", file.info(filename)[1, "size"]), "txt")
-    base64image <- paste0('data:image/png;base64,', base64image)
+        base64image <- base64Encode(readBin(filename, "raw", file.info(filename)[1, "size"]), "txt")
+        base64image <- paste0('data:image/png;base64,', base64image)
 
-    plot <- image_read("tempPlotBoxplot.png")
-    plot <- image_scale(plot, "x750")
-    image_write(plot, path = "../resources/images/boxPlot.png", format = "png")
-    results <- list(dir = '../resources/images/boxPlot.png', image = base64image)
+        plot <- image_read("tempPlotBoxplot.png")
+        plot <- image_scale(plot, "x750")
+        image_write(plot, path = "../resources/images/boxPlot.png", format = "png")
+    }
+    results <- list(dir = '../resources/images/boxPlot.png', image = base64image, error = errors)
     removeTemporalPlots('tempPlotBoxplot')
 
     return(results)
@@ -300,6 +309,9 @@ server <- function(input, output, session) {
             incProgress(2/10, detail = paste("Rendering plots..."))
             plot <- generateBoxPlot(input$iterationPlotsPerfomance)
             incProgress(10/10, detail = paste("Finishing..."))
+            validate(
+                need(plot$error != TRUE, "ERROR: Cannot plot because IRACE did not finish. Insuficient data to generate the plot.")
+            )
         })
         list(src = plot$dir)
     })
@@ -387,12 +399,13 @@ server <- function(input, output, session) {
         parameters <- paramsCand()
         iterations <- itersCand()
 
+        req(iterations)
+        conf <- getConfigurationByIteration(iraceResults = iraceResults, iterations = iterations[1]:iterations[2])
+        validate(
+            need(nrow(conf) != 0, "ERROR: Cannot plot because IRACE did not finish. The amount of rows is 0.")
+        )
         progress <- AsyncProgress$new(message = 'Plotting: Parallel Coordinates', detail = 'This may take a while...', value = 0)
         progress$inc(1/10, detail = paste("Preconfiguring..."))
-        req(iterations)
-
-        last <- length(iraceResults$iterationElites)
-        conf <- getConfigurationByIteration(iraceResults = iraceResults, iterations = iterations[1]:iterations[2])
         
         max <- 12
         limit <- 1
@@ -450,6 +463,11 @@ server <- function(input, output, session) {
         fes <- cumsum(table(iraceResults$experimentLog[,"iteration"]))
         fes <- fes[!names(fes) == '0']
         elites <- as.character(iraceResults$iterationElites)
+
+        validate(
+            need(dim(iraceResults$experiments[,elites]) != 0, "ERROR: Cannot plot because IRACE did not finish. Must be an array of two dimensions.")
+        )
+
         values <- colMeans(iraceResults$experiments[,elites])
         plot(fes,
             values,
