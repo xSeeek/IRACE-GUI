@@ -55,7 +55,8 @@ sidebar <- dashboardSidebar(
               h5("Num of Experiments Used so Far: ", textOutput("experimentsUsedSoFar",inline=TRUE), " / ", textOutput("maxExperiments",inline=TRUE)),
               h5("Num of Instances Used so Far: ", textOutput("numInstancesUsedSoFar",inline=TRUE), " / ", textOutput("numOfInstances",inline=TRUE)),
               h5(numericInput("iterationForElites","Select Iteration: ",value = 1,min = 1,max = iraceResults$state$nbIterations,width = "100px"),"Num of Elites Configurations: ",textOutput("numElitesConfigurations",inline=TRUE)),
-          )
+          ),
+          infoBox("Summary", "This section shows a summary of the execution of IRACE and shows te values of the variables in the scenario. Also shows a table with Elite Configurations and a table with All Configurations", icon = icon("info"), width = 5)
         ),
           fluidRow(
             box(title = "Elite Configurations",
