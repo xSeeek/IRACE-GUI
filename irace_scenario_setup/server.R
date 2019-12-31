@@ -334,7 +334,7 @@ server <- function(input, output, session) {
 
             status <- list(goto = 1)
             setwd('../')
-            path <- paste0(getwd(), '/shared/acotsp-arena/irace.Rdata')
+            path <- paste(getwd(),'/shared/acotsp-arena/',logFileName,'.Rdata', sep = "")
             assign("pathRDATA", path, envir=.GlobalEnv, inherits = FALSE)
             js$closewindow()
             assign("flagStop", TRUE, envir=.GlobalEnv,inherits = FALSE)
@@ -342,9 +342,10 @@ server <- function(input, output, session) {
         }  
     })
     
-    
+    logFileName <- NULL
     ### This section save all the user inputs on the IRACE options
     observeEvent(input$saveOptions,{
+      logFileName <<- Sys.time()
         if(input$saveOptions>0 && input$elitist != FALSE){
             write.table(paste("###General Options\n\n",
                               "parameterFile= ",input$parameterFile,"\n",
@@ -352,7 +353,7 @@ server <- function(input, output, session) {
                               "trainInstancesFile= ",input$trainInstancesFile,"\n",
                               "scenarioFile= ",input$scenarioFile,"\n",
                               "execDir= ",input$execDir,"\n",
-                              "logFile= ",input$logFile,"\n",
+                              "logFile= ",'"',input$logFile,logFileName,'.Rdata"',"\n",
                               "debugLevel= ",input$debugLevel,"\n",
                               "seed= ",as.integer(input$seed),"\n",
                               "repairConfiguration= ",input$repairConfiguration,"\n",
@@ -387,7 +388,7 @@ server <- function(input, output, session) {
                               "trainInstancesFile=",input$trainInstancesFile,"\n",
                               "scenarioFile=",input$scenarioFile,"\n",
                               "execDir= ",input$execDir,"\n",
-                              "logFile= ",input$logFile,"\n",
+                              "logFile= ",'"',input$logFile,logFileName,'.Rdata"',"\n",
                               "debugLevel=",input$debugLevel,"\n",
                               "seed=",as.integer(input$seed),"\n",
                               "repairConfiguration=",input$repairConfiguration,"\n",
