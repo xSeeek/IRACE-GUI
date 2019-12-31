@@ -534,7 +534,6 @@ server <- function(input, output, session) {
 
     observeEvent(input$requestPlottingCandidates, {
         req(input$selectedParametersCandidates)
-        print(input$requestPlottingCandidates$iterations)
         
         iterations <- input$requestPlottingCandidates$iterations
         parameters <- input$selectedParametersCandidates
