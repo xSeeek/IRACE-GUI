@@ -1,6 +1,7 @@
 library(shiny)
 library(shinythemes)
 library(shinydashboard)
+library(shinyjs)
 library(DT)
 library(ggplot2)
 library(readr)
@@ -15,10 +16,7 @@ updateFile <- function()
 {
   if(iraceResults$state$completed == TRUE)
   {
-    assign("flagStop", TRUE, envir=.GlobalEnv,inherits = FALSE)
-    js$closewindow()
-    status <- list(goto = 1)
-    stopApp(returnValue = invisible(status))
+    shinyjs::enable("change")
   }
   load(pathRDATA, envir=.GlobalEnv)
   return(irace)
@@ -46,7 +44,10 @@ summary <- shinyServer(function(input,output,session){
   process <- system("ps -ef | grep runIrace.R | awk '{print $2}'", intern = TRUE)
     #### TABLAS ####
       observe({
-        invalidateLater(4000,session)
+        if(iraceResults$state$completed == FALSE)
+        {
+          invalidateLater(4000,session)
+        }
         output$elites <- DT::renderDataTable({
             req(input$iterationsElites)
             validate(
@@ -62,9 +63,13 @@ summary <- shinyServer(function(input,output,session){
                               scrollX = TRUE,
                               scrollY = TRUE
                             ))
+              isolate(bestConfiguration)
         })
       observe({
-        invalidateLater(4000,session)
+        if(iraceResults$state$completed == FALSE)
+        {
+          invalidateLater(4000,session)
+        }
         output$dataTableAllConfigurations <- DT::renderDataTable({
           DT::datatable(iraceResults$allConfigurations,
                         options = list(
@@ -72,6 +77,7 @@ summary <- shinyServer(function(input,output,session){
                           scrollY = TRUE,
                           pageLength = 5
                         ))
+          isolate(iraceResults$allConfigurations)
         })
       })
       #### SUMMARY ####
@@ -79,54 +85,88 @@ summary <- shinyServer(function(input,output,session){
         incProgress(1/10,detail = paste("Updating Number of Parameters"))
         Sys.sleep(0.2)
         output$numOfParameters <- renderText({
-          invalidateLater(4000,session)
+          if(iraceResults$state$completed == FALSE)
+          {
+            invalidateLater(4000,session)
+          }
           updateFile()
           length(iraceResults$parameters$names)
+          isolate(length(iraceResults$parameters$names))
         })
         
         
         output$iraceVersion <- renderText({
-          invalidateLater(4000,session)
+          if(iraceResults$state$completed == FALSE)
+          {
+            invalidateLater(4000,session)
+          }
           iraceResults$irace.version
+          isolate(iraceResults$irace.version)
         })
         incProgress(2/10,detail = paste("Updating Number of Experiments Used so Far"))
         Sys.sleep(0.2)
         output$experimentsUsedSoFar <- renderText({
-          invalidateLater(4000,session)
-          
+          if(iraceResults$state$completed == FALSE)
+          {
+            invalidateLater(4000,session)
+          }
           iraceResults$state$experimentsUsedSoFar
+          isolate(iraceResults$state$experimentsUsedSoFar)
         })
         output$maxExperiments <- renderText({
-          invalidateLater(4000, session)
+          if(iraceResults$state$completed == FALSE)
+          {
+            invalidateLater(4000, session)
+          }
           iraceResults$scenario$maxExperiments
+          isolate(iraceResults$scenario$maxExperiments)
         })
         
         output$numIterations <- renderText({
-          invalidateLater(4000, session)
+          if(iraceResults$state$completed == FALSE)
+          {
+            invalidateLater(4000, session)
+          }
           iraceResults$state$nbIterations
+          isolate(iraceResults$state$nbIterations)
         })
         incProgress(3/10,detail = paste("Updating Number of Configurations"))
         Sys.sleep(0.2)
         output$numConfigurations <- renderText({
-          invalidateLater(4000, session)
+          if(iraceResults$state$completed == FALSE)
+          {
+            invalidateLater(4000, session)
+          }
           conf <- length(iraceResults$allConfigurations$.ID.)
+          isolate(conf)
         })
         incProgress(4/10,detail = paste("Updating Number of Instances Used so Far"))
         Sys.sleep(0.2)
         output$numInstancesUsedSoFar <- renderText({
-          invalidateLater(4000, session)
+          if(iraceResults$state$completed == FALSE)
+          {
+            invalidateLater(4000, session)
+          }
           nrow(iraceResults$experiments)
+          isolate(nrow(iraceResults$experiments))
         })
         incProgress(5/10,detail = paste("Updating Number of Instances"))
         Sys.sleep(0.2)
         output$numOfInstances <- renderText({
-          invalidateLater(4000,session)
+          if(iraceResults$state$completed == FALSE)
+          {
+            invalidateLater(4000,session)
+          }
           length(iraceResults$scenario$instances)
+          isolate(length(iraceResults$scenario$instances))
         })
         incProgress(6/10,detail = paste("Updating Number of Elites Configurations"))
         Sys.sleep(0.2)
         observe({
-          invalidateLater(4000, session)
+          if(iraceResults$state$completed == FALSE)
+          {
+            invalidateLater(4000, session)
+          }
           output$numElitesConfigurations <- renderText({
             req(input$iterationForElites)
             for(i in iraceResults$allElites[as.integer(input$iterationForElites)])
@@ -134,9 +174,10 @@ summary <- shinyServer(function(input,output,session){
               c(i)
               return(length(i))
             }
+            isolate(length(i))
           })
         })
-        if(statusIrace == TRUE)
+        if(iraceResults$state$completed == TRUE)
         {
           incProgress(10/10,detail = paste("Finishing"))
           Sys.sleep(0.2)
@@ -145,7 +186,10 @@ summary <- shinyServer(function(input,output,session){
      #### PLOTS ####
       output$plotPerformance <- renderPlot({
         req(input$iterationPerformance)
-        invalidateLater(4000, session)
+        if(iraceResults$state$completed == FALSE)
+        {
+          invalidateLater(4000, session)
+        }
         fes <- cumsum(table(iraceResults$experimentLog[,"iteration"]))
         elites <- as.character(iraceResults$iterationElites)
         values <- colMeans(iraceResults$testing$experiments[,elites])
@@ -157,7 +201,10 @@ summary <- shinyServer(function(input,output,session){
       output$frecuencyParameters <- renderImage({
         req(input$iterationFrequency)
         req(input$parametersFrequency)
-        invalidateLater(4000, session)
+        if(iraceResults$state$completed == FALSE)
+        {
+          invalidateLater(4000, session)
+        }
         
         
         
@@ -211,7 +258,10 @@ summary <- shinyServer(function(input,output,session){
         output$paralelCoordinatesCandidates <- renderImage({
         req(input$iterationPC)
         req(input$parametersParallelCoordinates)
-        invalidateLater(4000, session)
+        if(iraceResults$state$completed == FALSE)
+        {
+          invalidateLater(4000, session)
+        }
         
         iterationsPC <- seq(input$iterationPC[1],input$iterationPC[2])
         
@@ -261,7 +311,10 @@ summary <- shinyServer(function(input,output,session){
       })
         output$boxPlotBestConfiguration <- renderPlot({
           req(input$iterationBoxPlot)
-          invalidateLater(4000, session)
+          if(iraceResults$state$completed == FALSE)
+          {
+            invalidateLater(4000, session)
+          }
           iterationsBoxPlot <- seq(input$iterationBoxPlot[1],input$iterationBoxPlot[2])
           print(iterationsBoxPlot)
           configurationID <- unique(unlist(iraceResults$allElites[iterationsBoxPlot]))
@@ -275,7 +328,10 @@ summary <- shinyServer(function(input,output,session){
         })
         
           output$performance <- renderPlot({
-            invalidateLater(4000, session)
+            if(iraceResults$state$completed == FALSE)
+            {
+              invalidateLater(4000, session)
+            }
             iters <- unique(iraceResults$experimentLog[,"iteration"])
             fes <- cumsum(table(iraceResults$experimentLog[,"iteration"]))
             elites <- as.character(iraceResults$iterationElites)
@@ -288,7 +344,6 @@ summary <- shinyServer(function(input,output,session){
             )
             points(fes,values)
             text(fes, values, elites, pos = 1)
-            
           })
   })
     # FINISH IRACE #
@@ -314,6 +369,14 @@ summary <- shinyServer(function(input,output,session){
       assign("flagStop", TRUE, envir=.GlobalEnv,inherits = FALSE)
       stopApp()
     })
+
+    observeEvent(input$change,{
+      assign("flagStop", TRUE, envir=.GlobalEnv,inherits = FALSE)
+      js$closewindow()
+      status <- list(goto = 1)
+      stopApp(returnValue = invisible(status))
+    })
+
 
   observe({
     updateSliderInput(session, "iterationPC", min = 1, max = iraceResults$state$nbIterations, value = seq(1,3))

@@ -1,11 +1,13 @@
 library(shiny)
 library(shinythemes)
 library(shinydashboard)
+library(shinyjs)
 library(dashboardthemes)
 library(DT)
 library(ggplot2)
 library(irace)
 library(shinyalert)
+library(shinyBS)
 
 useShinyalert()
 
@@ -32,7 +34,8 @@ sidebar <- dashboardSidebar(
           menuItem("Frequency",tabName = "frequency" ,icon = icon("bar-chart-o")),
           menuItem("Info", icon = icon("info"), href = "http://iridia.ulb.ac.be/irace/"),
           menuItem("Back to Setup", icon = icon("file-code-o"), tabName = "target"),
-          actionButton("finish", "Finish IRACE", icon = icon("times-circle"),style="color: #FF0000; background-color: #ffffff; border-color: #ffffff")
+          actionButton("finish", "Finish IRACE", icon = icon("times-circle"),style="color: #FF0000; background-color: #ffffff; border-color: #ffffff"),
+          disabled(actionButton("change", "Go to Reports",icon = icon("file-alt")))
         )
 )
   body <- dashboardBody(
@@ -44,6 +47,8 @@ sidebar <- dashboardSidebar(
     tabItems(
       tabItem(tabName = "summary",
         fluidRow(
+          actionButton("summary","",icon = icon("info-circle")),
+          bsTooltip(id = "summary",title= "This section shows a summary of the execution of IRACE and shows te values of the variables in the scenario. Also shows a table with Elite Configurations and a table with All Configurations",placement ="rigth",trigger = "hover"),
           box(title="Summary",
               status="primary",
               h5("Irace Version: ", textOutput("iraceVersion",inline=TRUE)),
@@ -56,9 +61,11 @@ sidebar <- dashboardSidebar(
               h5("Num of Instances Used so Far: ", textOutput("numInstancesUsedSoFar",inline=TRUE), " / ", textOutput("numOfInstances",inline=TRUE)),
               h5(numericInput("iterationForElites","Select Iteration: ",value = 1,min = 1,max = iraceResults$state$nbIterations,width = "100px"),"Num of Elites Configurations: ",textOutput("numElitesConfigurations",inline=TRUE)),
           ),
-          infoBox("Summary", "This section shows a summary of the execution of IRACE and shows te values of the variables in the scenario. Also shows a table with Elite Configurations and a table with All Configurations", icon = icon("info"), width = 5)
+          
         ),
           fluidRow(
+            actionButton("elites","",icon = icon("info-circle")),
+            bsTooltip(id = "elites",title= "This section shows a table with All the Elite Configurations with the values ​​of their parameters",placement ="rigth",trigger = "hover"),
             box(title = "Elite Configurations",
                 status = "primary",
                 numericInput("iterationsElites","Select Iteration",value = 1,min = 1,max = iraceResults$state$nbIterations, width = "100px"),
@@ -67,6 +74,8 @@ sidebar <- dashboardSidebar(
             )
           ),
         fluidRow(
+          actionButton("allConf","",icon = icon("info-circle")),
+          bsTooltip(id = "allConf",title= "This section shows a table with All Configurations with the values of their parameters",placement ="rigth",trigger = "hover"),
           box(title="All Configurations",
               status="primary",
               DT::dataTableOutput("dataTableAllConfigurations"),
@@ -76,6 +85,8 @@ sidebar <- dashboardSidebar(
     ),
     tabItem(tabName = "performance",
       fluidRow(
+        actionButton("performance","",icon = icon("info-circle")),
+        bsTooltip(id = "performance",title= "This section shows a table with All Configurations with the values of their parameters",placement ="rigth",trigger = "hover"),
         box(title="Performance",
             status="primary",
             h1("BoxPlot"),
@@ -88,6 +99,8 @@ sidebar <- dashboardSidebar(
     ),
     tabItem(tabName = "frequency",
       fluidRow(
+        actionButton("frequency","",icon = icon("info-circle")),
+        bsTooltip(id = "frequency",title= "This section shows a table with All Configurations with the values of their parameters",placement ="rigth",trigger = "hover"),
         tags$div(style = 'overflow-y: auto;',
           box(title = "Frequency",
               status = "primary",
