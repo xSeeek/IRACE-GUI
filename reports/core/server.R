@@ -1,5 +1,3 @@
-absolutePath <- getwd()
-
 createTableEliteConfigurations <- function(configurationsData)
 {
     dataTable = c()
@@ -115,7 +113,6 @@ generateFrequencyPlot <- function(iterations, parameters)
 
 generateParallelCoordinatesPlot <- function(iterations, parameters)
 {
-    last <- length(iraceResults$iterationElites)
     conf <- getConfigurationByIteration(iraceResults = iraceResults, iterations = as.integer(iterations[1]):as.integer(iterations[2]))
     
     max <- 12
@@ -155,30 +152,41 @@ generateParallelCoordinatesPlot <- function(iterations, parameters)
 
 generateBoxPlot <- function(numberIteration)
 {
+    errors <- FALSE
+    base64image <- NULL
+
     configurationPerIteration <- convertVectorToString(iraceResults$allElites[as.integer(numberIteration)][[1]])
     results <- iraceResults$experiments
     intersectedColumns <- formatColData(results, configurationPerIteration)
     results <- subset(iraceResults$experiments, select=(intersectedColumns))
     conf <- gl(ncol(results), nrow(results), labels = colnames(results))
-    pairwise.wilcox.test (as.vector(results), conf, paired = TRUE, p.adj = "bonf")
+    if(length(conf) == 0)
+    {
+        errors <- TRUE
+    }
+    else
+    {
+        pairwise.wilcox.test (as.vector(results), conf, paired = TRUE, p.adj = "bonf")
 
-    png(filename <- paste0("tempPlotBoxplot.png"), width = 2000, height = 3000, res = 400)
-    configurationsBoxplot(results, ylab = "Solution cost")
-    dev.off()
+        png(filename <- paste0("tempPlotBoxplot.png"), width = 2000, height = 3000, res = 400)
+        configurationsBoxplot(results, ylab = "Solution cost")
+        dev.off()
 
-    base64image <- base64Encode(readBin(filename, "raw", file.info(filename)[1, "size"]), "txt")
-    base64image <- paste0('data:image/png;base64,', base64image)
+        base64image <- base64Encode(readBin(filename, "raw", file.info(filename)[1, "size"]), "txt")
+        base64image <- paste0('data:image/png;base64,', base64image)
 
-    plot <- image_read("tempPlotBoxplot.png")
-    plot <- image_scale(plot, "x750")
-    image_write(plot, path = "../resources/images/boxPlot.png", format = "png")
-    results <- list(dir = '../resources/images/boxPlot.png', image = base64image)
+        plot <- image_read("tempPlotBoxplot.png")
+        plot <- image_scale(plot, "x750")
+        image_write(plot, path = "../resources/images/boxPlot.png", format = "png")
+    }
+    results <- list(dir = '../resources/images/boxPlot.png', image = base64image, error = errors)
     removeTemporalPlots('tempPlotBoxplot')
 
     return(results)
 }
 
 plan(multiprocess)
+assign("completedIRACE", TRUE, envir=.GlobalEnv, inherits = FALSE)
 
 server <- function(input, output, session) {    
     if(length(ls(envir=.GlobalEnv, pattern="loadedCustomSection")) == 1)
@@ -302,6 +310,11 @@ server <- function(input, output, session) {
             incProgress(2/10, detail = paste("Rendering plots..."))
             plot <- generateBoxPlot(input$iterationPlotsPerfomance)
             incProgress(10/10, detail = paste("Finishing..."))
+            assign("completedIRACE", FALSE, envir=.GlobalEnv, inherits = FALSE)
+            validate(
+                need(plot$error != TRUE, "ERROR: Cannot plot because IRACE did not finish. Insuficient data to generate the plot.")
+            )
+            assign("completedIRACE", TRUE, envir=.GlobalEnv, inherits = FALSE)
         })
         list(src = plot$dir)
     })
@@ -389,12 +402,15 @@ server <- function(input, output, session) {
         parameters <- paramsCand()
         iterations <- itersCand()
 
+        req(iterations)
+        conf <- getConfigurationByIteration(iraceResults = iraceResults, iterations = iterations[1]:iterations[2])
+        assign("completedIRACE", FALSE, envir=.GlobalEnv, inherits = FALSE)
+        validate(
+            need(nrow(conf) != 0, "ERROR: Cannot plot because IRACE did not finish. The amount of rows is 0.")
+        )
+        assign("completedIRACE", TRUE, envir=.GlobalEnv, inherits = FALSE)
         progress <- AsyncProgress$new(message = 'Plotting: Parallel Coordinates', detail = 'This may take a while...', value = 0)
         progress$inc(1/10, detail = paste("Preconfiguring..."))
-        req(iterations)
-
-        last <- length(iraceResults$iterationElites)
-        conf <- getConfigurationByIteration(iraceResults = iraceResults, iterations = iterations[1]:iterations[2])
         
         max <- 12
         limit <- 1
@@ -452,6 +468,13 @@ server <- function(input, output, session) {
         fes <- cumsum(table(iraceResults$experimentLog[,"iteration"]))
         fes <- fes[!names(fes) == '0']
         elites <- as.character(iraceResults$iterationElites)
+
+        assign("completedIRACE", FALSE, envir=.GlobalEnv, inherits = FALSE)
+        validate(
+            need(dim(iraceResults$experiments[,elites]) != 0, "ERROR: Cannot plot because IRACE did not finish. Must be an array of two dimensions.")
+        )
+        assign("completedIRACE", TRUE, envir=.GlobalEnv, inherits = FALSE)
+
         values <- colMeans(iraceResults$experiments[,elites])
         plot(fes,
             values,
@@ -474,6 +497,12 @@ server <- function(input, output, session) {
     observeEvent(input$reportLoader, {
         dataToLoad <- input$reportLoader
 
+        if(dataToLoad$type != 'application/x-r-data')
+        {
+            session$sendCustomMessage(type = "invalidFiletype", message = "message")
+            return(NULL)
+        }
+
         if(length(ls(envir=.GlobalEnv, pattern="customSectionsNames")) != 0)
             rm(customSectionsNames, envir = .GlobalEnv)
         if(length(ls(envir=.GlobalEnv, pattern="customSectionsIDS")) != 0)
@@ -486,7 +515,7 @@ server <- function(input, output, session) {
         session$sendCustomMessage(type = "closeWindow", message = "message")
         status <- list(goto = 2, path = dataToLoad$datapath)
         stopApp(returnValue = invisible(status))
-    }, once = TRUE)
+    }, once = FALSE)
 
     observeEvent(input$backMainMenu, {
         status <- list(goto = 0)
@@ -505,7 +534,6 @@ server <- function(input, output, session) {
 
     observeEvent(input$requestPlottingCandidates, {
         req(input$selectedParametersCandidates)
-        print(input$requestPlottingCandidates$iterations)
         
         iterations <- input$requestPlottingCandidates$iterations
         parameters <- input$selectedParametersCandidates
@@ -547,4 +575,9 @@ server <- function(input, output, session) {
         session$sendCustomMessage("bestSoFarAllIterations", bestSoFarIterations)
         return(NULL)
     }, once = FALSE)
+
+
+    observeEvent(input$checkIsFinishedIRACE, {
+        session$sendCustomMessage("statusIRACE", completedIRACE)
+    }, once = FALSE, ignoreNULL = TRUE)
 }

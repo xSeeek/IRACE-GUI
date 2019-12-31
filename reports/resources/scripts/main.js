@@ -4,6 +4,8 @@ window.onload = function(){
     setTimeout(function(){
         checkForChanges();
     }, 6000);
+    Shiny.onInputChange("checkIsFinishedIRACE", Math.random());
+    blockButton();
 }
 
 function getParameters()
@@ -227,3 +229,31 @@ Shiny.addCustomMessageHandler('closeWindow',
     {
         window.close();
     });
+
+Shiny.addCustomMessageHandler('invalidFiletype', 
+    function(m) 
+    {
+        errorMessage('Invalid file, please upload a valid RData file.')
+    });
+
+function getStatusIRACE()
+{
+    return new Promise((resolve, reject) => {
+        Shiny.addCustomMessageHandler('statusIRACE', 
+            function(params) 
+            {
+                resolve(params)
+            });
+    });
+}
+
+async function blockButton()
+{
+    var status = await getStatusIRACE().then();
+
+    if(status == false)
+    {
+        $('#generatePDF').prop('disabled', true);
+        $('#generatePDF').attr('title', 'Cannot generate PDF because the generation of the report was interrupted before it finished.');
+    }
+}
