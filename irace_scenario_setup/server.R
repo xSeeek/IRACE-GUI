@@ -334,7 +334,7 @@ server <- function(input, output, session) {
 
             status <- list(goto = 1)
             setwd('../')
-            path <- paste(getwd(),'/shared/acotsp-arena/',logFileName,'.Rdata', sep = "")
+            path <- paste(getwd(),'/shared/',logFileName,'.Rdata', sep = "")
             assign("pathRDATA", path, envir=.GlobalEnv, inherits = FALSE)
             js$closewindow()
             assign("flagStop", TRUE, envir=.GlobalEnv,inherits = FALSE)
