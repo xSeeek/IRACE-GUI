@@ -186,6 +186,7 @@ generateBoxPlot <- function(numberIteration)
 }
 
 plan(multiprocess)
+assign("completedIRACE", TRUE, envir=.GlobalEnv, inherits = FALSE)
 
 server <- function(input, output, session) {    
     if(length(ls(envir=.GlobalEnv, pattern="loadedCustomSection")) == 1)
@@ -309,9 +310,11 @@ server <- function(input, output, session) {
             incProgress(2/10, detail = paste("Rendering plots..."))
             plot <- generateBoxPlot(input$iterationPlotsPerfomance)
             incProgress(10/10, detail = paste("Finishing..."))
+            assign("completedIRACE", FALSE, envir=.GlobalEnv, inherits = FALSE)
             validate(
                 need(plot$error != TRUE, "ERROR: Cannot plot because IRACE did not finish. Insuficient data to generate the plot.")
             )
+            assign("completedIRACE", TRUE, envir=.GlobalEnv, inherits = FALSE)
         })
         list(src = plot$dir)
     })
@@ -401,9 +404,11 @@ server <- function(input, output, session) {
 
         req(iterations)
         conf <- getConfigurationByIteration(iraceResults = iraceResults, iterations = iterations[1]:iterations[2])
+        assign("completedIRACE", FALSE, envir=.GlobalEnv, inherits = FALSE)
         validate(
             need(nrow(conf) != 0, "ERROR: Cannot plot because IRACE did not finish. The amount of rows is 0.")
         )
+        assign("completedIRACE", TRUE, envir=.GlobalEnv, inherits = FALSE)
         progress <- AsyncProgress$new(message = 'Plotting: Parallel Coordinates', detail = 'This may take a while...', value = 0)
         progress$inc(1/10, detail = paste("Preconfiguring..."))
         
@@ -464,9 +469,11 @@ server <- function(input, output, session) {
         fes <- fes[!names(fes) == '0']
         elites <- as.character(iraceResults$iterationElites)
 
+        assign("completedIRACE", FALSE, envir=.GlobalEnv, inherits = FALSE)
         validate(
             need(dim(iraceResults$experiments[,elites]) != 0, "ERROR: Cannot plot because IRACE did not finish. Must be an array of two dimensions.")
         )
+        assign("completedIRACE", TRUE, envir=.GlobalEnv, inherits = FALSE)
 
         values <- colMeans(iraceResults$experiments[,elites])
         plot(fes,
@@ -569,4 +576,9 @@ server <- function(input, output, session) {
         session$sendCustomMessage("bestSoFarAllIterations", bestSoFarIterations)
         return(NULL)
     }, once = FALSE)
+
+
+    observeEvent(input$checkIsFinishedIRACE, {
+        session$sendCustomMessage("statusIRACE", completedIRACE)
+    }, once = FALSE, ignoreNULL = TRUE)
 }
