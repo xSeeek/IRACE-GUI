@@ -139,9 +139,9 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="#perfomance" class="nav-link">
+                            <a href="#Performance" class="nav-link">
                                 <i class="fas fa-tachometer-alt"></i>
-                                <p>Perfomance</p>
+                                <p>Performance</p>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -351,8 +351,8 @@
             <div class="row justify-content-center">
                 <div class="col-md-12">
                     <div class="card">
-                        <div class="card-header" id="perfomance">
-                            Perfomance
+                        <div class="card-header" id="Performance">
+                            Performance
                             <button type="button" class="btn btn-outline-warning btn-sm" data-toggle="tooltip" data-placement="bottom" title="This section shows the quality of the configurations per iteration." style="float: right;"><i class="fas fa-info-circle"></i></button>
                         </div>
                         <div class="card=body" style="overflow:auto; height:900px;">
@@ -360,17 +360,17 @@
                             <div class="container">
                                 <div class="row">
                                     <div class="col">
-                                        {{ selectIterationPerfomance }}
+                                        {{ selectIterationPerformance }}
                                         <br>
                                         <div class="input-group">
-                                            <select class="custom-select section" id="covergencePerfomanceSectionSelect">
+                                            <select class="custom-select section" id="covergencePerformanceSectionSelect">
                                                 <option selected disabled>Select a section to copy Convergence Plot</option>
                                             </select>
                                             <div class="input-group-append">
-                                                <button class="btn btn-outline-primary" type="button" onclick="copyContentIntoSection('covergencePerfomanceSectionSelect', 'convergencePerfomance', 'true')">Copy</button>
+                                                <button class="btn btn-outline-primary" type="button" onclick="copyContentIntoSection('covergencePerformanceSectionSelect', 'convergencePerformance', 'true')">Copy</button>
                                             </div>
                                         </div>
-                                        {{ convergencePerfomance }}
+                                        {{ convergencePerformance }}
                                     </div>
                                     <div class="col">
                                         <br>
@@ -378,14 +378,14 @@
                                         <br>
                                         <br>
                                         <div class="input-group">
-                                            <select class="custom-select section" id="boxplotPerfomanceSectionSelect">
+                                            <select class="custom-select section" id="boxplotPerformanceSectionSelect">
                                                 <option selected disabled>Select a section to copy Boxplot</option>
                                             </select>
                                             <div class="input-group-append">
-                                                <button class="btn btn-outline-primary" type="button" onclick="copyContentIntoSection('boxplotPerfomanceSectionSelect', 'boxPlotPerfomance', 'true')">Copy</button>
+                                                <button class="btn btn-outline-primary" type="button" onclick="copyContentIntoSection('boxplotPerformanceSectionSelect', 'boxPlotPerformance', 'true')">Copy</button>
                                             </div>
                                         </div>
-                                        {{ boxPlotPerfomance }}
+                                        {{ boxPlotPerformance }}
                                     </div>
                                 </div>
                             </div>
@@ -504,20 +504,20 @@
                                     </div>
                                 </div>
                                 <br>
-                                <b>Perfomance</b>
+                                <b>Performance</b>
                                 <div class="row">
                                     <div class="col-8 col-sm-6">
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="" id="allIterationsPerfomance">
-                                            <label class="form-check-label" for="allIterationsPerfomance">
+                                            <input class="form-check-input" type="checkbox" value="" id="allIterationsPerformance">
+                                            <label class="form-check-label" for="allIterationsPerformance">
                                                 Include all iterations
                                             </label>
                                         </div>
                                     </div>
                                     <div class="col-4 col-sm-6">
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="" id="dontIncludePerfomance">
-                                            <label class="form-check-label" for="dontIncludePerfomance">
+                                            <input class="form-check-input" type="checkbox" value="" id="dontIncludePerformance">
+                                            <label class="form-check-label" for="dontIncludePerformance">
                                                 Do not include in the report
                                             </label>
                                         </div>

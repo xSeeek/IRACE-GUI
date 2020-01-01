@@ -290,7 +290,7 @@ server <- function(input, output, session) {
     })
 
     output$boxPlotBestConfiguration <- renderPlot({
-        withProgress(message = 'Plotting: Boxplot Perfomance', value = 0, {
+        withProgress(message = 'Plotting: Boxplot Performance', value = 0, {
             incProgress(1/10, detail = paste("Preconfiguring..."))
             last <- length(iraceResults$iterationElites)
             id <- paste0(iraceResults$iterationElites[last])
@@ -303,12 +303,12 @@ server <- function(input, output, session) {
         configurationsBoxplot (results, ylab = "Solution cost")
     })
 
-    output$boxPlotPerfomance <- renderImage({
-        withProgress(message = 'Plotting: Boxplot Perfomance', value = 0, {
+    output$boxPlotPerformance <- renderImage({
+        withProgress(message = 'Plotting: Boxplot Performance', value = 0, {
             incProgress(1/10, detail = paste("Preconfiguring..."))
-            req(input$iterationPlotsPerfomance)
+            req(input$iterationPlotsPerformance)
             incProgress(2/10, detail = paste("Rendering plots..."))
-            plot <- generateBoxPlot(input$iterationPlotsPerfomance)
+            plot <- generateBoxPlot(input$iterationPlotsPerformance)
             incProgress(10/10, detail = paste("Finishing..."))
             assign("completedIRACE", FALSE, envir=.GlobalEnv, inherits = FALSE)
             validate(
@@ -463,7 +463,7 @@ server <- function(input, output, session) {
         })
     })
 
-    output$convergencePerfomance <- renderPlot({
+    output$convergencePerformance <- renderPlot({
         iters <- unique(iraceResults$experimentLog[,"iteration"])
         fes <- cumsum(table(iraceResults$experimentLog[,"iteration"]))
         fes <- fes[!names(fes) == '0']
@@ -546,12 +546,12 @@ server <- function(input, output, session) {
         return(NULL)
     }, once = FALSE)
 
-    observeEvent(input$requestPlottingPerfomance, {
-        iteration <- input$requestPlottingPerfomance$iterations;
+    observeEvent(input$requestPlottingPerformance, {
+        iteration <- input$requestPlottingPerformance$iterations;
         boxPlot <- generateBoxPlot(iteration)
         image <- list(boxPlot = boxPlot$image)
 
-        session$sendCustomMessage("imagePlotPerfomance", image)
+        session$sendCustomMessage("imagePlotPerformance", image)
         return(NULL)
     }, once = FALSE)
 

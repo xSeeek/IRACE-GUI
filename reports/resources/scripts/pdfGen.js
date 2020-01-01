@@ -23,22 +23,22 @@ function getOptionsPDF()
 
     index++;
 
-    if(!$("#dontIncludePerfomance").prop("checked"))
+    if(!$("#dontIncludePerformance").prop("checked"))
     {
         var iterations = [numberOfIterations];
         var allIterations = false;
-        if($("#allIterationsPerfomance").prop("checked"))
+        if($("#allIterationsPerformance").prop("checked"))
         {
             iterations = Array.apply(null, {length: numberOfIterations}).map(function(value, index){
                 return index + 1;
             });
             allIterations = true;
         }
-        var data = {"perfomance": true, "perfomanceAllIterations": allIterations, "perfomanceIterations": iterations};
+        var data = {"Performance": true, "PerformanceAllIterations": allIterations, "PerformanceIterations": iterations};
         options[index] = data;
     }
     else
-        options[index] = {"perfomance": false};
+        options[index] = {"Performance": false};
 
     index++;
 
@@ -59,10 +59,10 @@ function getOptionsPDF()
 
 $(function() {
     enableAllIterationsCandidates();
-    enableAllIterationsPerfomance();
+    enableAllIterationsPerformance();
     showButtonParameters();
     $("#dontIncludeCandidates").click(enableAllIterationsCandidates);
-    $("#dontIncludePerfomance").click(enableAllIterationsPerfomance);
+    $("#dontIncludePerformance").click(enableAllIterationsPerformance);
     $("#includeDetails").click(showButtonParameters);
 });
   
@@ -74,11 +74,11 @@ function enableAllIterationsCandidates() {
     }
 }
 
-function enableAllIterationsPerfomance() {
+function enableAllIterationsPerformance() {
     if (!this.checked) {
-        $("#allIterationsPerfomance").removeAttr("disabled");
+        $("#allIterationsPerformance").removeAttr("disabled");
     } else {
-        $("#allIterationsPerfomance").attr("disabled", true);
+        $("#allIterationsPerformance").attr("disabled", true);
     }
 }
 
@@ -133,24 +133,24 @@ async function generatePDF(options)
     
     index++;
 
-    // PERFOMANCE
-    if(options[index]['perfomance'] != false)
+    // Performance
+    if(options[index]['Performance'] != false)
     {
         showLoading();
-        updateTextStatus("Generating Perfomance Section");
-        var iterations = options[index]['perfomanceIterations'][options[index]['perfomanceIterations'].length-1];
+        updateTextStatus("Generating Performance Section");
+        var iterations = options[index]['PerformanceIterations'][options[index]['PerformanceIterations'].length-1];
         var textIteration = 'Last iteration';
-        await appendPerfomance(doc, iterations, textIteration, true)
-        if(options[index]['perfomanceAllIterations'] == true)
+        await appendPerformance(doc, iterations, textIteration, true)
+        if(options[index]['PerformanceAllIterations'] == true)
         {
-            var iterations = options[index]['perfomanceIterations'];
+            var iterations = options[index]['PerformanceIterations'];
             for(var i = iterations.length - 2; i >= 0; i--)
             {
                 if(i == 0)
                     var textIteration = 'Iteration ' + iterations[i];
                 else
                     var textIteration = 'Iterations ' + iterations[i] + " - " + iterations[i - 1];
-                await appendPerfomance(doc, iterations[i], textIteration, false)
+                await appendPerformance(doc, iterations[i], textIteration, false)
                 i--;
             }
         }
@@ -342,7 +342,7 @@ async function appendCandidates(doc, iterations, lastTwo)
     return;
 }
 
-async function appendPerfomance(doc, iterations, textIteration, flagConvergence)
+async function appendPerformance(doc, iterations, textIteration, flagConvergence)
 {
     var flagLastIteration = false;
 
@@ -354,7 +354,7 @@ async function appendPerfomance(doc, iterations, textIteration, flagConvergence)
 
     doc.setFont("times", "bold");
     doc.setFontSize(14);
-    doc.text(20, 35, 'Perfomance')
+    doc.text(20, 35, 'Performance')
     doc.line(19, 36, 48, 36);
     doc.setFontSize(11);
     doc.text(20, 40, textIteration)
@@ -364,7 +364,7 @@ async function appendPerfomance(doc, iterations, textIteration, flagConvergence)
     {
         doc.text(50, 50, 'Convergence Plot')
         doc.text(46, 53, '(Valid for all iterations)')
-        source = $('#convergencePerfomance').children('img')[0].src;
+        source = $('#convergencePerformance').children('img')[0].src;
 
         await loadImage(source).then(formatedImage =>{
             doc.addImage(formatedImage, 20, 54, 80, 80);
@@ -377,11 +377,11 @@ async function appendPerfomance(doc, iterations, textIteration, flagConvergence)
         {
             var text = 'BoxPlot iteration ' + (iterations - 1)
             doc.text(55, 50, text)
-            Shiny.onInputChange("requestPlottingPerfomance", {iterations: (iterations - 1), ran: Math.random()});
+            Shiny.onInputChange("requestPlottingPerformance", {iterations: (iterations - 1), ran: Math.random()});
             await waitForData(2).then(async plot =>{
                 await loadImage(plot['boxPlot']).then(formatedImage =>{
                     doc.addImage(formatedImage, 5, 53, 100, 130);
-                    console.log('Add image: Boxplot Perfomance')
+                    console.log('Add image: Boxplot Performance')
                 });
             });
         }
@@ -396,11 +396,11 @@ async function appendPerfomance(doc, iterations, textIteration, flagConvergence)
     var text = 'BoxPlot iteration ' + iterations;
     doc.text(xLine, 50, text)
 
-    Shiny.onInputChange("requestPlottingPerfomance", {iterations: iterations, ran: Math.random()});
+    Shiny.onInputChange("requestPlottingPerformance", {iterations: iterations, ran: Math.random()});
     await waitForData(2).then(async plot =>{
         await loadImage(plot['boxPlot']).then(formatedImage =>{
             doc.addImage(formatedImage, (xLine - 45), 53, 100, 130);
-            console.log('Add image: Boxplot Perfomance')
+            console.log('Add image: Boxplot Performance')
         });
     });
     return;
@@ -671,7 +671,7 @@ function waitForData(required)
         });
     if(required == 2)
         return new Promise((resolve, reject) => {
-            Shiny.addCustomMessageHandler('imagePlotPerfomance', 
+            Shiny.addCustomMessageHandler('imagePlotPerformance', 
                 function(params) 
                 {
                     resolve(params)
