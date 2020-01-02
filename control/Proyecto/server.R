@@ -21,6 +21,14 @@ updateFile <- function()
   load(pathRDATA, envir=.GlobalEnv)
   return(irace)
 }
+
+disableFinishButton <- function()
+{
+  if(iraceResults$state$completed == TRUE)
+  {
+    shinyjs::disabled("finish")
+  }
+}
 removeTemporalPlots <- function(patternData)
 {
   junk <- dir(pattern=patternData)
@@ -42,10 +50,35 @@ summary <- shinyServer(function(input,output,session){
   time <- 0
   statusIrace <- iraceResults$state$completed
   process <- system("ps -ef | grep runIrace.R | awk '{print $2}'", intern = TRUE)
+  output$status <- renderMenu({
+    if(iraceResults$state$completed == FALSE)
+    {
+      invalidateLater(1000,session)
+    }
+    if(iraceResults$state$completed == TRUE)
+    {
+      dropdownMenu(type = "notifications",
+        notificationItem(
+          text = "Finished",
+          icon("circle"),
+          status = "success"
+        )
+      )
+    }else{
+        dropdownMenu(type = "notifications",
+          notificationItem(
+            text = "Running",
+            icon("circle"),
+            status = "warning"
+          )
+        )
+    }
+  })
     #### TABLAS ####
       observe({
         if(iraceResults$state$completed == FALSE)
         {
+
           invalidateLater(4000,session)
         }
         output$elites <- DT::renderDataTable({
@@ -65,6 +98,7 @@ summary <- shinyServer(function(input,output,session){
                             ))
               isolate(bestConfiguration)
         })
+      })
       observe({
         if(iraceResults$state$completed == FALSE)
         {
@@ -81,18 +115,21 @@ summary <- shinyServer(function(input,output,session){
         })
       })
       #### SUMMARY ####
-      withProgress(message = "Updating Summary", value = 0, {
-        incProgress(1/10,detail = paste("Updating Number of Parameters"))
-        Sys.sleep(0.2)
         output$numOfParameters <- renderText({
-          if(iraceResults$state$completed == FALSE)
-          {
-            invalidateLater(4000,session)
-          }
-          updateFile()
-          length(iraceResults$parameters$names)
-          isolate(length(iraceResults$parameters$names))
+          withProgress(message = "Updating data",value = 0,{
+            incProgress(1/10,detail = paste("Getting Data"))
+            Sys.sleep(0.3)
+            if(iraceResults$state$completed == FALSE)
+            {
+              invalidateLater(4000,session)
+            }
+            updateFile()
+            incProgress(10/10, detail = paste("Updating Number of Parameters"))
+            Sys.sleep(0.3)
+            length(iraceResults$parameters$names)
+            isolate(length(iraceResults$parameters$names))
         })
+      })
         
         
         output$iraceVersion <- renderText({
@@ -103,16 +140,21 @@ summary <- shinyServer(function(input,output,session){
           iraceResults$irace.version
           isolate(iraceResults$irace.version)
         })
-        incProgress(2/10,detail = paste("Updating Number of Experiments Used so Far"))
-        Sys.sleep(0.2)
         output$experimentsUsedSoFar <- renderText({
-          if(iraceResults$state$completed == FALSE)
-          {
-            invalidateLater(4000,session)
-          }
-          iraceResults$state$experimentsUsedSoFar
-          isolate(iraceResults$state$experimentsUsedSoFar)
+          withProgress(message = "Updating Data", value = 0, {
+            incProgress(1/10, detail = "Getting Data")
+            Sys.sleep(0.3)
+            if(iraceResults$state$completed == FALSE)
+            {
+              invalidateLater(4000,session)
+            }
+            incProgress(10/10, detail = paste("Updating Data"))
+            Sys.sleep(0.3)
+            iraceResults$state$experimentsUsedSoFar
+            isolate(iraceResults$state$experimentsUsedSoFar)
+          })
         })
+      
         output$maxExperiments <- renderText({
           if(iraceResults$state$completed == FALSE)
           {
@@ -130,38 +172,49 @@ summary <- shinyServer(function(input,output,session){
           iraceResults$state$nbIterations
           isolate(iraceResults$state$nbIterations)
         })
-        incProgress(3/10,detail = paste("Updating Number of Configurations"))
-        Sys.sleep(0.2)
         output$numConfigurations <- renderText({
-          if(iraceResults$state$completed == FALSE)
-          {
-            invalidateLater(4000, session)
-          }
-          conf <- length(iraceResults$allConfigurations$.ID.)
-          isolate(conf)
+          withProgress(message = "Updating Data", value = 0, {
+            incProgress(1/10,detail = paste("Getting Data"))
+            Sys.sleep(0.3)
+            if(iraceResults$state$completed == FALSE)
+            {
+              invalidateLater(4000, session)
+            }
+            incProgress(10/10,detail = paste("Updating Number of Configurations"))
+            Sys.sleep(0.3)
+            conf <- length(iraceResults$allConfigurations$.ID.)
+            isolate(conf)
+          })
         })
-        incProgress(4/10,detail = paste("Updating Number of Instances Used so Far"))
-        Sys.sleep(0.2)
+
         output$numInstancesUsedSoFar <- renderText({
-          if(iraceResults$state$completed == FALSE)
-          {
-            invalidateLater(4000, session)
-          }
-          nrow(iraceResults$experiments)
-          isolate(nrow(iraceResults$experiments))
+          withProgress(message = "Updating Data", value = 0, {
+            incProgress(1/10,detail = paste("Getting Data"))
+            Sys.sleep(0.3)
+            if(iraceResults$state$completed == FALSE)
+            {
+              invalidateLater(4000, session)
+            }
+            incProgress(10/10,detail = paste("Updating Number of Instances used so far"))
+            Sys.sleep(0.3)
+            nrow(iraceResults$experiments)
+            isolate(nrow(iraceResults$experiments))
+          })
         })
-        incProgress(5/10,detail = paste("Updating Number of Instances"))
-        Sys.sleep(0.2)
         output$numOfInstances <- renderText({
-          if(iraceResults$state$completed == FALSE)
-          {
-            invalidateLater(4000,session)
-          }
-          length(iraceResults$scenario$instances)
-          isolate(length(iraceResults$scenario$instances))
+          withProgress(message = "Updating Data", value = 0, {
+            incProgress(1/10,detail = paste("Getting Data"))
+            Sys.sleep(0.3)
+            if(iraceResults$state$completed == FALSE)
+            {
+              invalidateLater(4000,session)
+            }
+            incProgress(10/10,detail = paste("Updating Number of Instances"))
+            Sys.sleep(0.3)
+            length(iraceResults$scenario$instances)
+            isolate(length(iraceResults$scenario$instances))
+          })
         })
-        incProgress(6/10,detail = paste("Updating Number of Elites Configurations"))
-        Sys.sleep(0.2)
         observe({
           if(iraceResults$state$completed == FALSE)
           {
@@ -176,176 +229,204 @@ summary <- shinyServer(function(input,output,session){
             }
             isolate(length(i))
           })
-        })
-        if(iraceResults$state$completed == TRUE)
-        {
-          incProgress(10/10,detail = paste("Finishing"))
-          Sys.sleep(0.2)
-        }
-      }) 
+        }) 
      #### PLOTS ####
       output$plotPerformance <- renderPlot({
         req(input$iterationPerformance)
-        if(iraceResults$state$completed == FALSE)
-        {
-          invalidateLater(4000, session)
-        }
-        fes <- cumsum(table(iraceResults$experimentLog[,"iteration"]))
-        elites <- as.character(iraceResults$iterationElites)
-        values <- colMeans(iraceResults$testing$experiments[,elites])
-        plot(fes,values,type="s",xlab="Number of runs of the target algorithm",ylab= "Mean value over testing set")
-        points(fes,values)
-        text(fes,values,elites,pos=1)
-      })
-      
-      output$frecuencyParameters <- renderImage({
-        req(input$iterationFrequency)
-        req(input$parametersFrequency)
-        if(iraceResults$state$completed == FALSE)
-        {
-          invalidateLater(4000, session)
-        }
-        
-        
-        
-        conf <- getConfigurationByIteration(iraceResults = iraceResults, iterations = input$iterationFrequency[1]:input$iterationFrequency[2])
-        print(input$parametersFrequency)
-        print(conf)
-        max <- 12
-        limit <- 1
-        params <- c()
-        numberOfParameters <- ceiling(length(input$parametersFrequency)/max)
-        for(i in 1: numberOfParameters)
-        {
-          k <- 1
-          for(j in limit:(max*i))
-          {
-            if(length(input$parametersFrequency) >= j)
-            {
-              params[k] <- input$parametersFrequency[j]
-              k <- k + 1
-            }
-          }
-          
-          fixFormat <- iraceResults$parameters
-          fixFormat$names <- params
-          
-          png(filename = paste0("tempPlotFrequency",i,".png"), width = 550, height = 555, res = 80)
-          print(png(filename <- paste0("tempPlotFrequency", i, ".png"), width = 550, height = 555, res = 80))
-          parameterFrequency(conf, fixFormat)
-          dev.off()
-          print(dev.off())
-          limit <- (max*i) + 1;
-        }
-        finalPlot <- NULL
-        for(i in 1:numberOfParameters)
-        {
-          if(is.null(finalPlot))
-          {
-            finalPlot <- image_read(paste0("tempPlotFrequency",i,".png"))
-            next
-          }
-          image <- image_read(paste0("tempPlotFrequency",i,".png"))
-          print(image)
-          finalPlot <- image_append(c(finalPlot, image), stack = TRUE)
-        }
-        print(getwd())
-        removeTemporalPlots('tempPlotFrequency')
-        image_write(finalPlot,path = paste0(getwd(),"/resources/images/frequencyPlot.png"), format = "png")
-        print(image_write(finalPlot,path = paste0(getwd(),"/resources/images/frequencyPlot.png"), format = "png"))
-        list(src = paste0(getwd(),"/resources/images/frequencyPlot.png"))
-      })
-        output$paralelCoordinatesCandidates <- renderImage({
-        req(input$iterationPC)
-        req(input$parametersParallelCoordinates)
-        if(iraceResults$state$completed == FALSE)
-        {
-          invalidateLater(4000, session)
-        }
-        
-        iterationsPC <- seq(input$iterationPC[1],input$iterationPC[2])
-        
-        last <- length(iraceResults$iterationElites)
-        conf <- getConfigurationByIteration(iraceResults = iraceResults,iterations = unique(iterationsPC))
-        
-        max <- 12
-        limit <- 1
-        params <- c()
-        numberOfParameters <- ceiling(length(input$parametersParallelCoordinates)/max)
-        for(i in 1: numberOfParameters)
-        {
-          k <- 1
-          for(j in limit:(max*i))
-          {
-            if(length(input$parametersParallelCoordinates) >= j)
-            {
-              params[k] <- input$parametersParallelCoordinates[j]
-              k <- k + 1
-            }
-          }
-          
-          # TEMPORAL FIX DUE IMPLEMENTATION OF THE PLOT
-          fixFormat <- iraceResults$parameters
-          fixFormat$names <- params
-          
-          png(filename = paste0("tempPlotParallel", i, ".png"))
-          parallelCoordinatesPlot (conf, fixFormat, hierarchy = FALSE)
-          dev.off()
-          print(dev.off)
-          limit <- (max*i) + 1;
-        }
-        finalPlot <- NULL
-        for(i in 1:numberOfParameters)
-        {
-          if(is.null(finalPlot))
-          {
-            finalPlot <- image_read(paste0("tempPlotParallel",i,".png"))
-            next
-          }
-          image <- image_read(paste0("tempPlotParallel", i, ".png"))
-          finalPlot <- image_append(c(finalPlot, image), stack = TRUE)
-        }
-        removeTemporalPlots('tempPlotParallel')
-        image_write(finalPlot,path = paste0(getwd(),"/resources/images/parallelPlot.png"), format = "png")
-        list(src = paste0(getwd(),"/resources/images/parallelPlot.png"))
-      })
-        output$boxPlotBestConfiguration <- renderPlot({
-          req(input$iterationBoxPlot)
+        withProgress(message = "Updating Data", value = 0, {
+          incProgress(1/10,detail = paste("Getting Data"))
+          Sys.sleep(0.3)
           if(iraceResults$state$completed == FALSE)
           {
             invalidateLater(4000, session)
           }
-          iterationsBoxPlot <- seq(input$iterationBoxPlot[1],input$iterationBoxPlot[2])
-          print(iterationsBoxPlot)
-          configurationID <- unique(unlist(iraceResults$allElites[iterationsBoxPlot]))
-          results <- iraceResults$experiments[,configurationID,drop = FALSE]
-          conf <- gl(ncol(results),
-                     nrow(results),
-                     labels = colnames(results)
-                  )
-          pairwise.wilcox.test(as.vector(results), conf,paired = TRUE, p.adj ="bonf")
-          configurationsBoxplot(results, ylab = "Solution Cost")
+          fes <- cumsum(table(iraceResults$experimentLog[,"iteration"]))
+          elites <- as.character(iraceResults$iterationElites)
+          values <- colMeans(iraceResults$testing$experiments[,elites])
+          incProgress(10/10,detail = paste("Plotting Plot Performance"))
+          Sys.sleep(0.3)
+          plot(fes,values,type="s",xlab="Number of runs of the target algorithm",ylab= "Mean value over testing set")
+          points(fes,values)
+          text(fes,values,elites,pos=1)
         })
-        
-          output$performance <- renderPlot({
+      })
+      
+
+      output$frecuencyParameters <- renderImage({
+        req(input$iterationFrequency)
+        req(input$parametersFrequency)
+        withProgress(message = "Updating Data", value = 0, {
+          incProgress(1/10,detail = paste("Getting Data"))
+          Sys.sleep(0.3)
+          if(iraceResults$state$completed == FALSE)
+          {
+            invalidateLater(4000, session)
+          }
+          
+          
+          
+          conf <- getConfigurationByIteration(iraceResults = iraceResults, iterations = input$iterationFrequency[1]:input$iterationFrequency[2])
+          print(input$parametersFrequency)
+          print(conf)
+          max <- 12
+          limit <- 1
+          params <- c()
+          numberOfParameters <- ceiling(length(input$parametersFrequency)/max)
+          for(i in 1: numberOfParameters)
+          {
+            k <- 1
+            for(j in limit:(max*i))
+            {
+              if(length(input$parametersFrequency) >= j)
+              {
+                params[k] <- input$parametersFrequency[j]
+                k <- k + 1
+              }
+            }
+            
+            fixFormat <- iraceResults$parameters
+            fixFormat$names <- params
+            
+            png(filename = paste0("tempPlotFrequency",i,".png"), width = 550, height = 555, res = 80)
+            print(png(filename <- paste0("tempPlotFrequency", i, ".png"), width = 550, height = 555, res = 80))
+            incProgress(5/10,detail = paste("Plotting Frequency"))
+            Sys.sleep(0.3)
+            parameterFrequency(conf, fixFormat)
+            dev.off()
+            print(dev.off())
+            limit <- (max*i) + 1;
+          }
+          finalPlot <- NULL
+          for(i in 1:numberOfParameters)
+          {
+            if(is.null(finalPlot))
+            {
+              finalPlot <- image_read(paste0("tempPlotFrequency",i,".png"))
+              next
+            }
+            image <- image_read(paste0("tempPlotFrequency",i,".png"))
+            print(image)
+            finalPlot <- image_append(c(finalPlot, image), stack = TRUE)
+          }
+          print(getwd())
+          incProgress(10/10,detail = paste("Showing Plot of Frequency"))
+          Sys.sleep(0.3)
+          removeTemporalPlots('tempPlotFrequency')
+          image_write(finalPlot,path = paste0(getwd(),"/resources/images/frequencyPlot.png"), format = "png")
+          print(image_write(finalPlot,path = paste0(getwd(),"/resources/images/frequencyPlot.png"), format = "png"))
+          list(src = paste0(getwd(),"/resources/images/frequencyPlot.png"))
+        })
+      })
+        output$paralelCoordinatesCandidates <- renderImage({
+        req(input$iterationPC)
+        req(input$parametersParallelCoordinates)
+        withProgress(message = "Updating Data", value = 0, {
+          incProgress(1/10,detail = paste("Getting Data"))
+          Sys.sleep(0.3)
+          if(iraceResults$state$completed == FALSE)
+          {
+            invalidateLater(4000, session)
+          }
+          
+          iterationsPC <- seq(input$iterationPC[1],input$iterationPC[2])
+          
+          last <- length(iraceResults$iterationElites)
+          conf <- getConfigurationByIteration(iraceResults = iraceResults,iterations = unique(iterationsPC))
+          
+          max <- 12
+          limit <- 1
+          params <- c()
+          numberOfParameters <- ceiling(length(input$parametersParallelCoordinates)/max)
+          for(i in 1: numberOfParameters)
+          {
+            k <- 1
+            for(j in limit:(max*i))
+            {
+              if(length(input$parametersParallelCoordinates) >= j)
+              {
+                params[k] <- input$parametersParallelCoordinates[j]
+                k <- k + 1
+              }
+            }
+            
+            # TEMPORAL FIX DUE IMPLEMENTATION OF THE PLOT
+            fixFormat <- iraceResults$parameters
+            fixFormat$names <- params
+            
+            png(filename = paste0("tempPlotParallel", i, ".png"))
+            incProgress(5/10,detail = paste("Plotting Parallel Coordinates"))
+            Sys.sleep(0.3)
+            parallelCoordinatesPlot (conf, fixFormat, hierarchy = FALSE)
+            dev.off()
+            print(dev.off)
+            limit <- (max*i) + 1;
+          }
+          finalPlot <- NULL
+          for(i in 1:numberOfParameters)
+          {
+            if(is.null(finalPlot))
+            {
+              finalPlot <- image_read(paste0("tempPlotParallel",i,".png"))
+              next
+            }
+            image <- image_read(paste0("tempPlotParallel", i, ".png"))
+            finalPlot <- image_append(c(finalPlot, image), stack = TRUE)
+          }
+          removeTemporalPlots('tempPlotParallel')
+          incProgress(10/10,detail = paste("Showing Parallel Coordinates Plot"))
+          Sys.sleep(0.3)
+          image_write(finalPlot,path = paste0(getwd(),"/resources/images/parallelPlot.png"), format = "png")
+          list(src = paste0(getwd(),"/resources/images/parallelPlot.png"))
+        })
+      })
+        output$boxPlotBestConfiguration <- renderPlot({
+          req(input$iterationBoxPlot)
+          withProgress(message = "Updating Data", value = 0, {
+            incProgress(1/10,detail = paste("Getting Data"))
+            Sys.sleep(0.3)
             if(iraceResults$state$completed == FALSE)
             {
               invalidateLater(4000, session)
             }
-            iters <- unique(iraceResults$experimentLog[,"iteration"])
-            fes <- cumsum(table(iraceResults$experimentLog[,"iteration"]))
-            elites <- as.character(iraceResults$iterationElites)
-            values <- colMeans(iraceResults$experiments[,elites])
-            plot(fes,
-                 values,
-                 type = "s",
-                 xlab = "Number of runs of the target algorithm",
-                 ylab = "Mean value over testing set"
-            )
-            points(fes,values)
-            text(fes, values, elites, pos = 1)
+            iterationsBoxPlot <- seq(input$iterationBoxPlot[1],input$iterationBoxPlot[2])
+            print(iterationsBoxPlot)
+            configurationID <- unique(unlist(iraceResults$allElites[iterationsBoxPlot]))
+            results <- iraceResults$experiments[,configurationID,drop = FALSE]
+            conf <- gl(ncol(results),
+                      nrow(results),
+                      labels = colnames(results)
+                    )
+            pairwise.wilcox.test(as.vector(results), conf,paired = TRUE, p.adj ="bonf")
+            incProgress(10/10,detail = paste("Plotting BoxPlot"))
+            Sys.sleep(0.3)
+            configurationsBoxplot(results, ylab = "Solution Cost")
           })
-  })
+        })
+        
+          output$performance <- renderPlot({
+            withProgress(message = "Updating Data", value = 0, {
+              incProgress(1/10,detail = paste("Getting Data"))
+              Sys.sleep(0.3)
+              if(iraceResults$state$completed == FALSE)
+              {
+                invalidateLater(4000, session)
+              }
+              iters <- unique(iraceResults$experimentLog[,"iteration"])
+              fes <- cumsum(table(iraceResults$experimentLog[,"iteration"]))
+              elites <- as.character(iraceResults$iterationElites)
+              values <- colMeans(iraceResults$experiments[,elites])
+              incProgress(10/10,detail = paste("Plotting Performance Plot"))
+              Sys.sleep(0.3)
+              plot(fes,
+                  values,
+                  type = "s",
+                  xlab = "Number of runs of the target algorithm",
+                  ylab = "Mean value over testing set"
+              )
+              points(fes,values)
+              text(fes, values, elites, pos = 1)
+            })
+          })
     # FINISH IRACE #
 
     output$processFinish <- renderText({
@@ -365,7 +446,7 @@ summary <- shinyServer(function(input,output,session){
 
     observeEvent(input$acept_finish,{
       system(paste("kill",extractPID()))
-      print('SESSION ENDED BY SETUP APP')
+      print('SESSION ENDED BY CONTROL APP')
       assign("flagStop", TRUE, envir=.GlobalEnv,inherits = FALSE)
       stopApp()
     })
@@ -376,6 +457,10 @@ summary <- shinyServer(function(input,output,session){
       status <- list(goto = 1)
       stopApp(returnValue = invisible(status))
     })
+    if(iraceResults$state$completed == TRUE)
+    {
+      disableFinishButton()
+    }
 
 
   observe({

@@ -1,12 +1,12 @@
 
-packageVerification <- c("shiny", "irace","readr","magick","RCurl","shinydashboard","devtools", "shinyjs","future","promises","shinyalert")
+packageVerification <- c("shiny", "irace","readr","magick","RCurl","shinydashboard","devtools", "shinyjs","future","promises","shinyalert","shinyjs","shinyBS")
 
 if(!require("dashboardthemes"))
 {
   devtools::install_github("nik01010/dashboardthemes")
 }
 
-  local({r <- getOption("repos")
+local({r <- getOption("repos")
     r["CRAN"] <- "http://cran.us.r-project.org" 
   options(repos=r)
 })
