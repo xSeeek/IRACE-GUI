@@ -497,7 +497,7 @@ server <- function(input, output, session) {
     observeEvent(input$reportLoader, {
         dataToLoad <- input$reportLoader
 
-        if((length(dataToLoad$type) != 1 && dataToLoad$type != 'application/x-r-data') || dataToLoad$type != 'application/x-r-data')
+        if(length(dataToLoad$type) != 1 && dataToLoad$type != 'application/x-r-data')
         {
             session$sendCustomMessage(type = "invalidFiletype", message = "message")
             return(NULL)
