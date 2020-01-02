@@ -33,7 +33,7 @@ sidebar <- dashboardSidebar(
           menuItem("Performance", icon = icon("bar-chart-o"), tabName = "performance"),
           menuItem("Frequency",tabName = "frequency" ,icon = icon("bar-chart-o")),
           menuItem("Info", icon = icon("info"), href = "http://iridia.ulb.ac.be/irace/"),
-          menuItem("Back to Setup", icon = icon("undo"), tabName = "target"),
+          actionButton("back","Back to menu" ,icon = icon("undo"),style="background-color: #ffffff; border-color: #ffffff"),
           actionButton("finish", "Finish IRACE", icon = icon("times-circle"),style="color: #FF0000; background-color: #ffffff; border-color: #ffffff"),
           disabled(actionButton("change", "Go to Reports",icon = icon("file-alt"),style="color: #328900; background-color: #ffffff; border-color: #ffffff"))
         )
@@ -52,7 +52,6 @@ sidebar <- dashboardSidebar(
           box(title="Summary",
               status="primary",
               h5("Irace Version: ", textOutput("iraceVersion",inline=TRUE)),
-              h5("Test: ", textOutput("processFinish",inline=TRUE)),
               #h5("Time of Execution: ", textOutput("timeOfExecution",inline=TRUE), " seconds"),
               h5("Num of Iterations: ", textOutput("numIterations",inline=TRUE)),
               h5("Num of Parameters: ", textOutput("numOfParameters",inline=TRUE)),

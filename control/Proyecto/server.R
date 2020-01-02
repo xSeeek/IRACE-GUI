@@ -22,13 +22,6 @@ updateFile <- function()
   return(irace)
 }
 
-disableFinishButton <- function()
-{
-  if(iraceResults$state$completed == TRUE)
-  {
-    shinyjs::disabled("finish")
-  }
-}
 removeTemporalPlots <- function(patternData)
 {
   junk <- dir(pattern=patternData)
@@ -37,7 +30,7 @@ removeTemporalPlots <- function(patternData)
 
 extractPID <- function()
 {
-  process <- system("ps -ef | grep runIrace.R | awk '{print $2}'", intern = TRUE)
+  process <- system("ps -ef | grep runIrace.R | grep -v grep | awk '{print $2}'", intern = TRUE)
   substr(process,1,5)
   print(substr(process,1,5))
 }
@@ -49,7 +42,6 @@ summary <- shinyServer(function(input,output,session){
   bestConfiguration <- data.frame()
   time <- 0
   statusIrace <- iraceResults$state$completed
-  process <- system("ps -ef | grep runIrace.R | awk '{print $2}'", intern = TRUE)
   output$status <- renderMenu({
     if(iraceResults$state$completed == FALSE)
     {
@@ -235,7 +227,7 @@ summary <- shinyServer(function(input,output,session){
         req(input$iterationPerformance)
         withProgress(message = "Updating Data", value = 0, {
           incProgress(1/10,detail = paste("Getting Data"))
-          Sys.sleep(0.3)
+          Sys.sleep(0.1)
           if(iraceResults$state$completed == FALSE)
           {
             invalidateLater(4000, session)
@@ -244,7 +236,7 @@ summary <- shinyServer(function(input,output,session){
           elites <- as.character(iraceResults$iterationElites)
           values <- colMeans(iraceResults$testing$experiments[,elites])
           incProgress(10/10,detail = paste("Plotting Plot Performance"))
-          Sys.sleep(0.3)
+          Sys.sleep(0.1)
           plot(fes,values,type="s",xlab="Number of runs of the target algorithm",ylab= "Mean value over testing set")
           points(fes,values)
           text(fes,values,elites,pos=1)
@@ -257,7 +249,7 @@ summary <- shinyServer(function(input,output,session){
         req(input$parametersFrequency)
         withProgress(message = "Updating Data", value = 0, {
           incProgress(1/10,detail = paste("Getting Data"))
-          Sys.sleep(0.3)
+          Sys.sleep(0.1)
           if(iraceResults$state$completed == FALSE)
           {
             invalidateLater(4000, session)
@@ -290,7 +282,7 @@ summary <- shinyServer(function(input,output,session){
             png(filename = paste0("tempPlotFrequency",i,".png"), width = 550, height = 555, res = 80)
             print(png(filename <- paste0("tempPlotFrequency", i, ".png"), width = 550, height = 555, res = 80))
             incProgress(5/10,detail = paste("Plotting Frequency"))
-            Sys.sleep(0.3)
+            Sys.sleep(0.1)
             parameterFrequency(conf, fixFormat)
             dev.off()
             print(dev.off())
@@ -310,7 +302,7 @@ summary <- shinyServer(function(input,output,session){
           }
           print(getwd())
           incProgress(10/10,detail = paste("Showing Plot of Frequency"))
-          Sys.sleep(0.3)
+          Sys.sleep(0.1)
           removeTemporalPlots('tempPlotFrequency')
           image_write(finalPlot,path = paste0(getwd(),"/resources/images/frequencyPlot.png"), format = "png")
           print(image_write(finalPlot,path = paste0(getwd(),"/resources/images/frequencyPlot.png"), format = "png"))
@@ -322,7 +314,7 @@ summary <- shinyServer(function(input,output,session){
         req(input$parametersParallelCoordinates)
         withProgress(message = "Updating Data", value = 0, {
           incProgress(1/10,detail = paste("Getting Data"))
-          Sys.sleep(0.3)
+          Sys.sleep(0.1)
           if(iraceResults$state$completed == FALSE)
           {
             invalidateLater(4000, session)
@@ -355,7 +347,7 @@ summary <- shinyServer(function(input,output,session){
             
             png(filename = paste0("tempPlotParallel", i, ".png"))
             incProgress(5/10,detail = paste("Plotting Parallel Coordinates"))
-            Sys.sleep(0.3)
+            Sys.sleep(0.1)
             parallelCoordinatesPlot (conf, fixFormat, hierarchy = FALSE)
             dev.off()
             print(dev.off)
@@ -374,20 +366,20 @@ summary <- shinyServer(function(input,output,session){
           }
           removeTemporalPlots('tempPlotParallel')
           incProgress(10/10,detail = paste("Showing Parallel Coordinates Plot"))
-          Sys.sleep(0.3)
+          Sys.sleep(0.1)
           image_write(finalPlot,path = paste0(getwd(),"/resources/images/parallelPlot.png"), format = "png")
           list(src = paste0(getwd(),"/resources/images/parallelPlot.png"))
         })
       })
         output$boxPlotBestConfiguration <- renderPlot({
+          if(iraceResults$state$completed == FALSE)
+          {
+            invalidateLater(4000, session)
+          }
           req(input$iterationBoxPlot)
           withProgress(message = "Updating Data", value = 0, {
             incProgress(1/10,detail = paste("Getting Data"))
-            Sys.sleep(0.3)
-            if(iraceResults$state$completed == FALSE)
-            {
-              invalidateLater(4000, session)
-            }
+            Sys.sleep(0.1)
             iterationsBoxPlot <- seq(input$iterationBoxPlot[1],input$iterationBoxPlot[2])
             print(iterationsBoxPlot)
             configurationID <- unique(unlist(iraceResults$allElites[iterationsBoxPlot]))
@@ -398,25 +390,25 @@ summary <- shinyServer(function(input,output,session){
                     )
             pairwise.wilcox.test(as.vector(results), conf,paired = TRUE, p.adj ="bonf")
             incProgress(10/10,detail = paste("Plotting BoxPlot"))
-            Sys.sleep(0.3)
+            Sys.sleep(0.1)
             configurationsBoxplot(results, ylab = "Solution Cost")
           })
         })
         
           output$performance <- renderPlot({
+            if(iraceResults$state$completed == FALSE)
+            {
+                invalidateLater(4000, session)
+            }
             withProgress(message = "Updating Data", value = 0, {
               incProgress(1/10,detail = paste("Getting Data"))
-              Sys.sleep(0.3)
-              if(iraceResults$state$completed == FALSE)
-              {
-                invalidateLater(4000, session)
-              }
+              Sys.sleep(0.1)
               iters <- unique(iraceResults$experimentLog[,"iteration"])
               fes <- cumsum(table(iraceResults$experimentLog[,"iteration"]))
               elites <- as.character(iraceResults$iterationElites)
               values <- colMeans(iraceResults$experiments[,elites])
               incProgress(10/10,detail = paste("Plotting Performance Plot"))
-              Sys.sleep(0.3)
+              Sys.sleep(0.1)
               plot(fes,
                   values,
                   type = "s",
@@ -457,10 +449,26 @@ summary <- shinyServer(function(input,output,session){
       status <- list(goto = 1)
       stopApp(returnValue = invisible(status))
     })
-    if(iraceResults$state$completed == TRUE)
-    {
-      disableFinishButton()
-    }
+
+    observeEvent(input$back,{
+      showModal(
+      modalDialog(title = "Warning",
+                  paste("Are you sure you want to return to the main menu?. This action will end the execution of irace"),
+                  footer = tagList(
+                    modalButton("Cancel"),
+                    actionButton("backMainMenu","Yes")
+                  ),easyClose = TRUE)
+      )
+    })
+
+    observeEvent(input$backMainMenu, {
+      assign("flagStop", TRUE, envir=.GlobalEnv,inherits = FALSE)
+      system(paste("kill",extractPID()))
+      js$closeWindow()
+      status <- list(goto = 0)
+      session$sendCustomMessage(type = "closeWindow", message = "message")
+      stopApp(returnValue = invisible(status))
+    })
 
 
   observe({
@@ -474,10 +482,21 @@ summary <- shinyServer(function(input,output,session){
     updateSelectInput(session,"parametersFrequency",choices = iraceResults$parameters$names)
   })
 
+
+  session$onSessionEnded(function() {
+        print('SESSION ENDED BY CONTROL APP')
+        if(backMainMenu == FALSE)
+        {
+            status <- list(goto = 0)
+            session$sendCustomMessage(type = "closeWindow", message = "message")
+            stopApp(returnValue = invisible(status))
+        }
+        assign("backMainMenu", FALSE, envir=.GlobalEnv,inherits = FALSE)
+  })
   session$onSessionEnded(function() {
         if(flagStop == FALSE)
         {
-            print('SESSION ENDED BY SETUP APP')
+            print('SESSION ENDED BY CONTROL APP')
             assign("flagStop", TRUE, envir=.GlobalEnv,inherits = FALSE)
             stopApp()
         }
