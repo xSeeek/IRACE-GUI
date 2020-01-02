@@ -422,7 +422,7 @@ summary <- shinyServer(function(input,output,session){
     # FINISH IRACE #
 
     output$processFinish <- renderText({
-      system("ps -ef | grep runIrace.R | awk '{print $2}'", intern = TRUE)
+      system("ps -ef | grep runIrace.R | grep -v grep | awk '{print $2}'", intern = TRUE)
     })
 
     observeEvent(input$finish,{
@@ -437,38 +437,20 @@ summary <- shinyServer(function(input,output,session){
     })
 
     observeEvent(input$acept_finish,{
+      assign("flagControl", TRUE, envir=.GlobalEnv,inherits = FALSE)
       system(paste("kill",extractPID()))
-      print('SESSION ENDED BY CONTROL APP')
-      assign("flagStop", TRUE, envir=.GlobalEnv,inherits = FALSE)
-      stopApp()
+      js$closewindow()
+      status <- list(goto = 0)
+      stopApp(returnValue = invisible(status))
     })
 
     observeEvent(input$change,{
-      assign("flagStop", TRUE, envir=.GlobalEnv,inherits = FALSE)
+      assign("flagControl", TRUE, envir=.GlobalEnv,inherits = FALSE)
       js$closewindow()
       status <- list(goto = 1)
       stopApp(returnValue = invisible(status))
     })
 
-    observeEvent(input$back,{
-      showModal(
-      modalDialog(title = "Warning",
-                  paste("Are you sure you want to return to the main menu?. This action will end the execution of irace"),
-                  footer = tagList(
-                    modalButton("Cancel"),
-                    actionButton("backMainMenu","Yes")
-                  ),easyClose = TRUE)
-      )
-    })
-
-    observeEvent(input$backMainMenu, {
-      assign("flagStop", TRUE, envir=.GlobalEnv,inherits = FALSE)
-      system(paste("kill",extractPID()))
-      js$closeWindow()
-      status <- list(goto = 0)
-      session$sendCustomMessage(type = "closeWindow", message = "message")
-      stopApp(returnValue = invisible(status))
-    })
 
 
   observe({
@@ -483,22 +465,13 @@ summary <- shinyServer(function(input,output,session){
   })
 
 
-  session$onSessionEnded(function() {
+    session$onSessionEnded(function() {
         print('SESSION ENDED BY CONTROL APP')
-        if(backMainMenu == FALSE)
+        if(flagControl == FALSE)
         {
-            status <- list(goto = 0)
             session$sendCustomMessage(type = "closeWindow", message = "message")
             stopApp(returnValue = invisible(status))
         }
-        assign("backMainMenu", FALSE, envir=.GlobalEnv,inherits = FALSE)
-  })
-  session$onSessionEnded(function() {
-        if(flagStop == FALSE)
-        {
-            print('SESSION ENDED BY CONTROL APP')
-            assign("flagStop", TRUE, envir=.GlobalEnv,inherits = FALSE)
-            stopApp()
-        }
+        assign("flagControl", FALSE, envir=.GlobalEnv,inherits = FALSE)
     })
 })

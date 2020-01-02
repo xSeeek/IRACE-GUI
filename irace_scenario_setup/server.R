@@ -331,7 +331,7 @@ server <- function(input, output, session) {
             setwd('../irace_scenario_setup')
             script <- paste0(getwd(), "/runIrace.R")
             system(paste0("Rscript -e 'source(\"", script, "\")'"), wait=FALSE)
-
+            Sys.sleep(2)
             status <- list(goto = 1)
             setwd('../')
             path <- paste(getwd(),'/shared/',logFileName,'.Rdata', sep = "")
