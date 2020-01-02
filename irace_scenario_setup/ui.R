@@ -119,7 +119,8 @@ body <- dashboardBody(
                 
                 h1("Instances"),
                 
-                fileInput("file1", "Select a file"),tags$b("Path:"),verbatimTextOutput("instancesPath"),
+                fileInput("file1", "Select a file",accept=c('text','.txt')),
+                tags$b("Path:"),verbatimTextOutput("instancesPath"),
                 verbatimTextOutput("instancesFile")
                 
                 
@@ -131,7 +132,7 @@ body <- dashboardBody(
         
         tabItem(tabName = "target",
                 h1("Target "),
-                fileInput('file2',   'Select a file'),tags$b("Path:"),verbatimTextOutput("targetPath"),
+                fileInput('file2',   'Select a file',accept=c('text','.txt')),tags$b("Path:"),verbatimTextOutput("targetPath"),
                 
                 textAreaInput(inputId="query", "File content", width='200%', height ='480px',
                               "#Upload a file to edit content"),
