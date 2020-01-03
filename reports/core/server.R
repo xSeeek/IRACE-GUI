@@ -185,6 +185,16 @@ generateBoxPlot <- function(numberIteration)
     return(results)
 }
 
+invalidateRdata <- function()
+{
+    if(completedIRACE == TRUE)
+    {
+        assign("completedIRACE", FALSE, envir=.GlobalEnv, inherits = FALSE)
+        return()
+    }
+    return()
+}
+
 plan(multiprocess)
 assign("completedIRACE", TRUE, envir=.GlobalEnv, inherits = FALSE)
 
@@ -325,7 +335,6 @@ server <- function(input, output, session) {
     })
 
     output$boxPlotPerformance <- renderImage({
-        assign("completedIRACE", FALSE, envir=.GlobalEnv, inherits = FALSE)
         validate(
             need(nrow(iraceResults$allConfigurations) != 0, "ERROR: Cannot plot because IRACE did not finish. The number of candidate configurations is 0.")
         )
@@ -335,10 +344,11 @@ server <- function(input, output, session) {
             incProgress(2/10, detail = paste("Rendering plots..."))
             plot <- generateBoxPlot(input$iterationPlotsPerformance)
             incProgress(10/10, detail = paste("Finishing..."))
+            if(plot$error == TRUE)
+                invalidateRdata()
             validate(
                 need(plot$error != TRUE, "ERROR: Cannot plot because IRACE did not finish. Insuficient data to generate the plot.")
             )
-            assign("completedIRACE", TRUE, envir=.GlobalEnv, inherits = FALSE)
         })
         list(src = plot$dir)
     })
@@ -429,12 +439,12 @@ server <- function(input, output, session) {
 
         req(iterations)
         conf <- getConfigurationByIteration(iraceResults = iraceResults, iterations = iterations[1]:iterations[2])
-        assign("completedIRACE", FALSE, envir=.GlobalEnv, inherits = FALSE)
+        if(nrow(conf) == 0 || nrow(iraceResults$allConfigurations) == 0)
+            invalidateRdata()
         validate(
             need(nrow(conf) != 0, "ERROR: Cannot plot because IRACE did not finish. The amount of rows is 0."),
             need(nrow(iraceResults$allConfigurations) != 0, "ERROR: Cannot plot because IRACE did not finish. The number of candidate configurations is 0.")
         )
-        assign("completedIRACE", TRUE, envir=.GlobalEnv, inherits = FALSE)
         progress <- AsyncProgress$new(message = 'Plotting: Parallel Coordinates', detail = 'This may take a while...', value = 0)
         progress$inc(1/10, detail = paste("Preconfiguring..."))
         
@@ -490,7 +500,8 @@ server <- function(input, output, session) {
     })
 
     output$convergencePerformance <- renderPlot({
-        assign("completedIRACE", FALSE, envir=.GlobalEnv, inherits = FALSE)
+        if(nrow(iraceResults$allConfigurations) == 0)
+            invalidateRdata()
         validate(
             need(nrow(iraceResults$allConfigurations) != 0, "ERROR: Cannot plot because IRACE did not finish. The number of candidate configurations is 0.")
         )
@@ -500,10 +511,11 @@ server <- function(input, output, session) {
         fes <- fes[!names(fes) == '0']
         elites <- as.character(iraceResults$iterationElites)
 
+        if(length(dim(iraceResults$experiments[,elites])) != 2)
+            invalidateRdata()
         validate(
             need(dim(iraceResults$experiments[,elites]) != 0, "ERROR: Cannot plot because IRACE did not finish. Must be an array of two dimensions.")
         )
-        assign("completedIRACE", TRUE, envir=.GlobalEnv, inherits = FALSE)
 
         values <- colMeans(iraceResults$experiments[,elites])
         plot(fes,
