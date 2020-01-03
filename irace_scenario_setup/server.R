@@ -346,6 +346,12 @@ server <- function(input, output, session) {
     ### This section save all the user inputs on the IRACE options
     observeEvent(input$saveOptions,{
       logFileName <<- Sys.time()
+       if(input$debugLevel<0 || input$debugLevel>100 || input$postSelection<0 || input$postSelection>100){
+        shinyalert("please enter a valid input", type = "error")
+      }
+      validate(need(input$debugLevel >= 0 && input$debugLevel <= 100, "Please enter a positive number"),
+               need(input$postSelection >= 0 && input$postSelection <= 100, "Please enter a positive number")
+               )
         if(input$saveOptions>0 && input$elitist != FALSE){
             write.table(paste("###General Options\n\n",
                               "parameterFile= ",input$parameterFile,"\n",
@@ -355,7 +361,7 @@ server <- function(input, output, session) {
                               "execDir= ",input$execDir,"\n",
                               "logFile= ",'"',input$logFile,logFileName,'.Rdata"',"\n",
                               "debugLevel= ",input$debugLevel,"\n",
-                              "seed= ",as.integer(input$seed),"\n",
+                              "seed= ",input$seed,"\n",
                               "repairConfiguration= ",input$repairConfiguration,"\n",
                               "postSelection= ",input$postSelection,"\n",
                               "maxExperiments= ",input$maxExperiments,"\n",
@@ -390,7 +396,7 @@ server <- function(input, output, session) {
                               "execDir= ",input$execDir,"\n",
                               "logFile= ",'"',input$logFile,logFileName,'.Rdata"',"\n",
                               "debugLevel=",input$debugLevel,"\n",
-                              "seed=",as.integer(input$seed),"\n",
+                              "seed= ",input$seed,"\n",
                               "repairConfiguration=",input$repairConfiguration,"\n",
                               "postSelection=",input$postSelection,"\n",
                               "aclib=",as.integer(input$aclib),"\n\n",
