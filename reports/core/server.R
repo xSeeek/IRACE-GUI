@@ -206,6 +206,12 @@ server <- function(input, output, session) {
         print('SESSION ENDED BY REPORTS APP')
         if(recentlyLoadedReports == FALSE)
         {
+            if(length(ls(envir=.GlobalEnv, pattern="customSectionsNames")) != 0)
+                rm(customSectionsNames, envir = .GlobalEnv)
+            if(length(ls(envir=.GlobalEnv, pattern="customSectionsIDS")) != 0)
+                rm(customSectionsIDS, envir = .GlobalEnv)
+            if(length(ls(envir=.GlobalEnv, pattern="customSections")) != 0)
+                rm(customSections, envir = .GlobalEnv)
             status <- list(goto = -1)
             session$sendCustomMessage(type = "closeWindow", message = "message")
             stopApp(returnValue = invisible(status))
@@ -214,6 +220,10 @@ server <- function(input, output, session) {
     })
 
     output$bestConfigurationsDetails <- renderUI({
+        validate(
+            need(nrow(iraceResults$allConfigurations) != 0, "ERROR: Cannot plot because IRACE did not finish. The number of candidate configurations is 0.")
+        )
+
         last <- length(iraceResults$iterationElites)
         id <- iraceResults$iterationElites[last]
         bestConfiguration <- getConfigurationById(iraceResults, ids = id)
@@ -229,6 +239,9 @@ server <- function(input, output, session) {
     })
 
     output$bestSoFarSelected <- renderUI({
+        validate(
+            need(nrow(iraceResults$allConfigurations) != 0, "ERROR: Cannot plot because IRACE did not finish. The number of candidate configurations is 0.")
+        )
         withProgress(message = 'Generating table: Best-so-far', value = 0, {
             incProgress(1/10, detail = paste("Preconfiguring..."))
             req(input$iterationDetails)
@@ -261,6 +274,10 @@ server <- function(input, output, session) {
     })
 
     output$eliteConfigurationSelected <- renderUI({
+        validate(
+            need(nrow(iraceResults$allConfigurations) != 0, "ERROR: Cannot plot because IRACE did not finish. The number of candidate configurations is 0.")
+        )
+
         withProgress(message = 'Generating table: Elite configurations', value = 0, {
             incProgress(1/10, detail = paste("Preconfiguring..."))
             req(input$iterationDetails)
@@ -290,6 +307,10 @@ server <- function(input, output, session) {
     })
 
     output$boxPlotBestConfiguration <- renderPlot({
+        validate(
+            need(nrow(iraceResults$allConfigurations) != 0, "ERROR: Cannot plot because IRACE did not finish. The number of candidate configurations is 0.")
+        )
+
         withProgress(message = 'Plotting: Boxplot Performance', value = 0, {
             incProgress(1/10, detail = paste("Preconfiguring..."))
             last <- length(iraceResults$iterationElites)
@@ -304,13 +325,16 @@ server <- function(input, output, session) {
     })
 
     output$boxPlotPerformance <- renderImage({
+        assign("completedIRACE", FALSE, envir=.GlobalEnv, inherits = FALSE)
+        validate(
+            need(nrow(iraceResults$allConfigurations) != 0, "ERROR: Cannot plot because IRACE did not finish. The number of candidate configurations is 0.")
+        )
         withProgress(message = 'Plotting: Boxplot Performance', value = 0, {
             incProgress(1/10, detail = paste("Preconfiguring..."))
             req(input$iterationPlotsPerformance)
             incProgress(2/10, detail = paste("Rendering plots..."))
             plot <- generateBoxPlot(input$iterationPlotsPerformance)
             incProgress(10/10, detail = paste("Finishing..."))
-            assign("completedIRACE", FALSE, envir=.GlobalEnv, inherits = FALSE)
             validate(
                 need(plot$error != TRUE, "ERROR: Cannot plot because IRACE did not finish. Insuficient data to generate the plot.")
             )
@@ -321,7 +345,8 @@ server <- function(input, output, session) {
 
     paramsCandidates <- reactive({
         validate(
-            need(length(paramsCand()) >= 2, "ERROR: At least two parameters are necessary to generate the plots.")
+            need(length(paramsCand()) >= 2, "ERROR: At least two parameters are necessary to generate the plots."),
+            need(nrow(iraceResults$allConfigurations) != 0, "ERROR: Cannot plot because IRACE did not finish. The number of candidate configurations is 0.")
         )
     })
 
@@ -406,7 +431,8 @@ server <- function(input, output, session) {
         conf <- getConfigurationByIteration(iraceResults = iraceResults, iterations = iterations[1]:iterations[2])
         assign("completedIRACE", FALSE, envir=.GlobalEnv, inherits = FALSE)
         validate(
-            need(nrow(conf) != 0, "ERROR: Cannot plot because IRACE did not finish. The amount of rows is 0.")
+            need(nrow(conf) != 0, "ERROR: Cannot plot because IRACE did not finish. The amount of rows is 0."),
+            need(nrow(iraceResults$allConfigurations) != 0, "ERROR: Cannot plot because IRACE did not finish. The number of candidate configurations is 0.")
         )
         assign("completedIRACE", TRUE, envir=.GlobalEnv, inherits = FALSE)
         progress <- AsyncProgress$new(message = 'Plotting: Parallel Coordinates', detail = 'This may take a while...', value = 0)
@@ -464,12 +490,16 @@ server <- function(input, output, session) {
     })
 
     output$convergencePerformance <- renderPlot({
+        assign("completedIRACE", FALSE, envir=.GlobalEnv, inherits = FALSE)
+        validate(
+            need(nrow(iraceResults$allConfigurations) != 0, "ERROR: Cannot plot because IRACE did not finish. The number of candidate configurations is 0.")
+        )
+
         iters <- unique(iraceResults$experimentLog[,"iteration"])
         fes <- cumsum(table(iraceResults$experimentLog[,"iteration"]))
         fes <- fes[!names(fes) == '0']
         elites <- as.character(iraceResults$iterationElites)
 
-        assign("completedIRACE", FALSE, envir=.GlobalEnv, inherits = FALSE)
         validate(
             need(dim(iraceResults$experiments[,elites]) != 0, "ERROR: Cannot plot because IRACE did not finish. Must be an array of two dimensions.")
         )
@@ -518,6 +548,13 @@ server <- function(input, output, session) {
     }, once = FALSE)
 
     observeEvent(input$backMainMenu, {
+        if(length(ls(envir=.GlobalEnv, pattern="customSectionsNames")) != 0)
+            rm(customSectionsNames, envir = .GlobalEnv)
+        if(length(ls(envir=.GlobalEnv, pattern="customSectionsIDS")) != 0)
+            rm(customSectionsIDS, envir = .GlobalEnv)
+        if(length(ls(envir=.GlobalEnv, pattern="customSections")) != 0)
+            rm(customSections, envir = .GlobalEnv)
+
         status <- list(goto = 0)
         assign("recentlyLoadedReports", TRUE, envir=.GlobalEnv,inherits = FALSE)
         session$sendCustomMessage(type = "closeWindow", message = "message")
