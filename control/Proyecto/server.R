@@ -225,6 +225,7 @@ summary <- shinyServer(function(input,output,session){
      #### PLOTS ####
       output$plotPerformance <- renderPlot({
         req(input$iterationPerformance)
+        updateFile()
         withProgress(message = "Updating Data", value = 0, {
           incProgress(1/10,detail = paste("Getting Data"))
           Sys.sleep(0.1)
@@ -247,6 +248,7 @@ summary <- shinyServer(function(input,output,session){
       output$frecuencyParameters <- renderImage({
         req(input$iterationFrequency)
         req(input$parametersFrequency)
+        updateFile()
         withProgress(message = "Updating Data", value = 0, {
           incProgress(1/10,detail = paste("Getting Data"))
           Sys.sleep(0.1)
@@ -396,6 +398,7 @@ summary <- shinyServer(function(input,output,session){
         })
         
           output$performance <- renderPlot({
+            updateFile()
             if(iraceResults$state$completed == FALSE)
             {
                 invalidateLater(4000, session)
