@@ -76,7 +76,7 @@ summary <- shinyServer(function(input,output,session){
         output$elites <- DT::renderDataTable({
             req(input$iterationsElites)
             validate(
-              need(input$iterationsElites <= iraceResults$state$nbIterations, "Ingrese un valor valido")
+              need(input$iterationsElites <= iraceResults$state$nbIterations, "This iteration exceeds the maximum amount")
             )
               allElitesID <- iraceResults$allElites
               for(i in allElitesID[as.integer(input$iterationsElites)])
@@ -214,6 +214,9 @@ summary <- shinyServer(function(input,output,session){
           }
           output$numElitesConfigurations <- renderText({
             req(input$iterationForElites)
+            validate(
+              need(input$iterationForElites <= iraceResults$state$nbIterations, "This iteration exceeds the maximum amount")
+            )
             for(i in iraceResults$allElites[as.integer(input$iterationForElites)])
             {
               c(i)
