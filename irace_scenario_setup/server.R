@@ -399,6 +399,7 @@ server <- function(input, output, session) {
                               "seed= ",input$seed,"\n",
                               "repairConfiguration=",input$repairConfiguration,"\n",
                               "postSelection=",input$postSelection,"\n",
+                              "maxExperiments= ",input$maxExperiments,"\n",
                               "aclib=",as.integer(input$aclib),"\n\n",
                               "###Elitist Race\n\n",
                               "elitist=",as.integer(input$elitist),"\n",
